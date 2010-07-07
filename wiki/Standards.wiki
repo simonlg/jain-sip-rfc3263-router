@@ -1,4 +1,4 @@
 #summary List of standards relevant to this project.
 #labels Phase-Design
 
-  * [http://www.ietf.org/rfc/rfc3263.txt Session Initiation Protocol (SIP): Locating SIP Servers - RFC 3263]
+  * [http://www.ietf.org/rfc/rfc3263.txt RFC 3263]
