@@ -19,8 +19,7 @@ import javax.sip.address.SipURI;
 import javax.sip.address.URI;
 import javax.sip.message.Request;
 
-import org.apache.log4j.Logger;
-
+import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
@@ -44,6 +43,10 @@ public class DefaultRouter implements Router {
 			return null;
 		}
 		final SipURI sipUri = (SipURI) uri;
+		
+		Locator locator = new Locator(new DefaultResolver());
+		locator.locate(sipUri);
+		
 		Hop transport = selectTransport(sipUri);
 		determineHost(sipUri);
 		System.out.println(transport);
@@ -62,7 +65,7 @@ public class DefaultRouter implements Router {
 	}
 
 	protected String determineHost(SipURI uri) {
-		// RFC 3263 §4.1
+		// RFC 3263 Section 4.1
 		//
 		// If TARGET is a numeric IP address, the client uses that address.
 		final String target = getTarget(uri);
@@ -78,101 +81,94 @@ public class DefaultRouter implements Router {
 	}
 
 	protected Hop selectTransport(SipURI uri) {
-		// RFC 3263 §4.1
-		//
-		// If the URI specifies a transport protocol in the
-		// transport parameter, that transport protocol SHOULD
-		// be used.
+		final String transportParam = uri.getTransportParam();
+		final String target = getTarget(uri);
+		final boolean isNumericTarget = isNumeric(target);
+		final int uriPort = uri.getPort();
+		final boolean isSipsUri = uri.isSecure();
+		
 		String transport = null;
 		String host = null;
 		int port = -1;
 		
-		if (uri.getTransportParam() != null) {
-			transport = uri.getTransportParam();
-		}
-
-		// RFC 3263 §4.1
+		// RFC 3263 Section 4.1
 		//
-		// ... if no transport protocol is specified, but the
-		// TARGET is a numeric IP address, the client SHOULD
-		// use UDP for a SIP URI, and TCP for a SIPS URI.
-		final String target = getTarget(uri);
-		if (uri.getTransportParam() == null && isNumeric(target)) {
-			// HOST and PORT can be determined here.
-			if (uri.isSecure()) {
-				transport = "tcp";
-			} else {
-				transport = "udp";
-			}
-		}
-		
-		// RFC 3263 §4.1
-		//
-		// ... if no transport protocol is specified, and the
-		// TARGET is not numeric, but an explicit port is provided,
-		// the client SHOULD use UDP for a SIP URI, and TCP for a
-		// SIPS URI.
-		if (uri.getTransportParam() == null && isNumeric(target) == false && uri.getPort() != -1) {
-			if (uri.isSecure()) {
-				transport = "tcp";
-			} else {
-				transport = "udp";
-			}
-		}
-		
-		// RFC 3263 §4.2
-		//
-		// If TARGET is a numeric IP address, the client uses that address.  If
-		// the URI also contains a port, it uses that port.  If no port is
-		// specified, it uses the default port for the particular transport
-		// protocol.
-		if (isNumeric(target)) {
-			host = target;
-			
-			if (uri.getPort() != -1) {
-				port = uri.getPort();
-			} else {
-				if (transport.equals("tcp") && uri.isSecure()) {
-					port = ListeningPoint.PORT_5061;
+		// If the URI specifies a transport protocol in the
+		// transport parameter, that transport protocol SHOULD
+		// be used.
+		if (transportParam != null) {
+			transport = transportParam;
+		} else {
+			// RFC 3263 Section 4.1
+			//
+			// ... if no transport protocol is specified, but the
+			// TARGET is a numeric IP address, the client SHOULD
+			// use UDP for a SIP URI, and TCP for a SIPS URI.
+			if (isNumericTarget) {
+				if (isSipsUri) {
+					transport = "tcp";
 				} else {
-					port = ListeningPoint.PORT_5060;
+					transport = "udp";
+				}
+				// RFC 3263 Section 4.2
+				//
+				// If TARGET is a numeric IP address, the client uses that address...
+				host = target;
+				// ... If the URI also contains a port, it uses that port.  If no port is
+				// specified, it uses the default port for the particular transport
+				// protocol.
+				if (uriPort != -1) {
+					port = uriPort;
+				} else {
+					// No port specified, so use the default port for each transport.
+					if (transport.equals("tcp") && isSipsUri) {
+						port = ListeningPoint.PORT_5061;
+					} else {
+						port = ListeningPoint.PORT_5060;
+					}
+				}
+			} else {
+				// RFC 3263 Section 4.1
+				//
+				// ... if no transport protocol is specified, and the
+				// TARGET is not numeric, but an explicit port is provided,
+				// the client SHOULD use UDP for a SIP URI, and TCP for a
+				// SIPS URI.
+				if (uriPort != -1) {
+					if (isSipsUri) {
+						transport = "tcp";
+					} else {
+						transport = "udp";
+					}
 				}
 			}
-		}
-		
-		// If the TARGET was not a numeric IP address, but a port is present in
-		// the URI, the client performs an A or AAAA record lookup of the domain
-		// name.
-		if (isNumeric(target) == false && uri.getPort() != -1) {
-			// Do A or AAAA lookup.
 		}
 		
 		if (transport != null) {
 			return new HopImpl(transport, port, transport);
 		}
 
-		// RFC 3263 §4.1
+		// RFC 3263 Section 4.1
 		//
 		// ... if no transport protocol or port is specified, and the target
 		// is not a numeric IP address, the client SHOULD perform a NAPTR
 		// query for the domain in the URI.
-		if (uri.getTransportParam() == null && uri.getPort() == -1 && isNumeric(target) == false) {
+		if (transportParam == null && uriPort == -1 && isNumericTarget == false) {
 			Set<PointerRecord> pointers = lookupPointerRecords(target);
 			List<String> serviceNames = new ArrayList<String>();
 			
 			if (pointers.size() == 0) {
-				// RFC 3263 §4.1
+				// RFC 3263 Section 4.1
 				//
 				// If no NAPTR records are found, the client constructs SRV queries
 				// for those transport protocols it supports, and does a query for each.
 				final Set<String> supportedTransports = getSupportedTransportProtocols();
 				// TODO: Allow the end user to determine our transport preference.
 
-				// RFC 3263 §4.1
+				// RFC 3263 Section 4.1
 				//
 				// Queries are done using the service identifier "_sip" for SIP URIs
-				// and
-				// "_sips" for SIPS URIs.
+				// and "_sips" for SIPS URIs.
 				if (supportedTransports.contains("tls")) {
 					serviceNames.add("_sips._tcp." + target);
 				}
@@ -189,15 +185,15 @@ public class DefaultRouter implements Router {
 			} else {
 				// Found NAPTR records.
 				
-				// RFC 3263 §4.1
+				// RFC 3263 Section 4.1
 				//
 				// First, a client resolving a SIPS URI MUST discard any services
 				// that do not contain "SIPS" as the protocol in the service field
-				if (uri.isSecure()) {
+				if (isSipsUri) {
 					discardInsecureTransports(pointers);
 				}
 
-				// RFC 3263 §4.1
+				// RFC 3263 Section 4.1
 				//
 				// Second, a client MUST discard any service fields that identify
 				// a resolution service whose value is not "D2X", for values of X
@@ -211,7 +207,7 @@ public class DefaultRouter implements Router {
 				}
 			}
 			
-			// RFC 3263 §4.1
+			// RFC 3263 Section 4.1
 			//
 			// A particular transport is supported if the query is successful. The
 			// client MAY use any transport protocol it desires which is supported by the
@@ -230,24 +226,22 @@ public class DefaultRouter implements Router {
 				}
 			}
 			
-			// RFC 3263 §4.1
+			// RFC 3263 Section 4.1
 			//
 			// If no SRV records are found, the client SHOULD use TCP for a SIPS
 			// URI, and UDP for a SIP URI.
-			if (uri.isSecure()) {
+			if (isSipsUri) {
 				return new HopImpl(null, -1, "tcp");
 			} else {
 				return new HopImpl(null, -1, "udp");
 			}
 		}
-		
-		System.out.println("HERE");
-		
+
 		return null;
 	}
 
 	protected String getTarget(SipURI uri) {
-		// RFC 3263 §4
+		// RFC 3263 Section 4
 
 		// We define TARGET as the value of the maddr parameter of
 		// the URI, if present, otherwise, the host value of the
