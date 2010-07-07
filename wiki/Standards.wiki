@@ -1,4 +1,4 @@
-#summary List of standards relevant to this project.
+#summary List of standards documents relevant to this project.
 #labels Phase-Design
 
 == Primary Specification ==
