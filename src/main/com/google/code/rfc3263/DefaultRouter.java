@@ -21,6 +21,7 @@ import javax.sip.message.Request;
 
 import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.PointerRecord;
+import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
 /**
@@ -44,8 +45,15 @@ public class DefaultRouter implements Router {
 		}
 		final SipURI sipUri = (SipURI) uri;
 		
-		Locator locator = new Locator(new DefaultResolver());
-		locator.locate(sipUri);
+		List<String> transports = new ArrayList<String>();
+		Resolver resolver = new DefaultResolver();
+		
+		Locator locator = new Locator(resolver, transports);
+		try {
+			locator.locate(sipUri);
+		} catch (UnknownHostException e) {
+			throw new RuntimeException(e);
+		}
 		
 		Hop transport = selectTransport(sipUri);
 		determineHost(sipUri);
@@ -399,38 +407,6 @@ public class DefaultRouter implements Router {
 			if (pointer.getService().equals("SIPS+D2U")) {
 				iter.remove();
 			}
-		}
-	}
-
-	private class HopImpl implements Hop {
-		private final String host;
-		private final int port;
-		private final String transport;
-		
-		public HopImpl(String host, int port, String transport) {
-			this.host = host;
-			this.port = port;
-			this.transport= transport;
-		}
-		
-		@Override
-		public String getHost() {
-			return host;
-		}
-
-		@Override
-		public int getPort() {
-			return port;
-		}
-
-		@Override
-		public String getTransport() {
-			return transport;
-		}
-		
-		@Override
-		public String toString() {
-			return host + ":" + port + "/" + transport;
 		}
 	}
 }
