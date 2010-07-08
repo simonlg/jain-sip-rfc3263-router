@@ -2,12 +2,13 @@ package com.google.code.rfc3263;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -58,10 +59,10 @@ public class Locator {
 		this.transports = transports;
 	}
 	
-	public List<Hop> locate(SipURI uri) throws UnknownHostException {
-		List<Hop> hops = new ArrayList<Hop>();
+	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
+		Queue<Hop> hops = new LinkedList<Hop>();
 		
-		final String transportParam = uri.getTransportParam().toUpperCase();
+		final String transportParam = uri.getTransportParam();
 
 		if (transportParam == null && isNumeric(getTarget(uri))) {
 			// RFC 3263 Section 4.2 Para 2
@@ -108,10 +109,10 @@ public class Locator {
 				serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
 			} else {
 				// Work out if a client wishes to use TLS.
-				if (transportParam.equals("UDP")) {
+				if (transportParam.equalsIgnoreCase("UDP")) {
 					// No option for UDP, which is always false.
 					serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
-				} else if (transportParam.equals("TCP")) {
+				} else if (transportParam.equalsIgnoreCase("TCP")) {
 					if (transports.contains("TCP") && transports.contains("TLS")) {
 						if (transports.indexOf("TLS") < transports.indexOf("TCP")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
@@ -127,7 +128,7 @@ public class Locator {
 							throw new IllegalStateException("No usable transports (TCP or TLS) for transport flag: " + transportParam);
 						}
 					}
-				} else if (transportParam.equals("SCTP")) {
+				} else if (transportParam.equalsIgnoreCase("SCTP")) {
 					if (transports.contains("SCTP") && transports.contains("SCTP-TLS")) {
 						if (transports.indexOf("SCTP-TLS") < transports.indexOf("SCTP")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
@@ -374,26 +375,26 @@ public class Locator {
 		return sb.toString();
 	}
 	
-	protected List<Hop> getHops(String host, int port, String transport) throws UnknownHostException {
-		List<Hop> hops = new ArrayList<Hop>();
+	protected Queue<Hop> getHops(String host, int port, String transport) throws UnknownHostException {
+		Queue<Hop> hops = new LinkedList<Hop>();
 		
 		final InetAddress[] addresses = InetAddress.getAllByName(host);
 		for (InetAddress address : addresses) {
-			hops.add(new HopImpl(address.getHostAddress(), port, transport));
+			hops.add(new HopImpl(address.getHostAddress(), port, transport.toUpperCase()));
 		}
 		
 		return hops;
 	}
 	
-	protected List<Hop> getHops(String host, String transport, boolean isSecure) throws UnknownHostException {
+	protected Queue<Hop> getHops(String host, String transport, boolean isSecure) throws UnknownHostException {
 		return getHops(host, getDefaultPort(isSecure), transport);
 	}
 	
-	protected List<Hop> getHops(String host, int port, boolean isSecure) throws UnknownHostException {
+	protected Queue<Hop> getHops(String host, int port, boolean isSecure) throws UnknownHostException {
 		return getHops(host, port, getDefaultTransport(isSecure));
 	}
 	
-	protected List<Hop> getHops(String host, boolean isSecure) throws UnknownHostException {
+	protected Queue<Hop> getHops(String host, boolean isSecure) throws UnknownHostException {
 		return getHops(host, getDefaultPort(isSecure), getDefaultTransport(isSecure));
 	}
 	

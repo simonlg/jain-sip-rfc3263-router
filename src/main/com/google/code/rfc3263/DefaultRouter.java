@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Queue;
 
 import javax.sip.ListeningPoint;
 import javax.sip.SipException;
@@ -98,8 +99,8 @@ public class DefaultRouter implements Router {
 		Resolver resolver = new DefaultResolver();		
 		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
-			List<Hop> hops = locator.locate(destination);
-			return hops.get(0);
+			Queue<Hop> hops = locator.locate(destination);
+			return hops.poll();
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
