@@ -2,6 +2,7 @@ package com.google.code.rfc3263;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,6 +21,9 @@ import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
 public class Locator {
+	private String[] transports;
+	private String[] hosts;
+	private int[] ports;
 	/**
 	 * Class to use for DNS lookups.
 	 */
@@ -27,7 +31,7 @@ public class Locator {
 	/**
 	 * Preferred transports.
 	 */
-	private final List<String> transports;
+	private final List<String> prefTransports;
 	// SIP Table of Mappings From Service Field Values to Transport Protocols
 	//
 	// Services Field        Protocol  Reference
@@ -56,13 +60,73 @@ public class Locator {
 	
 	public Locator(Resolver resolver, List<String> transports) {
 		this.resolver = resolver;
-		this.transports = transports;
+		this.prefTransports = transports;
 	}
 	
 	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
 		Queue<Hop> hops = new LinkedList<Hop>();
 		
 		final String transportParam = uri.getTransportParam();
+		final String target = getTarget(uri);
+		final boolean isTargetNumeric = isNumeric(target);
+		final boolean isSecure = uri.isSecure();
+		final boolean wasPortProvided = uri.getPort() != -1;
+		final int providedPort = uri.getPort();
+		
+		// TODO: Check availability of these transports.
+		if (transportParam != null) {
+			if (isSecure) {
+				if (transportParam.equalsIgnoreCase("TCP")) {
+					transports = new String[]{"TLS"};
+				} else if (transportParam.equalsIgnoreCase("SCTP")) {
+					transports = new String[]{"SCTP-TLS"};
+				} else {
+					throw new IllegalArgumentException("UDP for SIPS URIs is not supported.");
+				}
+			} else {
+				transports = new String[]{transportParam.toUpperCase()};
+			}
+		} else {
+			if (isTargetNumeric) {
+				if (isSecure) {
+					transports = new String[]{"TLS"};
+				} else {
+					transports = new String[]{"UDP"};
+				}
+			} else {
+				if (wasPortProvided) {
+					if (isSecure) {
+						transports = new String[]{"TLS"};
+					} else {
+						transports = new String[]{"UDP"};
+					}
+				} else {
+					// DO NAPTR
+				}
+			}
+		}
+		
+		// Host and Port
+		if (isTargetNumeric) {
+			if (wasPortProvided) {
+				return getHops(target, providedPort, transports[0]);
+			} else {
+				if (isSecure) {
+					return getHops(target, 5061, transports[0]);
+				} else {
+					return getHops(target, 5060, transports[0]);
+				}
+			}
+		}
+		
+		if (transports.length != 0 && hosts.length != 0 && ports.length != 0) {
+			hops.add(new HopImpl(hosts[0], ports[0], transports[0]));
+			
+			return hops;
+		}
+		System.out.print(Arrays.toString(transports));
+		System.out.print(Arrays.toString(hosts));
+		System.out.println(Arrays.toString(ports));
 
 		if (transportParam == null && isNumeric(getTarget(uri))) {
 			// RFC 3263 Section 4.2 Para 2
@@ -113,32 +177,32 @@ public class Locator {
 					// No option for UDP, which is always false.
 					serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
 				} else if (transportParam.equalsIgnoreCase("TCP")) {
-					if (transports.contains("TCP") && transports.contains("TLS")) {
-						if (transports.indexOf("TLS") < transports.indexOf("TCP")) {
+					if (prefTransports.contains("TCP") && prefTransports.contains("TLS")) {
+						if (prefTransports.indexOf("TLS") < prefTransports.indexOf("TCP")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
 						} else {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
 						}
 					} else {
-						if (transports.contains("TLS")) {
+						if (prefTransports.contains("TLS")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
-						} else if (transports.contains("TCP")) {
+						} else if (prefTransports.contains("TCP")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
 						} else {
 							throw new IllegalStateException("No usable transports (TCP or TLS) for transport flag: " + transportParam);
 						}
 					}
 				} else if (transportParam.equalsIgnoreCase("SCTP")) {
-					if (transports.contains("SCTP") && transports.contains("SCTP-TLS")) {
-						if (transports.indexOf("SCTP-TLS") < transports.indexOf("SCTP")) {
+					if (prefTransports.contains("SCTP") && prefTransports.contains("SCTP-TLS")) {
+						if (prefTransports.indexOf("SCTP-TLS") < prefTransports.indexOf("SCTP")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
 						} else {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
 						}
 					} else {
-						if (transports.contains("SCTP-TLS")) {
+						if (prefTransports.contains("SCTP-TLS")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
-						} else if (transports.contains("SCTP")) {
+						} else if (prefTransports.contains("SCTP")) {
 							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
 						} else {
 							throw new IllegalStateException("No usable transports (SCTP or SCTP-TLS) for transport flag: " + transportParam);
@@ -215,10 +279,10 @@ public class Locator {
 			// protocol, if the client supports TLS.
 			//
 			// NOTE: "TLS" here is taken to mean TLS over TCP or SCTP.
-			if (transports.contains("TLS") == false) {
+			if (prefTransports.contains("TLS") == false) {
 				validServiceFields.remove("SIPS+D2T");
 			}
-			if (transports.contains("SCTP-TLS") == false) {
+			if (prefTransports.contains("SCTP-TLS") == false) {
 				validServiceFields.remove("SIPS+D2S");
 			}
 	
@@ -232,13 +296,13 @@ public class Locator {
 			// by the client, as well as an SRV record for the server.  It will also
 			// allow the client to discover if TLS is available and its preference
 			// for its usage.
-			if (transports.contains("TCP") == false) {
+			if (prefTransports.contains("TCP") == false) {
 				validServiceFields.remove("SIP+D2T");
 			}
-			if (transports.contains("UDP") == false) {
+			if (prefTransports.contains("UDP") == false) {
 				validServiceFields.remove("SIP+D2U");
 			}
-			if (transports.contains("SCTP") == false) {
+			if (prefTransports.contains("SCTP") == false) {
 				validServiceFields.remove("SIP+D2S");
 			}
 			
@@ -271,7 +335,7 @@ public class Locator {
 			// "_sips" for SIPS URIs.  A particular transport is supported if the
 			// query is successful.  The client MAY use any transport protocol it
 			// desires which is supported by the server.
-			for (String transport : transports) {
+			for (String transport : prefTransports) {
 				final String domain = serviceIdTransportMap.get(transport) + uri.getHost() + ".";
 				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(domain);
 				if (services.size() > 0) {
@@ -403,6 +467,6 @@ public class Locator {
 	}
 	
 	protected String getDefaultTransport(boolean isSecure) {
-		return isSecure ? "TCP" : "UDP";
+		return isSecure ? "TLS" : "UDP";
 	}
 }
