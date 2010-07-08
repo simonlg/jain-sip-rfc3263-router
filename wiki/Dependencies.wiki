@@ -2,7 +2,7 @@
 #labels Phase-Requirements
 
   * [http://jcp.org/en/jsr/detail?id=32 JAIN SIP API] 1.2
-  * https://jain-sip.dev.java.net/ JAIN SIP RI]
+  * [https://jain-sip.dev.java.net/ JAIN SIP RI]
   * [http://www.xbill.org/dnsjava/ dnsjava]
   * [http://www.junit.org/ JUnit] 4
   * [http://logging.apache.org/log4j/1.2/index.html log4j] 1.2
