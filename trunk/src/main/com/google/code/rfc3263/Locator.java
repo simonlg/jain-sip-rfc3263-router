@@ -60,8 +60,7 @@ public class Locator {
 		List<Hop> hops = new ArrayList<Hop>();
 		
 		if (uri.getTransportParam() != null) {
-			String transport = uri.getTransportParam().toUpperCase();
-			
+			final String transport = uri.getTransportParam().toUpperCase();
 			final String serviceId;
 			// If ... a transport was specified explicitly, the client performs an 
 			// SRV query for that specific transport, using the service identifier 
@@ -126,8 +125,11 @@ public class Locator {
 				// transport.  Processing then proceeds as described above for an
 				// explicit port once the A or AAAA records have been looked up.
 				hosts = InetAddress.getAllByName(uri.getHost());
-				// TODO: Invalid Port
-				port = -1;
+				if (uri.isSecure()) {
+					port = 5061;
+				} else {
+					port = 5060;
+				}
 			}
 			
 			// RFC 3263 Section 4.1 Para 2
@@ -135,7 +137,7 @@ public class Locator {
 			// If the URI specifies a transport protocol in the transport parameter,
 			// that transport protocol SHOULD be used.
 			for (InetAddress host : hosts) {
-				hops.add(new HopImpl(host.getHostAddress(), port, uri.getTransportParam()));
+				hops.add(new HopImpl(host.getHostAddress(), port, transport));
 			}
 			return hops;
 		}
