@@ -1,5 +1,5 @@
 #summary Library dependencies for this project
-#labels Phase-Requirements
+#labels Phase-Requirements,Featured
 
   * [http://jcp.org/en/jsr/detail?id=32 JAIN SIP API] 1.2
   * [https://jain-sip.dev.java.net/ JAIN SIP RI]
