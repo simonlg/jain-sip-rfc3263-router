@@ -46,17 +46,14 @@ public class Locator {
 		serviceIdTransportMap.put("SCTP", "_sip._sctp.");
 		serviceIdTransportMap.put("SCTP-TLS", "_sips._sctp.");
 	}
-	private InetAddress[] hosts;
-	private int port;
-	private String transport;
 	
 	public Locator(Resolver resolver, List<String> transports) {
 		this.resolver = resolver;
 		this.transports = transports;
 	}
 	
-	public void locate(SipURI uri) throws UnknownHostException {
-		List<Hop> hops = selectTransport(uri);
+	public List<Hop> locate(SipURI uri) throws UnknownHostException {
+		return selectTransport(uri);
 	}
 	
 	protected List<Hop> selectTransport(SipURI uri) throws UnknownHostException {
@@ -115,6 +112,8 @@ public class Locator {
 				}
 			}
 			SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+			final int port;
+			final InetAddress[] hosts;
 			if (services.size() > 0) {
 				ServiceRecord service = services.iterator().next();
 				hosts = InetAddress.getAllByName(service.getTarget());
@@ -127,6 +126,8 @@ public class Locator {
 				// transport.  Processing then proceeds as described above for an
 				// explicit port once the A or AAAA records have been looked up.
 				hosts = InetAddress.getAllByName(uri.getHost());
+				// TODO: Invalid Port
+				port = -1;
 			}
 			
 			// RFC 3263 Section 4.1 Para 2
@@ -145,7 +146,8 @@ public class Locator {
 			// the URI also contains a port, it uses that port.  If no port is
 			// specified, it uses the default port for the particular transport
 			// protocol.
-			hosts = InetAddress.getAllByName(getTarget(uri));
+			final InetAddress[] hosts = InetAddress.getAllByName(getTarget(uri));
+			final int port;
 			if (uri.getPort() != -1) {
 				// RFC 3263 Section 4.1 Para 2 (Cont)
 				//
@@ -177,31 +179,29 @@ public class Locator {
 				}
 			}
 			return hops;
-		} else {
-			if (uri.getPort() != -1) {
-				// RFC 3263 Section 4.2 Para 3
-				//
-				// If the TARGET was not a numeric IP address, but a port is present in
-				// the URI, the client performs an A or AAAA record lookup of the domain
-				// name.
-				hosts = InetAddress.getAllByName(getTarget(uri));
-				port = uri.getPort();
-				// RFC 3263 Section 4.1 Para 3 (Cont)
-				//
-				// Similarly, if no transport protocol is specified, and the TARGET is 
-				// not numeric, but an explicit port is provided, the client SHOULD use 
-				// UDP for a SIP URI, and TCP for a SIPS URI.
-				if (uri.isSecure() == false) {
-					for (InetAddress host : hosts) {
-						hops.add(new HopImpl(host.getHostAddress(), port, "UDP"));
-					}
-				} else {
-					for (InetAddress host : hosts) {
-						hops.add(new HopImpl(host.getHostAddress(), port, "TCP"));
-					}
+		} else if (uri.getPort() != -1) {
+			// RFC 3263 Section 4.2 Para 3
+			//
+			// If the TARGET was not a numeric IP address, but a port is present in
+			// the URI, the client performs an A or AAAA record lookup of the domain
+			// name.
+			final InetAddress[] hosts = InetAddress.getAllByName(getTarget(uri));
+			final int port = uri.getPort();
+			// RFC 3263 Section 4.1 Para 3 (Cont)
+			//
+			// Similarly, if no transport protocol is specified, and the TARGET is 
+			// not numeric, but an explicit port is provided, the client SHOULD use 
+			// UDP for a SIP URI, and TCP for a SIPS URI.
+			if (uri.isSecure() == false) {
+				for (InetAddress host : hosts) {
+					hops.add(new HopImpl(host.getHostAddress(), port, "UDP"));
 				}
-				return hops;
+			} else {
+				for (InetAddress host : hosts) {
+					hops.add(new HopImpl(host.getHostAddress(), port, "TCP"));
+				}
 			}
+			return hops;
 		}
 		// RFC 3263 Section 4.1 Para 4
 		//
@@ -292,8 +292,8 @@ public class Locator {
 					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(domain);
 					if (services.size() > 0) {
 						for (ServiceRecord service : services) {
-							hosts = InetAddress.getAllByName(service.getTarget());
-							port = service.getPort();
+							final InetAddress[] hosts = InetAddress.getAllByName(service.getTarget());
+							final int port = service.getPort();
 							String transport = serviceTransportMap.get(pointer.getService());
 							for (InetAddress host : hosts) {
 								hops.add(new HopImpl(host.getHostAddress(), port, transport));
@@ -317,8 +317,8 @@ public class Locator {
 				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(domain);
 				if (services.size() > 0) {
 					for (ServiceRecord service : services) {
-						hosts = InetAddress.getAllByName(service.getTarget());
-						port = service.getPort();
+						final InetAddress[] hosts = InetAddress.getAllByName(service.getTarget());
+						final int port = service.getPort();
 						for (InetAddress host : hosts) {
 							hops.add(new HopImpl(host.getHostAddress(), port, transport));
 						}
@@ -337,7 +337,9 @@ public class Locator {
 		// protocol determined previously, at the default port for that
 		// transport.  Processing then proceeds as described above for an
 		// explicit port once the A or AAAA records have been looked up.
-		hosts = InetAddress.getAllByName(uri.getHost());
+		final InetAddress[] hosts = InetAddress.getAllByName(uri.getHost());
+		final int port;
+		final String transport;
 		
 		// RFC 3263 Section 4.1 Para 13
 		//
@@ -348,13 +350,14 @@ public class Locator {
 		// exceed the path MTU.
 		if (uri.isSecure()) {
 			port = 5061;
-			for (InetAddress host : hosts) {
-				hops.add(new HopImpl(host.getHostAddress(), 5061, "TCP"));
-			}
+			transport = "TCP";
+			
 		} else {
-			for (InetAddress host : hosts) {
-				hops.add(new HopImpl(host.getHostAddress(), 5060, "UDP"));
-			}
+			port = 5060;
+			transport = "UDP";
+		}
+		for (InetAddress host : hosts) {
+			hops.add(new HopImpl(host.getHostAddress(), port, transport));
 		}
 		return hops;
 	}
