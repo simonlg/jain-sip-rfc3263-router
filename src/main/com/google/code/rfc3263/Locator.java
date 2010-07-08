@@ -110,13 +110,13 @@ public class Locator {
 					throw new IllegalStateException("Unrecognised transport flag: " + transport);
 				}
 			}
-			SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
-			final int port;
-			final InetAddress[] hosts;
+			final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+			
 			if (services.size() > 0) {
-				ServiceRecord service = services.iterator().next();
-				hosts = InetAddress.getAllByName(service.getTarget());
-				port = service.getPort();
+				for (ServiceRecord service : services) {
+					hops.addAll(getHops(service.getTarget(), service.getPort(), transport));
+				}
+				return hops;
 			} else {
 				// If no SRV records were found, the client performs an A or AAAA record
 				// lookup of the domain name.  The result will be a list of IP
@@ -124,22 +124,8 @@ public class Locator {
 				// protocol determined previously, at the default port for that
 				// transport.  Processing then proceeds as described above for an
 				// explicit port once the A or AAAA records have been looked up.
-				hosts = InetAddress.getAllByName(uri.getHost());
-				if (uri.isSecure()) {
-					port = 5061;
-				} else {
-					port = 5060;
-				}
+				return getHops(uri.getHost(), transport, uri.isSecure());
 			}
-			
-			// RFC 3263 Section 4.1 Para 2
-			//
-			// If the URI specifies a transport protocol in the transport parameter,
-			// that transport protocol SHOULD be used.
-			for (InetAddress host : hosts) {
-				hops.add(new HopImpl(host.getHostAddress(), port, transport));
-			}
-			return hops;
 		}
 		if (isNumeric(getTarget(uri))) {
 			// RFC 3263 Section 4.1 Para 2
@@ -148,62 +134,31 @@ public class Locator {
 			// the URI also contains a port, it uses that port.  If no port is
 			// specified, it uses the default port for the particular transport
 			// protocol.
-			final InetAddress[] hosts = InetAddress.getAllByName(getTarget(uri));
-			final int port;
 			if (uri.getPort() != -1) {
 				// RFC 3263 Section 4.1 Para 2 (Cont)
 				//
 				// If the URI also contains a port, it uses that port.
-				port = uri.getPort();
+				return getHops(getTarget(uri), uri.getPort(), uri.isSecure());
 			} else {
 				// RFC 3263 Section 4.1 Para 2 (Cont)
 				//
 				// If no port is specified, it uses the default port for the 
 				// particular transport protocol.
-				if (uri.isSecure()) {
-					port = 5061;
-				} else {
-					port = 5060;
-				}
+				return getHops(getTarget(uri), uri.isSecure());
 			}
-			// RFC 3263 Section 4.1 Para 3
-			//
-			// Otherwise, if no transport protocol is specified, but the TARGET is a
-			// numeric IP address, the client SHOULD use UDP for a SIP URI, and TCP
-			// for a SIPS URI.
-			if (uri.isSecure() == false) {
-				for (InetAddress host : hosts) {
-					hops.add(new HopImpl(host.getHostAddress(), port, "UDP"));
-				}
-			} else {
-				for (InetAddress host : hosts) {
-					hops.add(new HopImpl(host.getHostAddress(), port, "TCP"));
-				}
-			}
-			return hops;
 		} else if (uri.getPort() != -1) {
 			// RFC 3263 Section 4.2 Para 3
 			//
 			// If the TARGET was not a numeric IP address, but a port is present in
 			// the URI, the client performs an A or AAAA record lookup of the domain
 			// name.
-			final InetAddress[] hosts = InetAddress.getAllByName(getTarget(uri));
-			final int port = uri.getPort();
+
 			// RFC 3263 Section 4.1 Para 3 (Cont)
 			//
 			// Similarly, if no transport protocol is specified, and the TARGET is 
 			// not numeric, but an explicit port is provided, the client SHOULD use 
 			// UDP for a SIP URI, and TCP for a SIPS URI.
-			if (uri.isSecure() == false) {
-				for (InetAddress host : hosts) {
-					hops.add(new HopImpl(host.getHostAddress(), port, "UDP"));
-				}
-			} else {
-				for (InetAddress host : hosts) {
-					hops.add(new HopImpl(host.getHostAddress(), port, "TCP"));
-				}
-			}
-			return hops;
+			return getHops(getTarget(uri), uri.getPort(), uri.isSecure());
 		}
 		// RFC 3263 Section 4.1 Para 4
 		//
@@ -294,12 +249,7 @@ public class Locator {
 					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(domain);
 					if (services.size() > 0) {
 						for (ServiceRecord service : services) {
-							final InetAddress[] hosts = InetAddress.getAllByName(service.getTarget());
-							final int port = service.getPort();
-							String transport = serviceTransportMap.get(pointer.getService());
-							for (InetAddress host : hosts) {
-								hops.add(new HopImpl(host.getHostAddress(), port, transport));
-							}
+							hops.addAll(getHops(service.getTarget(), service.getPort(), serviceTransportMap.get(pointer.getService())));
 						}
 					}
 				}
@@ -339,9 +289,6 @@ public class Locator {
 		// protocol determined previously, at the default port for that
 		// transport.  Processing then proceeds as described above for an
 		// explicit port once the A or AAAA records have been looked up.
-		final InetAddress[] hosts = InetAddress.getAllByName(uri.getHost());
-		final int port;
-		final String transport;
 		
 		// RFC 3263 Section 4.1 Para 13
 		//
@@ -350,18 +297,7 @@ public class Locator {
 		// such as TCP, MAY be used if the guidelines of SIP mandate it for this
 		// particular request.  That is the case, for example, for requests that
 		// exceed the path MTU.
-		if (uri.isSecure()) {
-			port = 5061;
-			transport = "TCP";
-			
-		} else {
-			port = 5060;
-			transport = "UDP";
-		}
-		for (InetAddress host : hosts) {
-			hops.add(new HopImpl(host.getHostAddress(), port, transport));
-		}
-		return hops;
+		return getHops(uri.getHost(), uri.isSecure());
 	}
 	
 	protected String getTarget(SipURI uri) {
@@ -430,5 +366,36 @@ public class Locator {
 		sb.append(".");
 		
 		return sb.toString();
+	}
+	
+	protected List<Hop> getHops(String host, int port, String transport) throws UnknownHostException {
+		List<Hop> hops = new ArrayList<Hop>();
+		
+		final InetAddress[] addresses = InetAddress.getAllByName(host);
+		for (InetAddress address : addresses) {
+			hops.add(new HopImpl(address.getHostAddress(), port, transport));
+		}
+		
+		return hops;
+	}
+	
+	protected List<Hop> getHops(String host, String transport, boolean isSecure) throws UnknownHostException {
+		return getHops(host, getDefaultPort(isSecure), transport);
+	}
+	
+	protected List<Hop> getHops(String host, int port, boolean isSecure) throws UnknownHostException {
+		return getHops(host, port, getDefaultTransport(isSecure));
+	}
+	
+	protected List<Hop> getHops(String host, boolean isSecure) throws UnknownHostException {
+		return getHops(host, getDefaultPort(isSecure), getDefaultTransport(isSecure));
+	}
+	
+	protected int getDefaultPort(boolean isSecure) {
+		return isSecure ? 5061 : 5060;
+	}
+	
+	protected String getDefaultTransport(boolean isSecure) {
+		return isSecure ? "TCP" : "UDP";
 	}
 }
