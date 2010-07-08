@@ -19,7 +19,13 @@ import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
 public class Locator {
+	/**
+	 * Class to use for DNS lookups.
+	 */
 	private final Resolver resolver;
+	/**
+	 * Preferred transports.
+	 */
 	private final List<String> transports;
 	// SIP Table of Mappings From Service Field Values to Transport Protocols
 	//
