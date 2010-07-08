@@ -63,6 +63,26 @@ public class Locator {
 		this.prefTransports = transports;
 	}
 	
+	protected Queue<Hop> locateNumeric(String domain, int port, String transport, boolean isSecure) {
+		final Queue<Hop> hops = new LinkedList<Hop>();
+		
+		if (transport != null) {
+			if (isSecure) {
+				if (transport.equalsIgnoreCase("TCP")) {
+					transports = new String[]{"TLS"};
+				} else if (transport.equalsIgnoreCase("SCTP")) {
+					transports = new String[]{"SCTP-TLS"};
+				} else {
+					throw new IllegalArgumentException("UDP for SIPS URIs is not supported.");
+				}
+			}
+		} else {
+			
+		}
+		
+		return hops;
+	}
+	
 	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
 		Queue<Hop> hops = new LinkedList<Hop>();
 		
@@ -72,6 +92,10 @@ public class Locator {
 		final boolean isSecure = uri.isSecure();
 		final boolean wasPortProvided = uri.getPort() != -1;
 		final int providedPort = uri.getPort();
+
+		if (isTargetNumeric) {
+			return locateNumeric(target, providedPort, transportParam, isSecure);
+		}
 		
 		// TODO: Check availability of these transports.
 		if (transportParam != null) {
