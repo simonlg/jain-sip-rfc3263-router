@@ -1,5 +1,5 @@
 #summary List of standards documents relevant to this project.
-#labels Phase-Design
+#labels Phase-Design,Featured
 
 == Primary Specification ==
 
