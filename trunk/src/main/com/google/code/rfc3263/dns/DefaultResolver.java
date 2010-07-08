@@ -1,29 +1,17 @@
 package com.google.code.rfc3263.dns;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.NAPTRRecord;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
 public class DefaultResolver implements Resolver {
-	private final Set<String> validServiceFields = new HashSet<String>();
-	
-	public DefaultResolver() {
-		validServiceFields.add("SIP+D2T");
-		validServiceFields.add("SIPS+D2T");
-		validServiceFields.add("SIP+D2U");
-		validServiceFields.add("SIP+D2S");
-		validServiceFields.add("SIPS+D2S");
-	}
-	
-	@Override
-	public SortedSet<PointerRecord> lookupPointerRecords(String domain, boolean isSecure) {
+	public SortedSet<PointerRecord> lookupPointerRecords(String domain) {
 		final SortedSet<PointerRecord> pointers = new TreeSet<PointerRecord>();
 		
 		final Record[] records;
@@ -32,11 +20,12 @@ public class DefaultResolver implements Resolver {
 		} catch (TextParseException e) {
 			throw new RuntimeException(e);
 		}
+		if (records == null) {
+			return pointers;
+		}
 		for (int i = 0; i < records.length; i++) {
 			NAPTRRecord naptr = (NAPTRRecord) records[i];
-			if (validServiceFields.contains(naptr.getService()) == false) {
-				continue;
-			}
+
 			int order = naptr.getOrder();
 			int preference = naptr.getPreference();
 			String flags = naptr.getFlags();
@@ -52,4 +41,31 @@ public class DefaultResolver implements Resolver {
 		return pointers;
 	}
 
+	public SortedSet<ServiceRecord> lookupServiceRecords(String domain) {
+		final SortedSet<ServiceRecord> services = new TreeSet<ServiceRecord>();
+		
+		final Record[] records;
+		try {
+			records = new Lookup(domain, Type.SRV).run();
+		} catch (TextParseException e) {
+			throw new RuntimeException(e);
+		}
+		if (records == null) {
+			return services;
+		}
+		for (int i = 0; i < records.length; i++) {
+			SRVRecord srv = (SRVRecord) records[i];
+
+			int priority = srv.getPriority();
+			int weight = srv.getWeight();
+			int port = srv.getPort();
+			String target = srv.getTarget().toString();
+			
+			ServiceRecord service = new ServiceRecord(priority, weight, port, target);
+			services.add(service);
+		}
+		
+		
+		return services;
+	}
 }
