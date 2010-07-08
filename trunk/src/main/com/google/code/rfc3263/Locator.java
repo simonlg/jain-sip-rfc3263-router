@@ -59,82 +59,12 @@ public class Locator {
 	}
 	
 	public List<Hop> locate(SipURI uri) throws UnknownHostException {
-		return selectTransport(uri);
-	}
-	
-	protected List<Hop> selectTransport(SipURI uri) throws UnknownHostException {
 		List<Hop> hops = new ArrayList<Hop>();
 		
-		if (uri.getTransportParam() != null) {
-			final String transport = uri.getTransportParam().toUpperCase();
-			final String serviceId;
-			// If ... a transport was specified explicitly, the client performs an 
-			// SRV query for that specific transport, using the service identifier 
-			// "_sips" for SIPS URIs.  For a SIP URI, if the client wishes to use 
-			// TLS, it also uses the service identifier "_sips" for that specific 
-			// transport, otherwise, it uses "_sip".
-			if (uri.isSecure()) {
-				serviceId = getServiceIdentifier(transport, uri.getHost(), true);
-			} else {
-				// Work out if a client wishes to use TLS.
-				if (transport.equals("UDP")) {
-					// No option for UDP, which is always false.
-					serviceId = getServiceIdentifier(transport, uri.getHost(), false);
-				} else if (transport.equals("TCP")) {
-					if (transports.contains("TCP") && transports.contains("TLS")) {
-						if (transports.indexOf("TLS") < transports.indexOf("TCP")) {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), true);
-						} else {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), false);
-						}
-					} else {
-						if (transports.contains("TLS")) {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), true);
-						} else if (transports.contains("TCP")) {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), false);
-						} else {
-							throw new IllegalStateException("No usable transports (TCP or TLS) for transport flag: " + transport);
-						}
-					}
-				} else if (transport.equals("SCTP")) {
-					if (transports.contains("SCTP") && transports.contains("SCTP-TLS")) {
-						if (transports.indexOf("SCTP-TLS") < transports.indexOf("SCTP")) {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), true);
-						} else {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), false);
-						}
-					} else {
-						if (transports.contains("SCTP-TLS")) {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), true);
-						} else if (transports.contains("SCTP")) {
-							serviceId = getServiceIdentifier(transport, uri.getHost(), false);
-						} else {
-							throw new IllegalStateException("No usable transports (SCTP or SCTP-TLS) for transport flag: " + transport);
-						}
-					}
-				} else {
-					throw new IllegalStateException("Unrecognised transport flag: " + transport);
-				}
-			}
-			final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
-			
-			if (services.size() > 0) {
-				for (ServiceRecord service : services) {
-					hops.addAll(getHops(service.getTarget(), service.getPort(), transport));
-				}
-				return hops;
-			} else {
-				// If no SRV records were found, the client performs an A or AAAA record
-				// lookup of the domain name.  The result will be a list of IP
-				// addresses, each of which can be contacted using the transport
-				// protocol determined previously, at the default port for that
-				// transport.  Processing then proceeds as described above for an
-				// explicit port once the A or AAAA records have been looked up.
-				return getHops(uri.getHost(), transport, uri.isSecure());
-			}
-		}
-		if (isNumeric(getTarget(uri))) {
-			// RFC 3263 Section 4.1 Para 2
+		final String transportParam = uri.getTransportParam().toUpperCase();
+
+		if (transportParam == null && isNumeric(getTarget(uri))) {
+			// RFC 3263 Section 4.2 Para 2
 			//
 			// If TARGET is a numeric IP address, the client uses that address.  If
 			// the URI also contains a port, it uses that port.  If no port is
@@ -152,7 +82,7 @@ public class Locator {
 				// particular transport protocol.
 				return getHops(getTarget(uri), uri.isSecure());
 			}
-		} else if (uri.getPort() != -1) {
+		} else if (transportParam == null && isNumeric(getTarget(uri)) == false && uri.getPort() != -1) {
 			// RFC 3263 Section 4.2 Para 3
 			//
 			// If the TARGET was not a numeric IP address, but a port is present in
@@ -165,6 +95,76 @@ public class Locator {
 			// not numeric, but an explicit port is provided, the client SHOULD use 
 			// UDP for a SIP URI, and TCP for a SIPS URI.
 			return getHops(getTarget(uri), uri.getPort(), uri.isSecure());
+		} else if (transportParam != null) {
+			final String serviceId;
+			// RFC 3263 Section 4.2 Para 4 (Cont)
+			//
+			// If ... a transport was specified explicitly, the client performs an 
+			// SRV query for that specific transport, using the service identifier 
+			// "_sips" for SIPS URIs.  For a SIP URI, if the client wishes to use 
+			// TLS, it also uses the service identifier "_sips" for that specific 
+			// transport, otherwise, it uses "_sip".
+			if (uri.isSecure()) {
+				serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
+			} else {
+				// Work out if a client wishes to use TLS.
+				if (transportParam.equals("UDP")) {
+					// No option for UDP, which is always false.
+					serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
+				} else if (transportParam.equals("TCP")) {
+					if (transports.contains("TCP") && transports.contains("TLS")) {
+						if (transports.indexOf("TLS") < transports.indexOf("TCP")) {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
+						} else {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
+						}
+					} else {
+						if (transports.contains("TLS")) {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
+						} else if (transports.contains("TCP")) {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
+						} else {
+							throw new IllegalStateException("No usable transports (TCP or TLS) for transport flag: " + transportParam);
+						}
+					}
+				} else if (transportParam.equals("SCTP")) {
+					if (transports.contains("SCTP") && transports.contains("SCTP-TLS")) {
+						if (transports.indexOf("SCTP-TLS") < transports.indexOf("SCTP")) {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
+						} else {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
+						}
+					} else {
+						if (transports.contains("SCTP-TLS")) {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
+						} else if (transports.contains("SCTP")) {
+							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
+						} else {
+							throw new IllegalStateException("No usable transports (SCTP or SCTP-TLS) for transport flag: " + transportParam);
+						}
+					}
+				} else {
+					throw new IllegalStateException("Unrecognised transport flag: " + transportParam);
+				}
+			}
+			final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+			
+			if (services.size() > 0) {
+				for (ServiceRecord service : services) {
+					hops.addAll(getHops(service.getTarget(), service.getPort(), transportParam));
+				}
+				return hops;
+			} else {
+				// RFC 3263 Section 4.2 Para 5
+				//
+				// If no SRV records were found, the client performs an A or AAAA record
+				// lookup of the domain name.  The result will be a list of IP
+				// addresses, each of which can be contacted using the transport
+				// protocol determined previously, at the default port for that
+				// transport.  Processing then proceeds as described above for an
+				// explicit port once the A or AAAA records have been looked up.
+				return getHops(uri.getHost(), transportParam, uri.isSecure());
+			}
 		}
 		// RFC 3263 Section 4.1 Para 4
 		//
