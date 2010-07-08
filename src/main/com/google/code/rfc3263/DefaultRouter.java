@@ -1,18 +1,17 @@
 package com.google.code.rfc3263;
 
-import java.net.InetAddress;
+import gov.nist.javax.sip.header.Route;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.sip.ListeningPoint;
 import javax.sip.SipException;
 import javax.sip.SipStack;
+import javax.sip.address.Address;
 import javax.sip.address.Hop;
 import javax.sip.address.Router;
 import javax.sip.address.SipURI;
@@ -20,9 +19,7 @@ import javax.sip.address.URI;
 import javax.sip.message.Request;
 
 import com.google.code.rfc3263.dns.DefaultResolver;
-import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
-import com.google.code.rfc3263.dns.ServiceRecord;
 
 /**
  * TODO: Check MTU
@@ -38,18 +35,71 @@ public class DefaultRouter implements Router {
 
 	@Override
 	public Hop getNextHop(Request request) throws SipException {
-		final URI uri = request.getRequestURI();
+		final SipURI destination;
+		// RFC 3261 Section 8.1.2 Para 1
+		//
+		// The destination for the request is then computed.  Unless there is
+		// local policy specifying otherwise, the destination MUST be determined
+		// by applying the DNS procedures described in [4] as follows.  If the
+		// first element in the route set indicated a strict router (resulting
+		// in forming the request as described in Section 12.2.1.1), the
+		// procedures MUST be applied to the Request-URI of the request.
+		// Otherwise, the procedures are applied to the first Route header field
+		// value in the request (if one exists), or to the request's Request-URI
+		// if there is no Route header field present.  These procedures yield an
+		// ordered set of address, port, and transports to attempt.  Independent
+		// of which URI is used as input to the procedures of [4], if the
+		// Request-URI specifies a SIPS resource, the UAC MUST follow the
+		// procedures of [4] as if the input URI were a SIPS URI.
 
-		if (uri instanceof SipURI == false) {
-			return null;
+		final URI requestUri = request.getRequestURI();
+		if (requestUri.isSipURI() == false) {
+			throw new SipException("Can't route non-SIP URI" + requestUri);
 		}
-		final SipURI sipUri = (SipURI) uri;
+		final SipURI requestSipUri = (SipURI) requestUri;
 		
+		final ListIterator<?> routes = request.getHeaders("Route");
+		if (routes.hasNext()) {
+			// We have a Route set.  Get the top route.
+			Route route = (Route) routes.next();
+			URI routeUri = route.getAddress().getURI();
+			if (routeUri.isSipURI() == false) {
+				throw new SipException("Can't route non-SIP URI" + routeUri);
+			}
+			final SipURI routeSipUri = (SipURI) routeUri;
+			if (routeSipUri.hasLrParam() == false) {
+				// RFC 3261 Section 8.1.2 Para 1 (Cont)
+				//
+				// If the first element in the route set indicated a strict router, 
+				// the procedures MUST be applied to the Request-URI of the request.
+				destination = requestSipUri;
+			} else {
+				// RFC 3261 Section 8.1.2 Para 1 (Cont)
+				//
+				// Otherwise, the procedures are applied to the first Route header field
+				// value in the request
+				destination = routeSipUri;
+			}
+		} else {
+			// RFC 3261 Section 8.1.2 Para 1 (Cont)
+			//
+			// Otherwise, the procedures are applied to ... the request's Request-URI
+			// if there is no Route header field present.
+			destination = requestSipUri;
+		}
+		
+		// RFC 3261 Section 8.1.2 Para 1 (Cont)
+		//
+		// if the Request-URI specifies a SIPS resource, the UAC MUST follow 
+		// the procedures of [4] as if the input URI were a SIPS URI.
+		if (requestSipUri.isSecure()) {
+			destination.setSecure(true);
+		}
 		Resolver resolver = new DefaultResolver();		
 		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
-			List<Hop> hops = locator.locate(sipUri);
-			return new HopImpl("192.168.11.31", 5060, ListeningPoint.TCP);
+			List<Hop> hops = locator.locate(destination);
+			return hops.get(0);
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
@@ -72,7 +122,7 @@ public class DefaultRouter implements Router {
 		final Iterator<?> iter = sipStack.getListeningPoints();
 		while (iter.hasNext()) {
 			ListeningPoint endpoint = (ListeningPoint) iter.next();
-			supportedTransports.add(endpoint.getTransport());
+			supportedTransports.add(endpoint.getTransport().toUpperCase());
 		}
 
 		return supportedTransports;
