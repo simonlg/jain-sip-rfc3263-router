@@ -12,7 +12,6 @@ import java.util.Queue;
 import javax.sip.ListeningPoint;
 import javax.sip.SipException;
 import javax.sip.SipStack;
-import javax.sip.address.Address;
 import javax.sip.address.Hop;
 import javax.sip.address.Router;
 import javax.sip.address.SipURI;
@@ -27,11 +26,11 @@ import com.google.code.rfc3263.dns.Resolver;
  */
 public class DefaultRouter implements Router {
 	private final SipStack sipStack;
-	private final String outboundProxy;
+//	private final String outboundProxy;
 
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
 		this.sipStack = sipStack;
-		this.outboundProxy = outboundProxy;
+//		this.outboundProxy = outboundProxy;
 	}
 
 	@Override
@@ -101,8 +100,10 @@ public class DefaultRouter implements Router {
 		try {
 			Queue<Hop> hops = locator.locate(destination);
 			return hops.poll();
+		} catch (IllegalArgumentException e) {
+			throw new SipException("Rethrowing", e);
 		} catch (UnknownHostException e) {
-			throw new RuntimeException(e);
+			throw new SipException("Rethrowing", e);
 		}
 	}
 
