@@ -2,7 +2,6 @@ package com.google.code.rfc3263;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +15,7 @@ import java.util.SortedSet;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
+import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
@@ -65,21 +65,36 @@ public class Locator {
 	
 	protected Queue<Hop> locateNumeric(String domain, int port, String transport, boolean isSecure) {
 		final Queue<Hop> hops = new LinkedList<Hop>();
+		final String hopTransport;
+		final int hopPort;
 		
 		if (transport != null) {
 			if (isSecure) {
 				if (transport.equalsIgnoreCase("TCP")) {
-					transports = new String[]{"TLS"};
+					hopTransport = "TLS";
 				} else if (transport.equalsIgnoreCase("SCTP")) {
-					transports = new String[]{"SCTP-TLS"};
+					hopTransport = "SCTP-TLS";
 				} else {
 					throw new IllegalArgumentException("UDP for SIPS URIs is not supported.");
 				}
+			} else {
+				hopTransport = transport.toUpperCase();
 			}
+		} else if (isSecure) {
+			hopTransport = "TLS";
 		} else {
-			
+			hopTransport = "UDP";
 		}
 		
+		if (port != -1) {
+			hopPort = port;
+		} else if (isSecure) {
+			hopPort = 5061;
+		} else {
+			hopPort = 5060;
+		}
+		
+		hops.add(new HopImpl(domain, hopPort, hopTransport));
 		return hops;
 	}
 	
@@ -110,68 +125,19 @@ public class Locator {
 			} else {
 				transports = new String[]{transportParam.toUpperCase()};
 			}
-		} else {
-			if (isTargetNumeric) {
+		} else if (isTargetNumeric == false) {
+			if (wasPortProvided) {
 				if (isSecure) {
 					transports = new String[]{"TLS"};
 				} else {
 					transports = new String[]{"UDP"};
 				}
 			} else {
-				if (wasPortProvided) {
-					if (isSecure) {
-						transports = new String[]{"TLS"};
-					} else {
-						transports = new String[]{"UDP"};
-					}
-				} else {
-					// DO NAPTR
-				}
+				// DO NAPTR
 			}
 		}
-		
-		// Host and Port
-		if (isTargetNumeric) {
-			if (wasPortProvided) {
-				return getHops(target, providedPort, transports[0]);
-			} else {
-				if (isSecure) {
-					return getHops(target, 5061, transports[0]);
-				} else {
-					return getHops(target, 5060, transports[0]);
-				}
-			}
-		}
-		
-		if (transports.length != 0 && hosts.length != 0 && ports.length != 0) {
-			hops.add(new HopImpl(hosts[0], ports[0], transports[0]));
-			
-			return hops;
-		}
-		System.out.print(Arrays.toString(transports));
-		System.out.print(Arrays.toString(hosts));
-		System.out.println(Arrays.toString(ports));
 
-		if (transportParam == null && isNumeric(getTarget(uri))) {
-			// RFC 3263 Section 4.2 Para 2
-			//
-			// If TARGET is a numeric IP address, the client uses that address.  If
-			// the URI also contains a port, it uses that port.  If no port is
-			// specified, it uses the default port for the particular transport
-			// protocol.
-			if (uri.getPort() != -1) {
-				// RFC 3263 Section 4.1 Para 2 (Cont)
-				//
-				// If the URI also contains a port, it uses that port.
-				return getHops(getTarget(uri), uri.getPort(), uri.isSecure());
-			} else {
-				// RFC 3263 Section 4.1 Para 2 (Cont)
-				//
-				// If no port is specified, it uses the default port for the 
-				// particular transport protocol.
-				return getHops(getTarget(uri), uri.isSecure());
-			}
-		} else if (transportParam == null && isNumeric(getTarget(uri)) == false && uri.getPort() != -1) {
+		if (transportParam == null && isNumeric(getTarget(uri)) == false && uri.getPort() != -1) {
 			// RFC 3263 Section 4.2 Para 3
 			//
 			// If the TARGET was not a numeric IP address, but a port is present in
@@ -364,10 +330,10 @@ public class Locator {
 				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(domain);
 				if (services.size() > 0) {
 					for (ServiceRecord service : services) {
-						final InetAddress[] hosts = InetAddress.getAllByName(service.getTarget());
+						final Set<AddressRecord> hosts = resolver.lookupAddressRecords(service.getTarget());
 						final int port = service.getPort();
-						for (InetAddress host : hosts) {
-							hops.add(new HopImpl(host.getHostAddress(), port, transport));
+						for (AddressRecord host : hosts) {
+							hops.add(new HopImpl(host.getAddress().getHostAddress(), port, transport));
 						}
 					}
 				}
@@ -463,12 +429,12 @@ public class Locator {
 		return sb.toString();
 	}
 	
-	protected Queue<Hop> getHops(String host, int port, String transport) throws UnknownHostException {
+	protected Queue<Hop> getHops(String domain, int port, String transport) throws UnknownHostException {
 		Queue<Hop> hops = new LinkedList<Hop>();
 		
-		final InetAddress[] addresses = InetAddress.getAllByName(host);
-		for (InetAddress address : addresses) {
-			hops.add(new HopImpl(address.getHostAddress(), port, transport.toUpperCase()));
+		final Set<AddressRecord> hosts = resolver.lookupAddressRecords(domain);
+		for (AddressRecord host : hosts) {
+			hops.add(new HopImpl(host.getAddress().getHostAddress(), port, transport.toUpperCase()));
 		}
 		
 		return hops;
