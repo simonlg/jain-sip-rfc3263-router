@@ -59,6 +59,16 @@ public class LocatorTest {
 		test(hops, uri);
 	}
 	
+	// Otherwise, if no transport protocol is specified, but the TARGET is a
+	// numeric IP address, the client SHOULD use UDP for a SIP URI, and TCP
+	// for a SIPS URI
+	
+	// If TARGET is a numeric IP address, the client uses that address.  If
+	// the URI also contains a port, it uses that port.  If no port is
+	// specified, it uses the default port for the particular transport
+	// protocol.
+
+	
 	// Expected to fail.
 	@Test(expected = IllegalArgumentException.class)
 	public void testSelectTransportNumericHostWithNonStandardPortAndUDPSecure() throws Exception {

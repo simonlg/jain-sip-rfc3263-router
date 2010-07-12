@@ -137,7 +137,7 @@ public class Locator {
 			}
 		}
 
-		if (transportParam == null && isNumeric(getTarget(uri)) == false && uri.getPort() != -1) {
+		if (transportParam == null && isTargetNumeric == false && providedPort != -1) {
 			// RFC 3263 Section 4.2 Para 3
 			//
 			// If the TARGET was not a numeric IP address, but a port is present in
@@ -149,7 +149,7 @@ public class Locator {
 			// Similarly, if no transport protocol is specified, and the TARGET is 
 			// not numeric, but an explicit port is provided, the client SHOULD use 
 			// UDP for a SIP URI, and TCP for a SIPS URI.
-			return getHops(getTarget(uri), uri.getPort(), uri.isSecure());
+			return getHops(target, providedPort, isSecure);
 		} else if (transportParam != null) {
 			final String serviceId;
 			// RFC 3263 Section 4.2 Para 4 (Cont)
@@ -206,7 +206,7 @@ public class Locator {
 			
 			if (services.size() > 0) {
 				for (ServiceRecord service : services) {
-					hops.addAll(getHops(service.getTarget(), service.getPort(), transportParam));
+					hops.addAll(getHops(service.getTarget(), providedPort, transportParam));
 				}
 				return hops;
 			} else {
@@ -358,7 +358,7 @@ public class Locator {
 		// such as TCP, MAY be used if the guidelines of SIP mandate it for this
 		// particular request.  That is the case, for example, for requests that
 		// exceed the path MTU.
-		return getHops(uri.getHost(), uri.isSecure());
+		return getHops(uri.getHost(), isSecure);
 	}
 	
 	protected String getTarget(SipURI uri) {
