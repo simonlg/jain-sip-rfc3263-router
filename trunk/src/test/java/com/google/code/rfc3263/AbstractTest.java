@@ -17,6 +17,7 @@ public abstract class AbstractTest {
 	protected final static String TEST_HOST = "example.org";
 	protected final static String TEST_ADDRESS = "192.168.0.1";
 	protected final static String TEST_RESOLVED_ADDRESS = "192.168.0.2";
+	protected final static String TEST_RESOLVED_SERVICE_ADDRESS = "192.168.0.3";
 	protected final static String TEST_TRANSPORT = "TCP";
 	protected final static String TEST_SECURE_TRANSPORT = "TLS";
 	protected final static int TEST_PORT = 15060;
