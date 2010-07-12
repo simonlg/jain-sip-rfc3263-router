@@ -1,25 +1,6 @@
 #summary List of tests that should be verified
 #labels Phase-QA
 
-
-|| *Host* || *Port* || *Transport* || *Secure* ||
-|| numeric || false || false || false ||
-|| numeric || true || false || false ||
-|| numeric || false || (tcp, udp, sctp) || false ||
-|| numeric || true || (tcp, udp, sctp) || false ||
-|| numeric || false || false || true ||
-|| numeric || true || false || true ||
-|| numeric || false || (tcp, udp, sctp) || true ||
-|| numeric || true || (tcp, udp, sctp) || true ||
-|| non-numeric || false || false || false ||
-|| non-numeric || true || false || false ||
-|| non-numeric || false || (tcp, udp, sctp) || false ||
-|| non-numeric || true || (tcp, udp, sctp) || false ||
-|| non-numeric || false || false || true ||
-|| non-numeric || true || false || true ||
-|| non-numeric || false || (tcp, udp, sctp) || true ||
-|| non-numeric || true || (tcp, udp, sctp) || true ||
-
 ==Numeric Hostnames==
 
 Permutations of port, transport and SIPS.
