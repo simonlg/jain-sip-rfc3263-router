@@ -1,0 +1,21 @@
+#summary List of tests that should be verified
+#labels Phase-QA
+
+
+|| *Host* || *Port* || *Transport* || *Secure* ||
+|| 192.168.0.1 || - || - || false ||
+|| 192.168.0.1 || 5060 || - || false ||
+|| 192.168.0.1 || - || tcp || false ||
+|| 192.168.0.1 || 5060 || tcp || false ||
+|| 192.168.0.1 || - || - || true ||
+|| 192.168.0.1 || 5060 || - || true ||
+|| 192.168.0.1 || - || tcp || true ||
+|| 192.168.0.1 || 5060 || tcp || true ||
+|| example.org || - || - || false ||
+|| example.org || 5060 || - || false ||
+|| example.org || - || tcp || false ||
+|| example.org || 5060 || tcp || false ||
+|| example.org || - || - || true ||
+|| example.org || 5060 || - || true ||
+|| example.org || - || tcp || true ||
+|| example.org || 5060 || tcp || true ||
