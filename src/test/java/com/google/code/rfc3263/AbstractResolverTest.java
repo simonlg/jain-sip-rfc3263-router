@@ -13,20 +13,20 @@ import org.junit.Test;
 
 import com.google.code.rfc3263.dns.Resolver;
 
-public abstract class AbstractTest {
-	protected final static String TEST_HOST = "example.org";
-	protected final static String TEST_ADDRESS = "192.168.0.1";
-	protected final static String TEST_RESOLVED_ADDRESS = "192.168.0.2";
-	protected final static String TEST_RESOLVED_SERVICE_ADDRESS = "192.168.0.3";
-	protected final static String TEST_TRANSPORT = "TCP";
-	protected final static String TEST_SECURE_TRANSPORT = "TLS";
-	protected final static int TEST_PORT = 15060;
+public abstract class AbstractResolverTest {
+	public final static String TEST_HOST = "example.org";
+	public final static String TEST_ADDRESS = "192.168.0.1";
+	public final static String TEST_RESOLVED_ADDRESS = "192.168.0.2";
+	public final static String TEST_RESOLVED_SERVICE_ADDRESS = "192.168.0.3";
+	public final static String TEST_TRANSPORT = "TCP";
+	public final static String TEST_SECURE_TRANSPORT = "TLS";
+	public final static int TEST_PORT = 15060;
 	
 	private final Resolver resolver;
 	private Locator locator;
 	private AddressFactory addressFactory;
 	
-	public AbstractTest(Resolver resolver) {
+	public AbstractResolverTest(Resolver resolver) {
 		this.resolver = resolver;
 	}
 	

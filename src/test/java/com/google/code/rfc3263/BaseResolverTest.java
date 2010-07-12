@@ -5,14 +5,22 @@ import java.util.List;
 
 import javax.sip.address.Hop;
 
+import com.google.code.rfc3263.dns.BaseResolver;
 import com.google.code.rfc3263.dns.Resolver;
 
-public class BaseTest extends AbstractTest {
-	public BaseTest() {
-		this(new BaseTestResolver());
+/**
+ * Tests for location in the following DNS environment:
+ * 
+ * NAPTR	N
+ * SRV		N
+ * A/AAAA	N
+ */
+public class BaseResolverTest extends AbstractResolverTest {
+	public BaseResolverTest() {
+		this(new BaseResolver());
 	}
 	
-	public BaseTest(Resolver resolver) {
+	public BaseResolverTest(Resolver resolver) {
 		super(resolver);
 	}
 	
@@ -68,41 +76,41 @@ public class BaseTest extends AbstractTest {
 	
 	@Override
 	protected Hop getHopForHost() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, 5060, "UDP");
+		return null;
 	}
 
 	@Override
 	protected Hop getHopForHostWithTransportAndPort() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, TEST_PORT, TEST_TRANSPORT);
+		return null;
 	}
 
 	@Override
 	protected Hop getHopForHostWithTransport() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, 5060, TEST_TRANSPORT);
+		return null;
 	}
 
 	@Override
 	protected Hop getHopForHostWithPort() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, TEST_PORT, "UDP");
+		return null;
 	}
 
 	@Override
 	protected Hop getHopForSecureHost() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, 5061, "TLS");
+		return null;
 	}
 
 	@Override
 	protected Hop getHopForSecureHostWithTransportAndPort() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, TEST_PORT, TEST_SECURE_TRANSPORT);
+		return null;
 	}
 
 	@Override
 	protected Hop getHopForSecureHostWithPort() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, TEST_PORT, TEST_SECURE_TRANSPORT);
+		return null;
 	}
 
 	@Override
 	protected Hop getHopForSecureHostWithTransport() {
-		return new HopImpl(TEST_RESOLVED_ADDRESS, 5061, TEST_SECURE_TRANSPORT);
+		return null;
 	}
 }
