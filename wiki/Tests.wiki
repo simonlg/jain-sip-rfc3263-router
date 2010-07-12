@@ -19,3 +19,11 @@
 || non-numeric || true || false || true ||
 || non-numeric || false || (tcp, udp, sctp) || true ||
 || non-numeric || true || (tcp, udp, sctp) || true ||
+
+==Numeric Hostnames==
+
+Permutations of port, transport and SIPS.
+
+==Non-Numeric Hostnames==
+
+As above, plus state of NAPTR and SRV records.
