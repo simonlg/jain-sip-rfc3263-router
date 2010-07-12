@@ -4,18 +4,18 @@
 
 || *Host* || *Port* || *Transport* || *Secure* ||
 || 192.168.0.1 || false || false || false ||
-|| 192.168.0.1 || 5060 || false || false ||
-|| 192.168.0.1 || - || tcp || false ||
-|| 192.168.0.1 || 5060 || tcp || false ||
-|| 192.168.0.1 || - || false || true ||
-|| 192.168.0.1 || 5060 || false || true ||
-|| 192.168.0.1 || - || tcp || true ||
-|| 192.168.0.1 || 5060 || tcp || true ||
-|| example.org || - || false || false ||
-|| example.org || 5060 || false || false ||
-|| example.org || - || tcp || false ||
-|| example.org || 5060 || tcp || false ||
-|| example.org || - || false || true ||
-|| example.org || 5060 || false || true ||
-|| example.org || - || tcp || true ||
-|| example.org || 5060 || tcp || true ||
+|| 192.168.0.1 || true || false || false ||
+|| 192.168.0.1 || false || (tcp, udp, sctp) || false ||
+|| 192.168.0.1 || true || (tcp, udp, sctp) || false ||
+|| 192.168.0.1 || false || false || true ||
+|| 192.168.0.1 || true || false || true ||
+|| 192.168.0.1 || false || (tcp, udp, sctp) || true ||
+|| 192.168.0.1 || true || (tcp, udp, sctp) || true ||
+|| example.org || false || false || false ||
+|| example.org || true || false || false ||
+|| example.org || false || (tcp, udp, sctp) || false ||
+|| example.org || true || (tcp, udp, sctp) || false ||
+|| example.org || false || false || true ||
+|| example.org || true || false || true ||
+|| example.org || false || (tcp, udp, sctp) || true ||
+|| example.org || true || (tcp, udp, sctp) || true ||
