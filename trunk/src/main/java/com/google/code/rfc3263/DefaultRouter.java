@@ -26,11 +26,9 @@ import com.google.code.rfc3263.dns.Resolver;
  */
 public class DefaultRouter implements Router {
 	private final SipStack sipStack;
-//	private final String outboundProxy;
 
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
 		this.sipStack = sipStack;
-//		this.outboundProxy = outboundProxy;
 	}
 
 	@Override

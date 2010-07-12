@@ -2,6 +2,7 @@ package com.google.code.rfc3263;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,9 +22,6 @@ import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
 public class Locator {
-	private String[] transports;
-	private String[] hosts;
-	private int[] ports;
 	/**
 	 * Class to use for DNS lookups.
 	 */
@@ -98,267 +96,177 @@ public class Locator {
 		return hops;
 	}
 	
-	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
-		Queue<Hop> hops = new LinkedList<Hop>();
+	protected Queue<Hop> locate(String domain, int port, String transport, boolean isSecure) throws UnknownHostException {
+		final Queue<Hop> hops = new LinkedList<Hop>();
+		final Queue<Hop> partialHops = new LinkedList<Hop>();
+		boolean servicesFound = false;
 		
-		final String transportParam = uri.getTransportParam();
-		final String target = getTarget(uri);
-		final boolean isTargetNumeric = isNumeric(target);
-		final boolean isSecure = uri.isSecure();
-		final boolean wasPortProvided = uri.getPort() != -1;
-		final int providedPort = uri.getPort();
-
-		if (isTargetNumeric) {
-			return locateNumeric(target, providedPort, transportParam, isSecure);
-		}
-		
-		// TODO: Check availability of these transports.
-		if (transportParam != null) {
+		if (transport != null) {
 			if (isSecure) {
-				if (transportParam.equalsIgnoreCase("TCP")) {
-					transports = new String[]{"TLS"};
-				} else if (transportParam.equalsIgnoreCase("SCTP")) {
-					transports = new String[]{"SCTP-TLS"};
+				if (transport.equalsIgnoreCase("TCP")) {
+					partialHops.add(new HopImpl(null, -1, "TLS"));
+				} else if (transport.equalsIgnoreCase("SCTP")) {
+					partialHops.add(new HopImpl(null, -1, "SCTP-TLS"));
 				} else {
 					throw new IllegalArgumentException("UDP for SIPS URIs is not supported.");
 				}
 			} else {
-				transports = new String[]{transportParam.toUpperCase()};
+				partialHops.add(new HopImpl(null, -1, transport.toUpperCase()));
 			}
-		} else if (isTargetNumeric == false) {
-			if (wasPortProvided) {
+		} else if (port != -1) {
+			if (isSecure) {
+				partialHops.add(new HopImpl(null, -1, "TLS"));
+			} else {
+				partialHops.add(new HopImpl(null, -1, "UDP"));
+			}
+		} else {
+			final SortedSet<PointerRecord> pointers = resolver.lookupPointerRecords(domain);
+			
+			if (pointers.size() > 0) {
+				final Set<String> validServiceFields = new HashSet<String>();
+				validServiceFields.addAll(serviceTransportMap.keySet());
+				
 				if (isSecure) {
-					transports = new String[]{"TLS"};
-				} else {
-					transports = new String[]{"UDP"};
+					validServiceFields.remove("SIP+D2T");
+					validServiceFields.remove("SIP+D2U");
+					validServiceFields.remove("SIP+D2S");
 				}
-			} else {
-				// DO NAPTR
-			}
-		}
-
-		if (transportParam == null && isTargetNumeric == false && providedPort != -1) {
-			// RFC 3263 Section 4.2 Para 3
-			//
-			// If the TARGET was not a numeric IP address, but a port is present in
-			// the URI, the client performs an A or AAAA record lookup of the domain
-			// name.
-
-			// RFC 3263 Section 4.1 Para 3 (Cont)
-			//
-			// Similarly, if no transport protocol is specified, and the TARGET is 
-			// not numeric, but an explicit port is provided, the client SHOULD use 
-			// UDP for a SIP URI, and TCP for a SIPS URI.
-			return getHops(target, providedPort, isSecure);
-		} else if (transportParam != null) {
-			final String serviceId;
-			// RFC 3263 Section 4.2 Para 4 (Cont)
-			//
-			// If ... a transport was specified explicitly, the client performs an 
-			// SRV query for that specific transport, using the service identifier 
-			// "_sips" for SIPS URIs.  For a SIP URI, if the client wishes to use 
-			// TLS, it also uses the service identifier "_sips" for that specific 
-			// transport, otherwise, it uses "_sip".
-			if (uri.isSecure()) {
-				serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
-			} else {
-				// Work out if a client wishes to use TLS.
-				if (transportParam.equalsIgnoreCase("UDP")) {
-					// No option for UDP, which is always false.
-					serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
-				} else if (transportParam.equalsIgnoreCase("TCP")) {
-					if (prefTransports.contains("TCP") && prefTransports.contains("TLS")) {
-						if (prefTransports.indexOf("TLS") < prefTransports.indexOf("TCP")) {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
-						} else {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
-						}
-					} else {
-						if (prefTransports.contains("TLS")) {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
-						} else if (prefTransports.contains("TCP")) {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
-						} else {
-							throw new IllegalStateException("No usable transports (TCP or TLS) for transport flag: " + transportParam);
-						}
-					}
-				} else if (transportParam.equalsIgnoreCase("SCTP")) {
-					if (prefTransports.contains("SCTP") && prefTransports.contains("SCTP-TLS")) {
-						if (prefTransports.indexOf("SCTP-TLS") < prefTransports.indexOf("SCTP")) {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
-						} else {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
-						}
-					} else {
-						if (prefTransports.contains("SCTP-TLS")) {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), true);
-						} else if (prefTransports.contains("SCTP")) {
-							serviceId = getServiceIdentifier(transportParam, uri.getHost(), false);
-						} else {
-							throw new IllegalStateException("No usable transports (SCTP or SCTP-TLS) for transport flag: " + transportParam);
-						}
-					}
-				} else {
-					throw new IllegalStateException("Unrecognised transport flag: " + transportParam);
+				
+				if (prefTransports.contains("TLS") == false) {
+					validServiceFields.remove("SIPS+D2T");
 				}
-			}
-			final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
-			
-			if (services.size() > 0) {
-				for (ServiceRecord service : services) {
-					hops.addAll(getHops(service.getTarget(), providedPort, transportParam));
+				if (prefTransports.contains("SCTP-TLS") == false) {
+					validServiceFields.remove("SIPS+D2S");
 				}
-				return hops;
-			} else {
-				// RFC 3263 Section 4.2 Para 5
-				//
-				// If no SRV records were found, the client performs an A or AAAA record
-				// lookup of the domain name.  The result will be a list of IP
-				// addresses, each of which can be contacted using the transport
-				// protocol determined previously, at the default port for that
-				// transport.  Processing then proceeds as described above for an
-				// explicit port once the A or AAAA records have been looked up.
-				return getHops(uri.getHost(), transportParam, uri.isSecure());
-			}
-		}
-		// RFC 3263 Section 4.1 Para 4
-		//
-		// Otherwise, if no transport protocol or port is specified, and the
-		// target is not a numeric IP address, the client SHOULD perform a NAPTR
-		// query for the domain in the URI.
-		final SortedSet<PointerRecord> pointers = resolver.lookupPointerRecords(uri.getHost());
-		
-		if (pointers.size() > 0) {
-			// RFC 3263 Section 4.1 Para 4 (Cont)
-			//
-			// The services relevant for the task of transport protocol selection are 
-			// those with NAPTR service fields with values "SIP+D2X" and "SIPS+D2X", 
-			// where X is a letter that corresponds to a transport protocol supported 
-			// by the domain.  This specification defines D2U for UDP, D2T for TCP, and 
-			// D2S for SCTP.  We also establish an IANA registry for NAPTR service name 
-			// to transport protocol mappings.
-			final Set<String> validServiceFields = new HashSet<String>();
-			validServiceFields.addAll(serviceTransportMap.keySet());
-			
-			// RFC 3263 Section 4.1 Para 5
-			//
-			// These NAPTR records provide a mapping from a domain to the SRV record
-			// for contacting a server with the specific transport protocol in the
-			// NAPTR services field.  The resource record will contain an empty
-			// regular expression and a replacement value, which is the SRV record
-			// for that particular transport protocol.  If the server supports
-			// multiple transport protocols, there will be multiple NAPTR records,
-			// each with a different service value.  As per RFC 2915 [3], the client
-			// discards any records whose services fields are not applicable.  For
-			// the purposes of this specification, several rules are defined.
-			
-			// RFC 3263 Section 4.1 Para 6
-			//
-			// First, a client resolving a SIPS URI MUST discard any services that
-			// do not contain "SIPS" as the protocol in the service field.  The
-			// converse is not true, however.
-			if (uri.isSecure()) {
-				validServiceFields.remove("SIP+D2T");
-				validServiceFields.remove("SIP+D2U");
-				validServiceFields.remove("SIP+D2S");
-			}
-			
-			// RFC 3263 Section 4.1 Para 6 (Cont)
-			//
-			// A client resolving a SIP URI SHOULD retain records with "SIPS" as the 
-			// protocol, if the client supports TLS.
-			//
-			// NOTE: "TLS" here is taken to mean TLS over TCP or SCTP.
-			if (prefTransports.contains("TLS") == false) {
-				validServiceFields.remove("SIPS+D2T");
-			}
-			if (prefTransports.contains("SCTP-TLS") == false) {
-				validServiceFields.remove("SIPS+D2S");
-			}
+				if (prefTransports.contains("TCP") == false) {
+					validServiceFields.remove("SIP+D2T");
+				}
+				if (prefTransports.contains("UDP") == false) {
+					validServiceFields.remove("SIP+D2U");
+				}
+				if (prefTransports.contains("SCTP") == false) {
+					validServiceFields.remove("SIP+D2S");
+				}
 	
-			// RFC 3263 Section 4.1 Para 6 (Cont)
-			//
-			// Second, a client MUST discard any service fields that identify
-			// a resolution service whose value is not "D2X", for values of X that
-			// indicate transport protocols supported by the client.  The NAPTR
-			// processing as described in RFC 2915 will result in the discovery of
-			// the most preferred transport protocol of the server that is supported
-			// by the client, as well as an SRV record for the server.  It will also
-			// allow the client to discover if TLS is available and its preference
-			// for its usage.
-			if (prefTransports.contains("TCP") == false) {
-				validServiceFields.remove("SIP+D2T");
-			}
-			if (prefTransports.contains("UDP") == false) {
-				validServiceFields.remove("SIP+D2U");
-			}
-			if (prefTransports.contains("SCTP") == false) {
-				validServiceFields.remove("SIP+D2S");
+				final Iterator<PointerRecord> iter = pointers.iterator();
+				while (iter.hasNext()) {
+					final PointerRecord pointer = iter.next();
+					if (validServiceFields.contains(pointer.getService()) == false) {
+						iter.remove();
+					}
+				}
+				
+				for (PointerRecord pointer : pointers) {
+					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(pointer.getReplacement());
+					if (services.size() > 0) {
+						servicesFound = true;
+						
+						for (ServiceRecord service : services) {
+							partialHops.add(new HopImpl(service.getTarget(), service.getPort(), serviceTransportMap.get(pointer.getService())));
+						}
+					}
+				}
+			} else {
+				List<String> filteredTransports = filterTransports(isSecure);
+				for (String prefTransport : filteredTransports) {
+					String serviceId = getServiceIdentifier(prefTransport, domain);
+					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+					if (services.size() > 0) {
+						servicesFound = true;
+						
+						for (ServiceRecord service : services) {
+							partialHops.add(new HopImpl(service.getTarget(), service.getPort(), prefTransport));
+						}
+					}
+				}
 			}
 			
-			final Iterator<PointerRecord> iter = pointers.iterator();
+			if (servicesFound == false) {
+				if (isSecure) {
+					partialHops.add(new HopImpl(null, -1, "TLS"));
+				} else {
+					partialHops.add(new HopImpl(null, -1, "UDP"));
+				}
+			}
+		}
+		
+		if (port != -1) {
+			Set<AddressRecord> addresses = resolver.lookupAddressRecords(domain);
+			for (AddressRecord address : addresses) {
+				for (Hop partialHop : partialHops) {
+					hops.add(new HopImpl(address.getAddress().getHostAddress(), port, partialHop.getTransport()));
+				}
+			}
+		} else {
+			if (servicesFound) {
+				for (Hop partialHop : partialHops) {
+					Set<AddressRecord> addresses = resolver.lookupAddressRecords(partialHop.getHost());
+					for (AddressRecord address : addresses) {
+						hops.add(new HopImpl(address.getAddress().getHostAddress(), partialHop.getPort(), partialHop.getTransport()));
+					}
+				}
+			} else if (transport != null) {
+				// Guaranteed to be only one partial hop.
+				
+				Hop partialHop = partialHops.poll();
+				String serviceId = getServiceIdentifier(partialHop.getTransport(), domain);
+				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+				if (services.size() > 0) {
+					for (ServiceRecord service : services) {
+						Set<AddressRecord> addresses = resolver.lookupAddressRecords(service.getTarget());
+						for (AddressRecord address : addresses) {
+							hops.add(new HopImpl(address.getAddress().getHostAddress(), service.getPort(), partialHop.getTransport()));
+						}
+					}
+				} else {
+					int hopPort = isSecure ? 5061 : 5060;
+					Set<AddressRecord> addresses = resolver.lookupAddressRecords(domain);
+					for (AddressRecord address : addresses) {
+						hops.add(new HopImpl(address.getAddress().getHostAddress(), hopPort, partialHop.getTransport()));
+					}
+				}
+			} else {
+				int hopPort = isSecure ? 5061 : 5060;
+				Set<AddressRecord> addresses = resolver.lookupAddressRecords(domain);
+				for (AddressRecord address : addresses) {
+					for (Hop partialHop : partialHops) {
+						hops.add(new HopImpl(address.getAddress().getHostAddress(), hopPort, partialHop.getTransport()));
+					}
+				}
+			}
+		}
+		
+		return hops;
+	}
+
+	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
+		final String transportParam = uri.getTransportParam();
+		final String target = getTarget(uri);
+		final boolean isTargetNumeric = isNumeric(target);
+		final boolean isSecure = uri.isSecure();
+		final int providedPort = uri.getPort();
+
+		if (isTargetNumeric) {
+			return locateNumeric(target, providedPort, transportParam, isSecure);
+		} else {
+			return locate(target, providedPort, transportParam, isSecure);
+		}
+	}
+	
+	protected List<String> filterTransports(boolean isSecure) {
+		if (isSecure) {
+			final List<String> filteredTransports = new ArrayList<String>(prefTransports);
+			Iterator<String> iter = filteredTransports.iterator();
 			while (iter.hasNext()) {
-				final PointerRecord pointer = iter.next();
-				if (validServiceFields.contains(pointer.getService()) == false) {
+				// TLS or SCTP-TLS
+				if (iter.next().endsWith("TLS") == false) {
 					iter.remove();
 				}
 			}
-			
-			if (pointers.size() > 0) {
-				for (PointerRecord pointer : pointers) {
-					final String domain = pointer.getReplacement();
-					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(domain);
-					if (services.size() > 0) {
-						for (ServiceRecord service : services) {
-							hops.addAll(getHops(service.getTarget(), service.getPort(), serviceTransportMap.get(pointer.getService())));
-						}
-					}
-				}
-				return hops;
-			}
+			return filteredTransports;
 		} else {
-			// RFC 3263 Section 4.1 Para 12
-			//
-			// If no NAPTR records are found, the client constructs SRV queries for
-			// those transport protocols it supports, and does a query for each.
-			// Queries are done using the service identifier "_sip" for SIP URIs and
-			// "_sips" for SIPS URIs.  A particular transport is supported if the
-			// query is successful.  The client MAY use any transport protocol it
-			// desires which is supported by the server.
-			for (String transport : prefTransports) {
-				final String domain = serviceIdTransportMap.get(transport) + uri.getHost() + ".";
-				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(domain);
-				if (services.size() > 0) {
-					for (ServiceRecord service : services) {
-						final Set<AddressRecord> hosts = resolver.lookupAddressRecords(service.getTarget());
-						final int port = service.getPort();
-						for (AddressRecord host : hosts) {
-							hops.add(new HopImpl(host.getAddress().getHostAddress(), port, transport));
-						}
-					}
-				}
-			}
-			if (hops.size() > 0) {
-				return hops;
-			}
+			return prefTransports;
 		}
-		// RFC 3263 Section 4.2 Para 5
-		//
-		// If no SRV records were found, the client performs an A or AAAA record
-		// lookup of the domain name.  The result will be a list of IP
-		// addresses, each of which can be contacted using the transport
-		// protocol determined previously, at the default port for that
-		// transport.  Processing then proceeds as described above for an
-		// explicit port once the A or AAAA records have been looked up.
-		
-		// RFC 3263 Section 4.1 Para 13
-		//
-		// If no SRV records are found, the client SHOULD use TCP for a SIPS
-		// URI, and UDP for a SIP URI.  However, another transport protocol,
-		// such as TCP, MAY be used if the guidelines of SIP mandate it for this
-		// particular request.  That is the case, for example, for requests that
-		// exceed the path MTU.
-		return getHops(uri.getHost(), isSecure);
 	}
 	
 	protected String getTarget(SipURI uri) {
@@ -408,6 +316,14 @@ public class Locator {
 			// the argument to this method MUST have been a host name for
 			// this exception to have been thrown.
 			return false;
+		}
+	}
+	
+	protected String getServiceIdentifier(String transport, String host) {
+		if (transport.equalsIgnoreCase("TLS") || transport.equalsIgnoreCase("SCTP-TLS")) {
+			return getServiceIdentifier(transport, host, true);
+		} else {
+			return getServiceIdentifier(transport, host, false);
 		}
 	}
 	
