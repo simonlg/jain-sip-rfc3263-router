@@ -29,7 +29,11 @@ public class BaseTestResolver implements Resolver {
 		Set<AddressRecord> addresses = new HashSet<AddressRecord>();
 		
 		try {
-			addresses.add(new AddressRecord(AbstractTest.TEST_HOST, InetAddress.getByName(AbstractTest.TEST_RESOLVED_ADDRESS)));
+			if (domain.equals("example.org")) {
+				addresses.add(new AddressRecord(domain, InetAddress.getByName(AbstractTest.TEST_RESOLVED_ADDRESS)));
+			} else {
+				addresses.add(new AddressRecord(domain, InetAddress.getByName(AbstractTest.TEST_RESOLVED_SERVICE_ADDRESS)));
+			}
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
