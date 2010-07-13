@@ -1,9 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.google.code.jain-sip-rfc3263-router</groupId>
 	<artifactId>jain-sip-rfc3263-router</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>JAIN-SIP RFC3263 Router</name>
 	<url>http://code.google.com/p/jain-sip-rfc3263-router/</url>
 	<dependencies>
@@ -36,10 +38,10 @@
 		</dependency>
 	</dependencies>
 	<scm>
-		<connection>scm:svn:http://jain-sip-rfc3263-router.googlecode.com/svn/tags/1.0</connection>
-		<developerConnection>scm:svn:https://jain-sip-rfc3263-router.googlecode.com/svn/tags/1.0</developerConnection>
+		<connection>scm:svn:http://jain-sip-rfc3263-router.googlecode.com/svn/</connection>
+		<developerConnection>scm:svn:https://jain-sip-rfc3263-router.googlecode.com/svn/</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://code.google.com/p/jain-sip-rfc3263-router/source/browse/tags/1.0</url>
+		<url>http://code.google.com/p/jain-sip-rfc3263-router/source/browse/</url>
 	</scm>
 	<build>
 		<plugins>
