@@ -3,7 +3,7 @@
 
 ==Numeric Hostnames==
 
-Permutations of port, transport and SIPS.
+Permutations of port, transport parameter and scheme (SIP vs SIPS)
 
 ==Non-Numeric Hostnames==
 
