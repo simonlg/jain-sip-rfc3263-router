@@ -25,10 +25,12 @@ import com.google.code.rfc3263.dns.Resolver;
  * TODO: Check MTU
  */
 public class DefaultRouter implements Router {
+	private final Resolver resolver;
 	private final SipStack sipStack;
 
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
 		this.sipStack = sipStack;
+		this.resolver = new DefaultResolver();
 	}
 
 	@Override
@@ -93,7 +95,6 @@ public class DefaultRouter implements Router {
 		if (requestSipUri.isSecure()) {
 			destination.setSecure(true);
 		}
-		Resolver resolver = new DefaultResolver();		
 		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
 			Queue<Hop> hops = locator.locate(destination);

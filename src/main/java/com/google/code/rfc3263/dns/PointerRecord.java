@@ -45,16 +45,25 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 		return replacement;
 	}
 
-	@Override
 	public int compareTo(PointerRecord o) {
-		// TODO: Compare properly.
-		return 1;
+		if (order > o.order) {
+			return 1;
+		} else if (order < o.order) {
+			return -1;
+		} else {
+			if (preference > o.preference) {
+				return 1;
+			} else if (preference < o.preference) {
+				return -1;
+			}
+			return replacement.compareTo(o.replacement);
+		}
 	}
 	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((flags == null) ? 0 : flags.hashCode());
 		result = prime * result + order;
 		result = prime * result + preference;
@@ -70,7 +79,7 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
 		if (!(obj instanceof PointerRecord)) {
@@ -119,6 +128,8 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append('[');
+		sb.append(super.toString());
+		sb.append(' ');
 		sb.append("IN NAPTR ");
 		sb.append(order);
 		sb.append(' ');
