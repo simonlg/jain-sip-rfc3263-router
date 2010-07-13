@@ -33,10 +33,19 @@ public final class ServiceRecord extends Record implements Comparable<ServiceRec
 		return target;
 	}
 
-	@Override
 	public int compareTo(ServiceRecord o) {
-		// TODO: Compare properly.
-		return 1;
+		if (priority < o.priority) {
+			return -1;
+		} else  if (priority > o.priority) {
+			return 1;
+		} else {
+			if (weight > o.weight) {
+				return -1;
+			} else if (weight < o.weight) {
+				return 1;
+			}
+			return getName().compareTo(o.getName());
+		}
 	}
 	
 	@Override
@@ -44,6 +53,8 @@ public final class ServiceRecord extends Record implements Comparable<ServiceRec
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append('[');
+		sb.append(super.toString());
+		sb.append(' ');
 		sb.append("IN SRV ");
 		sb.append(priority);
 		sb.append(' ');
@@ -60,7 +71,7 @@ public final class ServiceRecord extends Record implements Comparable<ServiceRec
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + port;
 		result = prime * result + priority;
 		result = prime * result + ((target == null) ? 0 : target.hashCode());
@@ -73,7 +84,7 @@ public final class ServiceRecord extends Record implements Comparable<ServiceRec
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
 		if (!(obj instanceof ServiceRecord)) {

@@ -63,81 +63,141 @@ public class Locator {
 	
 	protected Queue<Hop> locateNumeric(String domain, int port, String transport, boolean isSecure) {
 		final Queue<Hop> hops = new LinkedList<Hop>();
+		
+		final String hopAddress;
 		final String hopTransport;
 		final int hopPort;
 		
 		if (transport != null) {
+			// 4.1 Para 2
+			//
+			// If the URI specifies a transport protocol in the transport parameter,
+			// that transport protocol SHOULD be used.
 			if (isSecure) {
-				if (transport.equalsIgnoreCase("TCP")) {
-					hopTransport = "TLS";
-				} else if (transport.equalsIgnoreCase("SCTP")) {
-					hopTransport = "SCTP-TLS";
-				} else {
-					throw new IllegalArgumentException("UDP for SIPS URIs is not supported.");
-				}
+				hopTransport = upgradeTransport(transport);
 			} else {
 				hopTransport = transport.toUpperCase();
 			}
-		} else if (isSecure) {
-			hopTransport = "TLS";
 		} else {
-			hopTransport = "UDP";
+			// 4.1 Para 3
+			//
+			// Otherwise, if no transport protocol is specified, but the TARGET is a
+			// numeric IP address, the client SHOULD use UDP for a SIP URI, and TCP
+			// for a SIPS URI.
+			if (isSecure) {
+				hopTransport = upgradeTransport("TCP");
+			} else {
+				hopTransport = "UDP";
+			}
 		}
-		
+
+		// 4.2 Para 2
+		//
+		// If TARGET is a numeric IP address, the client uses that address.  If
+		// the URI also contains a port, it uses that port.  If no port is
+		// specified, it uses the default port for the particular transport
+		// protocol.
+		hopAddress = domain;
 		if (port != -1) {
 			hopPort = port;
-		} else if (isSecure) {
-			hopPort = 5061;
 		} else {
-			hopPort = 5060;
+			hopPort = getDefaultPortForTransport(hopTransport);
 		}
 		
-		hops.add(new HopImpl(domain, hopPort, hopTransport));
+		hops.add(new HopImpl(hopAddress, hopPort, hopTransport));
 		return hops;
 	}
 	
+	private int getDefaultPortForTransport(String transport) {
+		if (transport.endsWith("TLS")) {
+			return 5061;
+		} else {
+			return 5060;
+		}
+	}
+
+	private String upgradeTransport(String transport) {
+		if (transport.equalsIgnoreCase("tcp")) {
+			return "TLS";
+		} else if (transport.equalsIgnoreCase("sctp")) {
+			return "SCTP-TLS";
+		} else {
+			throw new IllegalArgumentException("Cannot upgrade " + transport);
+		}
+	}
+
 	protected Queue<Hop> locate(String domain, int port, String transport, boolean isSecure) throws UnknownHostException {
 		final Queue<Hop> hops = new LinkedList<Hop>();
 		final Queue<Hop> partialHops = new LinkedList<Hop>();
 		boolean servicesFound = false;
 		
 		if (transport != null) {
+			// 4.1 Para 2
+			//
+			// If the URI specifies a transport protocol in the transport parameter,
+			// that transport protocol SHOULD be used.
 			if (isSecure) {
-				if (transport.equalsIgnoreCase("TCP")) {
-					partialHops.add(new HopImpl(null, -1, "TLS"));
-				} else if (transport.equalsIgnoreCase("SCTP")) {
-					partialHops.add(new HopImpl(null, -1, "SCTP-TLS"));
-				} else {
-					throw new IllegalArgumentException("UDP for SIPS URIs is not supported.");
-				}
+				partialHops.add(new HopImpl(null, -1, upgradeTransport(transport)));
 			} else {
 				partialHops.add(new HopImpl(null, -1, transport.toUpperCase()));
 			}
 		} else if (port != -1) {
+			// 4.1 Para 3
+			//
+			// ... if no transport protocol is specified, and the TARGET is not 
+			// numeric, but an explicit port is provided, the client SHOULD use 
+			// UDP for a SIP URI, and TCP for a SIPS URI.
 			if (isSecure) {
-				partialHops.add(new HopImpl(null, -1, "TLS"));
+				partialHops.add(new HopImpl(null, -1, upgradeTransport("TCP")));
 			} else {
 				partialHops.add(new HopImpl(null, -1, "UDP"));
 			}
 		} else {
+			// 4.1 Para 4
+			//
+			// Otherwise, if no transport protocol or port is specified, and the
+			// target is not a numeric IP address, the client SHOULD perform a NAPTR
+			// query for the domain in the URI.
 			final SortedSet<PointerRecord> pointers = resolver.lookupPointerRecords(domain);
 			
 			if (pointers.size() > 0) {
 				final Set<String> validServiceFields = new HashSet<String>();
+				// 4.1 Para 5
+				//
+				// The services relevant for the task of transport protocol selection 
+				// are those with NAPTR service fields with values "SIP+D2X" and "SIPS+D2X", 
+				// where X is a letter that corresponds to a transport protocol supported 
+				// by the domain.  This specification defines D2U for UDP, D2T for TCP, 
+				// and D2S for SCTP.  We also establish an IANA registry for NAPTR service 
+				// name to transport protocol mappings.
 				validServiceFields.addAll(serviceTransportMap.keySet());
 				
+				// 4.1 Para 6
+				//
+				// First, a client resolving a SIPS URI MUST discard any services that
+				// do not contain "SIPS" as the protocol in the service field.
 				if (isSecure) {
 					validServiceFields.remove("SIP+D2T");
 					validServiceFields.remove("SIP+D2U");
 					validServiceFields.remove("SIP+D2S");
 				}
 				
+				// 4.1 Para 6
+				//
+				// A client resolving a SIP URI SHOULD retain records with "SIPS"
+				// as the protocol, if the client supports TLS.
 				if (prefTransports.contains("TLS") == false) {
 					validServiceFields.remove("SIPS+D2T");
 				}
 				if (prefTransports.contains("SCTP-TLS") == false) {
 					validServiceFields.remove("SIPS+D2S");
 				}
+				
+				// 4.1 Para 6
+				//
+				// Second, a client MUST discard any service fields that identify
+				// a resolution service whose value is not "D2X", for values of X that
+				// indicate transport protocols supported by the client.
 				if (prefTransports.contains("TCP") == false) {
 					validServiceFields.remove("SIP+D2T");
 				}
@@ -148,17 +208,26 @@ public class Locator {
 					validServiceFields.remove("SIP+D2S");
 				}
 	
+				// Discard
 				final Iterator<PointerRecord> iter = pointers.iterator();
 				while (iter.hasNext()) {
 					final PointerRecord pointer = iter.next();
 					if (validServiceFields.contains(pointer.getService()) == false) {
 						iter.remove();
+					} else if (isValid(pointer) == false) {
+						iter.remove();
 					}
 				}
 				
+				// 4.1 Para 6
+				//
+				// The NAPTR processing as described in RFC 2915 will result in 
+				// the discovery of the most preferred transport protocol of the 
+				// server that is supported by the client, as well as an SRV 
+				// record for the server.
 				for (PointerRecord pointer : pointers) {
 					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(pointer.getReplacement());
-					if (services.size() > 0) {
+					if (isValid(services)) {
 						servicesFound = true;
 						
 						for (ServiceRecord service : services) {
@@ -167,11 +236,18 @@ public class Locator {
 					}
 				}
 			} else {
-				List<String> filteredTransports = filterTransports(isSecure);
+				// 4.1 Para 12
+				//
+				// If no NAPTR records are found, the client constructs SRV queries for
+				// those transport protocols it supports, and does a query for each.
+				// Queries are done using the service identifier "_sip" for SIP URIs and
+				// "_sips" for SIPS URIs.  A particular transport is supported if the
+				// query is successful.
+				final List<String> filteredTransports = filterTransports(isSecure);
 				for (String prefTransport : filteredTransports) {
 					String serviceId = getServiceIdentifier(prefTransport, domain);
 					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
-					if (services.size() > 0) {
+					if (isValid(services)) {
 						servicesFound = true;
 						
 						for (ServiceRecord service : services) {
@@ -182,6 +258,10 @@ public class Locator {
 			}
 			
 			if (servicesFound == false) {
+				// 4.1 Para 13
+				//
+				// If no SRV records are found, the client SHOULD use TCP for a SIPS
+				// URI, and UDP for a SIP URI.
 				if (isSecure) {
 					partialHops.add(new HopImpl(null, -1, "TLS"));
 				} else {
@@ -191,6 +271,13 @@ public class Locator {
 		}
 		
 		if (port != -1) {
+			// 4.2 Para 3
+			//
+			// If the TARGET was not a numeric IP address, but a port is present in
+			// the URI, the client performs an A or AAAA record lookup of the domain
+			// name.  The result will be a list of IP addresses, each of which can
+			// be contacted at the specific port from the URI and transport protocol
+			// determined previously.
 			Set<AddressRecord> addresses = resolver.lookupAddressRecords(domain);
 			for (AddressRecord address : addresses) {
 				for (Hop partialHop : partialHops) {
@@ -198,6 +285,12 @@ public class Locator {
 				}
 			}
 		} else {
+			// 4.2 Para 4
+			//
+			// If the TARGET was not a numeric IP address, and no port was present
+			// in the URI, the client performs an SRV query on the record returned
+			// from the NAPTR processing of Section 4.1, if such processing was
+			// performed.
 			if (servicesFound) {
 				for (Hop partialHop : partialHops) {
 					Set<AddressRecord> addresses = resolver.lookupAddressRecords(partialHop.getHost());
@@ -206,12 +299,18 @@ public class Locator {
 					}
 				}
 			} else if (transport != null) {
-				// Guaranteed to be only one partial hop.
-				
+				// 4.2 Para 4
+				//
+				// If [NAPTR processing] was not [performed], because a transport was 
+				// specified explicitly, the client performs an SRV query for that 
+				// specific transport, using the service identifier "_sips" for SIPS URIs.  
+				// For a SIP URI, if the client wishes to use TLS, it also uses the service
+				// identifier "_sips" for that specific transport, otherwise, it uses
+				// "_sip".
 				Hop partialHop = partialHops.poll();
 				String serviceId = getServiceIdentifier(partialHop.getTransport(), domain);
 				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
-				if (services.size() > 0) {
+				if (isValid(services)) {
 					for (ServiceRecord service : services) {
 						Set<AddressRecord> addresses = resolver.lookupAddressRecords(service.getTarget());
 						for (AddressRecord address : addresses) {
@@ -219,17 +318,31 @@ public class Locator {
 						}
 					}
 				} else {
-					int hopPort = isSecure ? 5061 : 5060;
+					// 4.2 Para 5
+					//
+					// If no SRV records were found, the client performs an A or AAAA record
+					// lookup of the domain name.  The result will be a list of IP
+					// addresses, each of which can be contacted using the transport
+					// protocol determined previously, at the default port for that
+					// transport.
+					int hopPort = getDefaultPortForTransport(partialHop.getTransport());
 					Set<AddressRecord> addresses = resolver.lookupAddressRecords(domain);
 					for (AddressRecord address : addresses) {
 						hops.add(new HopImpl(address.getAddress().getHostAddress(), hopPort, partialHop.getTransport()));
 					}
 				}
 			} else {
-				int hopPort = isSecure ? 5061 : 5060;
+				// 4.2 Para 5
+				//
+				// If no SRV records were found, the client performs an A or AAAA record
+				// lookup of the domain name.  The result will be a list of IP
+				// addresses, each of which can be contacted using the transport
+				// protocol determined previously, at the default port for that
+				// transport.
 				Set<AddressRecord> addresses = resolver.lookupAddressRecords(domain);
 				for (AddressRecord address : addresses) {
 					for (Hop partialHop : partialHops) {
+						int hopPort = getDefaultPortForTransport(partialHop.getTransport());
 						hops.add(new HopImpl(address.getAddress().getHostAddress(), hopPort, partialHop.getTransport()));
 					}
 				}
@@ -281,6 +394,31 @@ public class Locator {
 		} else {
 			return uri.getHost();
 		}
+	}
+	
+	/**
+	 * See RFC 2782
+	 * 
+	 * @param services
+	 * @return
+	 */
+	protected boolean isValid(SortedSet<ServiceRecord> services) {
+		if (services.size() == 0) {
+			return false;
+		} else if (services.size() == 1) {
+			ServiceRecord service = services.iterator().next();
+			if (service.getTarget().equals(".")) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return true;
+		}
+	}
+	
+	protected boolean isValid(PointerRecord pointer) {
+		return pointer.getRegexp().isEmpty() && pointer.getFlags().equalsIgnoreCase("s"); 
 	}
 	
 	protected boolean isNumeric(String target) {
