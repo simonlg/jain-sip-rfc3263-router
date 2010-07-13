@@ -74,7 +74,6 @@ public class DefaultResolver implements Resolver {
 		return services;
 	}
 
-	@Override
 	public Set<AddressRecord> lookupAddressRecords(String domain) {
 		final Set<AddressRecord> addresses = new HashSet<AddressRecord>();
 		
