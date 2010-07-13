@@ -1,5 +1,6 @@
 package com.google.code.rfc3263;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.sip.SipFactory;
@@ -7,6 +8,7 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,16 +34,22 @@ public abstract class AbstractResolverTest {
 	
 	@Before
 	public void setUp() throws Exception {
+		BasicConfigurator.configure();
+		
 		SipFactory factory = SipFactory.getInstance();
 		addressFactory = factory.createAddressFactory();
 		locator = new Locator(resolver, getTransports());
+	}
+	
+	private void test(Hop expected, SipURI uri) throws UnknownHostException {
+		Assert.assertEquals(expected, locator.locate(uri).poll());
 	}
 	
 	@Test
 	public void testNumericHost() throws Exception {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
 		
-		Assert.assertEquals(getHopForNumericHost(), locator.locate(uri).poll());
+		test(getHopForNumericHost(), uri);
 	}
 	
 	@Test
@@ -50,7 +58,7 @@ public abstract class AbstractResolverTest {
 		uri.setPort(TEST_PORT);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForNumericHostWithTransportAndPort(), locator.locate(uri).poll());
+		test(getHopForNumericHostWithTransportAndPort(), uri);
 	}
 	
 	@Test
@@ -58,7 +66,7 @@ public abstract class AbstractResolverTest {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
 		uri.setPort(TEST_PORT);
 		
-		Assert.assertEquals(getHopForNumericHostWithPort(), locator.locate(uri).poll());
+		test(getHopForNumericHostWithPort(), uri);
 	}
 
 	@Test
@@ -66,7 +74,7 @@ public abstract class AbstractResolverTest {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForNumericHostWithTransport(), locator.locate(uri).poll());
+		test(getHopForNumericHostWithTransport(), uri);
 	}
 	
 	@Test
@@ -74,7 +82,7 @@ public abstract class AbstractResolverTest {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
 		uri.setSecure(true);
 		
-		Assert.assertEquals(getHopForSecureNumericHost(), locator.locate(uri).poll());
+		test(getHopForSecureNumericHost(), uri);
 	}
 	
 	@Test
@@ -84,7 +92,7 @@ public abstract class AbstractResolverTest {
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForSecureNumericHostWithTransportAndPort(), locator.locate(uri).poll());
+		test(getHopForSecureNumericHostWithTransportAndPort(), uri);
 	}
 	
 	@Test
@@ -93,7 +101,7 @@ public abstract class AbstractResolverTest {
 		uri.setPort(TEST_PORT);
 		uri.setSecure(true);
 		
-		Assert.assertEquals(getHopForSecureNumericHostWithPort(), locator.locate(uri).poll());
+		test(getHopForSecureNumericHostWithPort(), uri);
 	}
 
 	@Test
@@ -102,14 +110,14 @@ public abstract class AbstractResolverTest {
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForSecureNumericHostWithTransport(), locator.locate(uri).poll());
+		test(getHopForSecureNumericHostWithTransport(), uri);
 	}
 	
 	@Test
 	public void testHost() throws Exception {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
 		
-		Assert.assertEquals(getHopForHost(), locator.locate(uri).poll());
+		test(getHopForHost(), uri);
 	}
 	
 	@Test
@@ -118,7 +126,7 @@ public abstract class AbstractResolverTest {
 		uri.setPort(TEST_PORT);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForHostWithTransportAndPort(), locator.locate(uri).poll());
+		test(getHopForHostWithTransportAndPort(), uri);
 	}
 	
 	@Test
@@ -126,7 +134,7 @@ public abstract class AbstractResolverTest {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
 		uri.setPort(TEST_PORT);
 		
-		Assert.assertEquals(getHopForHostWithPort(), locator.locate(uri).poll());
+		test(getHopForHostWithPort(), uri);
 	}
 
 	@Test
@@ -134,7 +142,7 @@ public abstract class AbstractResolverTest {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForHostWithTransport(), locator.locate(uri).poll());
+		test(getHopForHostWithTransport(), uri);
 	}
 	
 	@Test
@@ -142,7 +150,7 @@ public abstract class AbstractResolverTest {
 		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
 		uri.setSecure(true);
 		
-		Assert.assertEquals(getHopForSecureHost(), locator.locate(uri).poll());
+		test(getHopForSecureHost(), uri);
 	}
 	
 	@Test
@@ -152,7 +160,7 @@ public abstract class AbstractResolverTest {
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForSecureHostWithTransportAndPort(), locator.locate(uri).poll());
+		test(getHopForSecureHostWithTransportAndPort(), uri);
 	}
 	
 	@Test
@@ -161,7 +169,7 @@ public abstract class AbstractResolverTest {
 		uri.setPort(TEST_PORT);
 		uri.setSecure(true);
 		
-		Assert.assertEquals(getHopForSecureHostWithPort(), locator.locate(uri).poll());
+		test(getHopForSecureHostWithPort(), uri);
 	}
 
 	@Test
@@ -170,7 +178,7 @@ public abstract class AbstractResolverTest {
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
-		Assert.assertEquals(getHopForSecureHostWithTransport(), locator.locate(uri).poll());
+		test(getHopForSecureHostWithTransport(), uri);
 	}
 	
 	protected abstract Hop getHopForNumericHost();
