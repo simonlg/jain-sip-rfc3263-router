@@ -33,7 +33,6 @@ public class DefaultRouter implements Router {
 		this.resolver = new DefaultResolver();
 	}
 
-	@Override
 	public Hop getNextHop(Request request) throws SipException {
 		final SipURI destination;
 		// RFC 3261 Section 8.1.2 Para 1
@@ -106,12 +105,10 @@ public class DefaultRouter implements Router {
 		}
 	}
 
-	@Override
 	public ListIterator<?> getNextHops(Request request) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Hop getOutboundProxy() {
 		return null;
 	}

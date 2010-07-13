@@ -13,17 +13,14 @@ class HopImpl implements Hop {
 		this.transport= transport;
 	}
 	
-	@Override
 	public String getHost() {
 		return host;
 	}
 
-	@Override
 	public int getPort() {
 		return port;
 	}
 
-	@Override
 	public String getTransport() {
 		return transport;
 	}
