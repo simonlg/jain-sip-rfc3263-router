@@ -11,6 +11,7 @@ import javax.sip.address.SipURI;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.code.rfc3263.dns.Resolver;
@@ -32,17 +33,20 @@ public abstract class AbstractResolverTest {
 		this.resolver = resolver;
 	}
 	
+	@BeforeClass
+	public static void setUpLogging() {
+		BasicConfigurator.configure();
+	}
+	
 	@Before
 	public void setUp() throws Exception {
-		BasicConfigurator.configure();
-		
 		SipFactory factory = SipFactory.getInstance();
 		addressFactory = factory.createAddressFactory();
 		locator = new Locator(resolver, getTransports());
 	}
 	
 	private void test(Hop expected, SipURI uri) throws UnknownHostException {
-		Assert.assertEquals(expected, locator.locate(uri).poll());
+		Assert.assertEquals(expected, locator.locate(uri));
 	}
 	
 	@Test
