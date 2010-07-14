@@ -1,0 +1,4 @@
+#summary Discussion about detecting hop failure
+#labels Phase-Design
+
+Add a `SipListener` to each `SipProvider` in the `SipStack`.
