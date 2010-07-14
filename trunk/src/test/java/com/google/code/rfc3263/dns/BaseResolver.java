@@ -1,22 +1,17 @@
 package com.google.code.rfc3263.dns;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import com.google.code.rfc3263.dns.AddressRecord;
-import com.google.code.rfc3263.dns.PointerRecord;
-import com.google.code.rfc3263.dns.Resolver;
-import com.google.code.rfc3263.dns.ServiceRecord;
 
 public class BaseResolver implements Resolver {
-	public SortedSet<PointerRecord> lookupPointerRecords(String domain) {
-		return new TreeSet<PointerRecord>();
+	public List<PointerRecord> lookupPointerRecords(String domain) {
+		return new ArrayList<PointerRecord>();
 	}
 
-	public SortedSet<ServiceRecord> lookupServiceRecords(String domain) {
-		return new TreeSet<ServiceRecord>();
+	public List<ServiceRecord> lookupServiceRecords(String domain) {
+		return new ArrayList<ServiceRecord>();
 	}
 	
 	public Set<AddressRecord> lookupAddressRecords(String domain) {

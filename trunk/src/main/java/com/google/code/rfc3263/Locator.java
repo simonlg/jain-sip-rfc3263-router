@@ -3,13 +3,13 @@ package com.google.code.rfc3263;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
@@ -20,6 +20,8 @@ import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
+import com.google.code.rfc3263.dns.ServiceRecordPriorityComparator;
+import com.google.code.rfc3263.dns.ServiceRecordWeightComparator;
 
 public class Locator {
 	private final Logger LOGGER = Logger.getLogger(Locator.class);
@@ -186,7 +188,7 @@ public class Locator {
 			// target is not a numeric IP address, the client SHOULD perform a NAPTR
 			// query for the domain in the URI.
 			LOGGER.debug("Looking up NAPTR records for " + domain);
-			final SortedSet<PointerRecord> pointers = resolver.lookupPointerRecords(domain);
+			final List<PointerRecord> pointers = resolver.lookupPointerRecords(domain);
 			discardInvalidPointers(pointers, uri.isSecure());
 			
 			if (pointers.size() > 0) {
@@ -201,7 +203,7 @@ public class Locator {
 				PointerRecord pointer = selectPointerRecord(pointers);
 				String serviceId = pointer.getReplacement();
 				LOGGER.debug("Looking up SRV records for " + serviceId);
-				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 				if (isValid(services)) {
 					LOGGER.debug("Found " + services.size() + " SRV record(s)");
 					ServiceRecord service = selectServiceRecord(services);
@@ -223,7 +225,7 @@ public class Locator {
 				for (String prefTransport : filteredTransports) {
 					String serviceId = getServiceIdentifier(prefTransport, domain);
 					LOGGER.debug("Looking up SRV records for " + serviceId);
-					final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+					final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 					if (isValid(services)) {
 						LOGGER.debug("Found " + services.size() + " SRV record(s) for " + serviceId);
 						ServiceRecord service = selectServiceRecord(services);
@@ -290,7 +292,7 @@ public class Locator {
 				// "_sip".
 				String serviceId = getServiceIdentifier(hopTransport, domain);
 				LOGGER.debug("Looking up SRV records for " + serviceId);
-				final SortedSet<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 				if (isValid(services)) {
 					LOGGER.debug("Found " + services.size() + " SRV records");
 					ServiceRecord service = selectServiceRecord(services);
@@ -338,9 +340,9 @@ public class Locator {
 		}
 	}
 
-	private PointerRecord selectPointerRecord(SortedSet<PointerRecord> pointers) {
+	private PointerRecord selectPointerRecord(List<PointerRecord> pointers) {
 		LOGGER.debug("Selecting pointer record from record set");
-		return pointers.iterator().next();
+		return pointers.get(0);
 	}
 
 	private String lookupAddress(String domain) {
@@ -361,12 +363,33 @@ public class Locator {
 		return addresses.iterator().next();
 	}
 	
-	private ServiceRecord selectServiceRecord(SortedSet<ServiceRecord> services) {
+	private ServiceRecord selectServiceRecord(List<ServiceRecord> services) {
 		LOGGER.debug("Selecting service record from record set");
+		
+		// RFC 2782 Usage Rules
+		
+		// Sort the list by priority (lowest number first)
+		Collections.sort(services, new ServiceRecordPriorityComparator());
+		// Create a new empty list
+		List<ServiceRecord> priorityList = new ArrayList<ServiceRecord>();
+		
+		int p = -1;
+		int totalWeight = 0;
+		for (ServiceRecord service : services) {
+			if (service.getPriority() != p) {
+				// Update priority.
+				Collections.sort(priorityList, new ServiceRecordWeightComparator());
+				
+				p = service.getPriority();
+				priorityList = new ArrayList<ServiceRecord>();
+			}
+			priorityList.add(service);
+		}
+		
 		return services.iterator().next();
 	}
 	
-	private void discardInvalidPointers(SortedSet<PointerRecord> pointers, boolean isSecure) {
+	private void discardInvalidPointers(List<PointerRecord> pointers, boolean isSecure) {
 		final Set<String> validServiceFields = new HashSet<String>();
 		// 4.1 Para 5
 		//
@@ -490,7 +513,7 @@ public class Locator {
 	 * @param services
 	 * @return
 	 */
-	protected boolean isValid(SortedSet<ServiceRecord> services) {
+	protected boolean isValid(List<ServiceRecord> services) {
 		if (services.size() == 0) {
 			return false;
 		} else if (services.size() == 1) {

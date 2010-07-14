@@ -3,7 +3,7 @@ package com.google.code.rfc3263.dns;
 /**
  * See http://www.ietf.org/rfc/rfc2782.txt
  */
-public final class ServiceRecord extends Record implements Comparable<ServiceRecord> {
+public final class ServiceRecord extends Record {
 	private final int priority;
 	private final int weight;
 	private final int port;
@@ -31,21 +31,6 @@ public final class ServiceRecord extends Record implements Comparable<ServiceRec
 	
 	public String getTarget() {
 		return target;
-	}
-
-	public int compareTo(ServiceRecord o) {
-		if (priority < o.priority) {
-			return -1;
-		} else  if (priority > o.priority) {
-			return 1;
-		} else {
-			if (weight > o.weight) {
-				return -1;
-			} else if (weight < o.weight) {
-				return 1;
-			}
-			return getName().compareTo(o.getName());
-		}
 	}
 	
 	@Override

@@ -1,8 +1,8 @@
 package com.google.code.rfc3263.dns;
 
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,21 +10,40 @@ import org.junit.Test;
 
 public class ServiceRecordTest {
 	@Test
-	public void sortingTest() {
-		SortedSet<ServiceRecord> services = new TreeSet<ServiceRecord>();
+	public void prioritySortingTest() {
+		List<ServiceRecord> services = new ArrayList<ServiceRecord>();
 		
-		ServiceRecord baz = new ServiceRecord("_sip._tcp.example.org.", 3, 1, 5060, "gamma.example.org.");
-		ServiceRecord bar = new ServiceRecord("_sip._tcp.example.org.", 1, 1, 5060, "beta.example.org.");
-		ServiceRecord foo = new ServiceRecord("_sip._tcp.example.org.", 1, 3, 5060, "alpha.example.org.");
+		// Priority 2
+		ServiceRecord one = new ServiceRecord("_sip._tcp.example.org.", 2, 1, 5060, "one.sip.example.org.");
+		// Priority 1
+		ServiceRecord two = new ServiceRecord("_sip._tcp.example.org.", 1, 1, 5060, "two.sip.example.org.");
 		
-		services.add(baz);
-		services.add(bar);
-		services.add(foo);
+		services.add(two);
+		services.add(one);
 		
-		Iterator<ServiceRecord> iter = services.iterator();
+		// Lower priorities should be first.
+		Collections.sort(services, new ServiceRecordPriorityComparator());
 		
-		Assert.assertEquals(foo, iter.next());
-		Assert.assertEquals(bar, iter.next());
-		Assert.assertEquals(baz, iter.next());
+		Assert.assertEquals(one, services.get(1));
+		Assert.assertEquals(two, services.get(0));
+	}
+	
+	@Test
+	public void weightSortingTest() {
+		List<ServiceRecord> services = new ArrayList<ServiceRecord>();
+		
+		// Weight 100
+		ServiceRecord one = new ServiceRecord("_sip._tcp.example.org.", 1, 100, 5060, "one.sip.example.org.");
+		// Weight 0
+		ServiceRecord two = new ServiceRecord("_sip._tcp.example.org.", 1, 0, 5060, "two.sip.example.org.");
+		
+		services.add(one);
+		services.add(two);
+		
+		// Zero weights should be first
+		Collections.sort(services, new ServiceRecordWeightComparator());
+
+		Assert.assertEquals(two, services.get(0));
+		Assert.assertEquals(one, services.get(1));
 	}
 }

@@ -1,18 +1,17 @@
 package com.google.code.rfc3263.dns;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.code.rfc3263.AbstractResolverTest;
-import com.google.code.rfc3263.dns.ServiceRecord;
 
 /**
  * DNS only declares TCP service.
  */
 public class AddressServiceResolver extends AddressResolver {
 	@Override
-	public SortedSet<ServiceRecord> lookupServiceRecords(String domain) {
-		SortedSet<ServiceRecord> services = new TreeSet<ServiceRecord>();
+	public List<ServiceRecord> lookupServiceRecords(String domain) {
+		List<ServiceRecord> services = new ArrayList<ServiceRecord>();
 		
 		final ServiceRecord service;
 		if (domain.equals("_sip._tcp." + AbstractResolverTest.TEST_HOST + ".")) {
