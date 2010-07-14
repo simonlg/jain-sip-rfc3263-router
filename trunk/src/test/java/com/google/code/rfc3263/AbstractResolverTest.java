@@ -35,11 +35,6 @@ public abstract class AbstractResolverTest {
 		this.resolver = resolver;
 	}
 	
-	@BeforeClass
-	public static void setUpLogging() {
-		BasicConfigurator.configure();
-	}
-	
 	@Before
 	public void setUp() throws Exception {
 		SipFactory factory = SipFactory.getInstance();
