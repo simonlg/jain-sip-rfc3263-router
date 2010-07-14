@@ -13,4 +13,15 @@ while (providers.hasNext()) {
 }
 }}}
 
-Record the `Hop` selected for a particular `Request`.  If the `SipListener` observes a `TransactionTerminated` event, the `Hop` should be marked as "good".  If the `SipListener` observes a `TimeoutEvent` or `IOExceptionEvent`, the `Hop` should be marked as "bad".
+Record the `Hop` selected for a particular `Request`.
+
+{{{
+public Hop getNextHop(Request req) {
+    Hop hop = ...;
+    associate(req, hop);
+
+    return hop;
+}
+}}}
+
+ If the `SipListener` observes a `TransactionTerminated` event, the `Hop` should be marked as "good".  If the `SipListener` observes a `TimeoutEvent` or `IOExceptionEvent`, the `Hop` should be marked as "bad".
