@@ -1,6 +1,7 @@
 package com.google.code.rfc3263;
 
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.sip.SipFactory;
@@ -17,7 +18,8 @@ import org.junit.Test;
 import com.google.code.rfc3263.dns.Resolver;
 
 public abstract class AbstractResolverTest {
-	public final static String TEST_HOST = "example.org";
+	public final static String TEST_USER = "alice";
+	public final static String TEST_HOST = "atlanta.com";
 	public final static String TEST_ADDRESS = "192.168.0.1";
 	public final static String TEST_RESOLVED_ADDRESS = "192.168.0.2";
 	public final static String TEST_RESOLVED_SERVICE_ADDRESS = "192.168.0.3";
@@ -49,16 +51,24 @@ public abstract class AbstractResolverTest {
 		Assert.assertEquals(expected, locator.locate(uri));
 	}
 	
+	private SipURI getNumericURI() throws ParseException {
+		return addressFactory.createSipURI(null, TEST_ADDRESS);
+	}
+	
+	private SipURI getNonNumericURI() throws ParseException {
+		return addressFactory.createSipURI(TEST_USER, TEST_HOST);
+	}
+	
 	@Test
 	public void testNumericHost() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		
 		test(getHopForNumericHost(), uri);
 	}
 	
 	@Test
 	public void testNumericHostWithPortAndTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		uri.setPort(TEST_PORT);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
@@ -67,7 +77,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testNumericHostWithPort() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		uri.setPort(TEST_PORT);
 		
 		test(getHopForNumericHostWithPort(), uri);
@@ -75,7 +85,7 @@ public abstract class AbstractResolverTest {
 
 	@Test
 	public void testNumericHostWithTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		uri.setTransportParam(TEST_TRANSPORT);
 		
 		test(getHopForNumericHostWithTransport(), uri);
@@ -83,7 +93,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testSecureNumericHost() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		uri.setSecure(true);
 		
 		test(getHopForSecureNumericHost(), uri);
@@ -91,7 +101,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testSecureNumericHostWithPortAndTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		uri.setPort(TEST_PORT);
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
@@ -101,7 +111,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testSecureNumericHostWithPort() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		uri.setPort(TEST_PORT);
 		uri.setSecure(true);
 		
@@ -110,7 +120,7 @@ public abstract class AbstractResolverTest {
 
 	@Test
 	public void testSecureNumericHostWithTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_ADDRESS);
+		final SipURI uri = getNumericURI();
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
@@ -119,14 +129,14 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testHost() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		
 		test(getHopForHost(), uri);
 	}
 	
 	@Test
 	public void testHostWithPortAndTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		uri.setPort(TEST_PORT);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
@@ -135,7 +145,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testHostWithPort() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		uri.setPort(TEST_PORT);
 		
 		test(getHopForHostWithPort(), uri);
@@ -143,7 +153,7 @@ public abstract class AbstractResolverTest {
 
 	@Test
 	public void testHostWithTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		uri.setTransportParam(TEST_TRANSPORT);
 		
 		test(getHopForHostWithTransport(), uri);
@@ -151,7 +161,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testSecureHost() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		uri.setSecure(true);
 		
 		test(getHopForSecureHost(), uri);
@@ -159,7 +169,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testSecureHostWithPortAndTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		uri.setPort(TEST_PORT);
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
@@ -169,7 +179,7 @@ public abstract class AbstractResolverTest {
 	
 	@Test
 	public void testSecureHostWithPort() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		uri.setPort(TEST_PORT);
 		uri.setSecure(true);
 		
@@ -178,7 +188,7 @@ public abstract class AbstractResolverTest {
 
 	@Test
 	public void testSecureHostWithTransport() throws Exception {
-		final SipURI uri = addressFactory.createSipURI(null, TEST_HOST);
+		final SipURI uri = getNonNumericURI();
 		uri.setSecure(true);
 		uri.setTransportParam(TEST_TRANSPORT);
 		
