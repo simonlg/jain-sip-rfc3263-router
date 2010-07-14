@@ -3,7 +3,7 @@ package com.google.code.rfc3263.dns;
 /**
  * See http://www.ietf.org/rfc/rfc2915.txt
  */
-public final class PointerRecord extends Record implements Comparable<PointerRecord> {
+public final class PointerRecord extends Record {
 	private final int order;
 	private final int preference;
 	private final String flags;
@@ -43,21 +43,6 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 	
 	public String getReplacement() {
 		return replacement;
-	}
-
-	public int compareTo(PointerRecord o) {
-		if (order > o.order) {
-			return 1;
-		} else if (order < o.order) {
-			return -1;
-		} else {
-			if (preference > o.preference) {
-				return 1;
-			} else if (preference < o.preference) {
-				return -1;
-			}
-			return replacement.compareTo(o.replacement);
-		}
 	}
 	
 	@Override
