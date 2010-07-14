@@ -14,6 +14,7 @@ import javax.sip.ListeningPoint;
 import javax.sip.PeerUnavailableException;
 import javax.sip.SipException;
 import javax.sip.SipFactory;
+import javax.sip.SipProvider;
 import javax.sip.SipStack;
 import javax.sip.address.Hop;
 import javax.sip.address.Router;
@@ -149,15 +150,18 @@ public class DefaultRouter implements Router {
 	}
 
 	protected List<String> getSupportedTransports() {
+		LOGGER.debug("Determining transports supported by stack");
 		final List<String> supportedTransports = new ArrayList<String>();
-		// TODO: Should these listening points be associated with a
-		// SIP Provider?
-		final Iterator<?> iter = sipStack.getListeningPoints();
-		while (iter.hasNext()) {
-			ListeningPoint endpoint = (ListeningPoint) iter.next();
-			supportedTransports.add(endpoint.getTransport().toUpperCase());
-		}
 
+		final Iterator<?> providers = sipStack.getSipProviders();
+		while (providers.hasNext()) {
+			SipProvider provider = (SipProvider) providers.next();
+			for (ListeningPoint endpoint : provider.getListeningPoints()) {
+				supportedTransports.add(endpoint.getTransport().toUpperCase());
+			}
+		}
+		
+		LOGGER.debug("Supported transports: " + supportedTransports);
 		return supportedTransports;
 	}
 }

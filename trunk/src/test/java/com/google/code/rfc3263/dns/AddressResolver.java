@@ -14,7 +14,7 @@ public class AddressResolver extends BaseResolver {
 		Set<AddressRecord> addresses = new HashSet<AddressRecord>();
 		
 		try {
-			if (domain.equals("example.org")) {
+			if (domain.equals(AbstractResolverTest.TEST_HOST)) {
 				addresses.add(new AddressRecord(domain, InetAddress.getByName(AbstractResolverTest.TEST_RESOLVED_ADDRESS)));
 			} else {
 				addresses.add(new AddressRecord(domain, InetAddress.getByName(AbstractResolverTest.TEST_RESOLVED_SERVICE_ADDRESS)));
