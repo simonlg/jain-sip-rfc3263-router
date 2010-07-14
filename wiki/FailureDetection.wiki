@@ -1,4 +1,4 @@
 #summary Discussion about detecting hop failure
 #labels Phase-Design
 
-Add a `SipListener` to each `SipProvider` in the `SipStack`.
+Add a `SipListener` to each `SipProvider` in the `SipStack`.  Record the `Hop` selected for a particular `Request`.  If the `SipListener` observes a `TransactionTerminated` event, the `Hop` should be marked as "good".  If the `SipListener` observes a `TimeoutEvent` or `IOExceptionEvent`, the `Hop` should be marked as "bad".
