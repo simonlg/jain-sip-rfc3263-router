@@ -25,3 +25,10 @@ public Hop getNextHop(Request req) {
 }}}
 
 If the `SipListener` observes a `TransactionTerminated` event, the `Hop` should be marked as "good".  If the `SipListener` observes a `TimeoutEvent` or `IOExceptionEvent`, the `Hop` should be marked as "bad".
+
+{{{
+public void processIOException(IOExceptionEvent event) {
+    Hop hop = createHop(event.getHost(), event.getPort(), event.getTransport());
+    router.markBad(hop);
+}
+}}}
