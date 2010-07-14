@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Queue;
 
 import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
@@ -115,8 +114,7 @@ public class DefaultRouter implements Router {
 		}
 		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
-			Queue<Hop> hops = locator.locate(destination);
-			Hop hop = hops.poll();
+			Hop hop = locator.locate(destination);
 			
 			if (hop != null) {
 				ViaHeader via = toVia(hop);
