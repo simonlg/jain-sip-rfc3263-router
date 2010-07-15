@@ -15,7 +15,7 @@ SipFactory factory = SipFactory.getInstance();
 SipStack stack = factory.createSipStack(properties);
 }}}
 
-The router is *stateless*, so a request with an identical Request-URI (or top Route header where appropriate) will always be sent to the same server in a constant DNS environment (subject to DNS caching).  This may cause problems if the SIP server by DNS is invalid or temporarily unavailable, in which case you may choose to use the location service manually (see below) to find an alternative route.
+The router is *stateless*, so a request with an identical Request-URI (or top Route header where appropriate) will always be sent to the same server in a constant DNS environment (subject to DNS caching).  This may cause problems if the SIP server by DNS is invalid or temporarily unavailable, in which case you may choose to use the location service manually (see below) to specify an alternative route, should one exist.
 
 ==Location Service==
 
