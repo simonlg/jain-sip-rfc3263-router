@@ -28,6 +28,9 @@ routeUri.setPort(hop.getPort());
 if (hop.getTransport().equals("TLS")) {
     routeUri.setSecure(true);
     routeUri.setTransportParam("tcp");
+} else if (hop.getTransport().equals("SCTP-TLS")) {
+    routeUri.setSecure(true);
+    routeUri.setTransportParam("sctp");
 } else {
     routeUri.setTransportParam(hop.getTransport().toLowerCase());
 }
