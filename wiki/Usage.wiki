@@ -5,6 +5,8 @@
 
 ==Locator==
 
+The first thing you should attempt is to retrieve a list of hops from the Locator.  You create a new instance of the Locator by passing in a list of preferred transports, in order of preference.  Here, we are stating that we prefer TCP to UDP.  We then attempt to find the next hops for `sip:bob@biloxi.com`:
+
 {{{
 SipFactory factory = SipFactory.getInstance();
 AddressFactory addressFactory = factory.createAddressFactory();
