@@ -1,0 +1,7 @@
+#summary Changes
+
+== 1.0.2 ==
+
+Issue 1
+Issue 2
+Issue 3
