@@ -5,6 +5,7 @@ import gov.nist.javax.sip.header.Route;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -109,7 +110,7 @@ public class DefaultRouter implements Router {
 		}
 		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
-			return locator.locate(destination);
+			return locator.locate(destination).iterator().next();
 		} catch (IllegalArgumentException e) {
 			throw new SipException("Rethrowing", e);
 		} catch (UnknownHostException e) {
@@ -118,7 +119,7 @@ public class DefaultRouter implements Router {
 	}
 
 	public ListIterator<?> getNextHops(Request request) {
-		throw new UnsupportedOperationException();
+		return new LinkedList<Hop>().listIterator();
 	}
 
 	public Hop getOutboundProxy() {
