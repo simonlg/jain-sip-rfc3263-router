@@ -41,12 +41,19 @@ Address routeAddress = addressFactory.createAddress(routeUri);
 RouteHeader route = createRouteHeader(routeAddress);
 }}}
 
-You should then clone the request, add the route header to the top of route set, and send it using the most appropriate !ListeningPoint.
+You should then clone the request, add the route header to the top of route set, and send it using the most appropriate !SipProvider.  For a clear division of security, it might be simpler to use two different providers, and assign secure !ListeningPoint instances (TLS, SCTP-TLS) to one, and insecure !ListeningPoint instances (UDP, TCP, SCTP) to the other.
 
 {{{
 Request clonedRequest = (Request) request.clone();
 clonedRequest.addFirst(route);
-ClientTransaction tx = sipProvider.getNewClientTransaction(clonedRequest);
+
+SipProvider sendingProvider;
+if (hop.getTransport().endsWith("TLS")) {
+    sendingProvider = secureProvider;
+} else {
+    sendingProvider = insecureProvider;
+}
+ClientTransaction tx = sendingProvider.getNewClientTransaction(clonedRequest);
 tx.send();
 }}}
 
