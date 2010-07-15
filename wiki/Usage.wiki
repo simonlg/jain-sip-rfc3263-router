@@ -15,5 +15,5 @@ transports.add("TCP");
 transports.add("UDP");
 
 Locator locator = new Locator(transports);
-List<Hop> hops = locator.locate("bob", "biloxi.com");
+Queue<Hop> hops = locator.locate("bob", "biloxi.com");
 }}}
