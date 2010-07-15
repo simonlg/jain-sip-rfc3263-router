@@ -9,8 +9,10 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.code.rfc3263.dns.Resolver;
@@ -31,6 +33,11 @@ public abstract class AbstractResolverTest {
 	
 	public AbstractResolverTest(Resolver resolver) {
 		this.resolver = resolver;
+	}
+	
+	@BeforeClass
+	public static void configureLogging() {
+		BasicConfigurator.configure();
 	}
 	
 	@Before
