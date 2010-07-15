@@ -50,4 +50,4 @@ ClientTransaction tx = sipProvider.getNewClientTransaction(clonedRequest);
 tx.send();
 }}}
 
-If the transaction fails, poll the next hop from the queue and try again.
+If the transaction fails, poll the next hop from the queue and try again.  When the queue is empty, no more hops could be determined, and message sending has failed.  Depending on the type of failure, you may choose to try some or all of the hops again.
