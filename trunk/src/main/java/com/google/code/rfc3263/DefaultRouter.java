@@ -3,25 +3,19 @@ package com.google.code.rfc3263;
 import gov.nist.javax.sip.header.Route;
 
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
-import javax.sip.PeerUnavailableException;
 import javax.sip.SipException;
-import javax.sip.SipFactory;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
 import javax.sip.address.Hop;
 import javax.sip.address.Router;
 import javax.sip.address.SipURI;
 import javax.sip.address.URI;
-import javax.sip.header.HeaderFactory;
-import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 
 import org.apache.log4j.Logger;
@@ -115,30 +109,12 @@ public class DefaultRouter implements Router {
 		}
 		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
-			Hop hop = locator.locate(destination);
-			
-			if (hop != null) {
-				ViaHeader via = toVia(hop);
-				LOGGER.debug(destination + ": Adding header " + via);
-				request.addHeader(via);
-			}
-			
-			return hop;
+			return locator.locate(destination);
 		} catch (IllegalArgumentException e) {
 			throw new SipException("Rethrowing", e);
 		} catch (UnknownHostException e) {
 			throw new SipException("Rethrowing", e);
-		} catch (ParseException e) {
-			throw new SipException("Rethrowing", e);
-		} catch (InvalidArgumentException e) {
-			throw new SipException("Rethrowing", e);
 		}
-	}
-	
-	private ViaHeader toVia(Hop hop) throws PeerUnavailableException, ParseException, InvalidArgumentException {
-		SipFactory factory = SipFactory.getInstance();
-		HeaderFactory headerFactory = factory.createHeaderFactory();
-		return headerFactory.createViaHeader(hop.getHost(), hop.getPort(), hop.getTransport(), null);
 	}
 
 	public ListIterator<?> getNextHops(Request request) {
