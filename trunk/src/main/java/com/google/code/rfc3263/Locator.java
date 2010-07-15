@@ -18,6 +18,7 @@ import javax.sip.address.SipURI;
 import org.apache.log4j.Logger;
 
 import com.google.code.rfc3263.dns.AddressRecord;
+import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
@@ -57,6 +58,10 @@ public class Locator {
 		serviceIdTransportMap.put("UDP", "_sip._udp.");
 		serviceIdTransportMap.put("SCTP", "_sip._sctp.");
 		serviceIdTransportMap.put("SCTP-TLS", "_sips._sctp.");
+	}
+	
+	public Locator(List<String> transports) {
+		this(new DefaultResolver(), transports);
 	}
 	
 	public Locator(Resolver resolver, List<String> transports) {
@@ -329,19 +334,6 @@ public class Locator {
 		LOGGER.debug("Selecting pointer record from record set");
 		return pointers.get(0);
 	}
-
-	private String lookupAddress(String domain) {
-		LOGGER.debug("Attempting to resolve " + domain + " to an IP address");
-		final Set<AddressRecord> addresses = resolver.lookupAddressRecords(domain);
-		if (addresses.size() > 0) {
-			LOGGER.debug("Found " + addresses.size() + " IP address(es) for " + domain);
-			AddressRecord address = selectAddressRecord(addresses);
-			return address.getAddress().getHostAddress();
-		} else {
-			LOGGER.debug("No IP addresses found for " + domain);
-			return null;
-		}
-	}
 	
 	private Queue<Hop> resolveHops(Queue<Hop> hops) {
 		Queue<Hop> resolvedHops = new LinkedList<Hop>();
@@ -358,11 +350,6 @@ public class Locator {
 		}
 		
 		return resolvedHops;
-	}
-	
-	private AddressRecord selectAddressRecord(Set<AddressRecord> addresses) {
-		LOGGER.debug("Using first IP address record from set");
-		return addresses.iterator().next();
 	}
 	
 	private List<ServiceRecord> sortServiceRecords(List<ServiceRecord> services) {
