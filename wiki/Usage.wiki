@@ -5,7 +5,7 @@ The jain-sip-rfc3263-router library can be used in two ways: by specifying the !
 
 ==Router==
 
-To use the jain-sip-rfc3263-router Router, simply set the *javax.sip.ROUTER_PATH* property to "com.google.code.rfc3263.!DefaultRouter" in the Properties argument used to create a new !SipStack:
+To use the jain-sip-rfc3263-router Router, simply set the `javax.sip.ROUTER_PATH` property to `"com.google.code.rfc3263.!DefaultRouter"` in the Properties argument used to create a new !SipStack:
 
 {{{
 Properties properties = new Properties();
