@@ -15,6 +15,10 @@ SipFactory factory = SipFactory.getInstance();
 SipStack stack = factory.createSipStack(properties);
 }}}
 
+Note that `javax.sip.USE_ROUTER_FOR_ALL_URIS` property must either be absent or have a value of "true" for the router to be consulted for SIP URIs.
+
+===Potential Problems===
+
 The router is *stateless*, so a request with an identical Request-URI (or top Route header where appropriate) will always be sent to the same server in a constant DNS environment (subject to DNS caching).  This may cause problems if the SIP server by DNS is invalid or temporarily unavailable, in which case you may choose to use the location service manually (see below) to specify an alternative route, should one exist.
 
 ==Location Service==
