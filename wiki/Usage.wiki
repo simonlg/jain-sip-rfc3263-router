@@ -10,7 +10,6 @@ To use the jain-sip-rfc3263-router Router, simply set the *javax.sip.ROUTER_PATH
 {{{
 Properties properties = new Properties();
 properties.setProperty("javax.sip.ROUTER_PATH", "com.google.code.rfc3263.DefaultRouter");
-}}}
 
 SipFactory factory = SipFactory.getInstance();
 SipStack stack = factory.createSipStack(properties);
