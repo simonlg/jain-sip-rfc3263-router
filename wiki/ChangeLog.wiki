@@ -1,5 +1,7 @@
 #summary Changes
 
+<wiki:toc/>
+
 == 1.0.2 ==
 
 1.0.2 is a bug-fix and feature release.
@@ -12,8 +14,8 @@
 
 == 1.0.1 ==
 
-The primary objective of this release was to improve the amount of logging to enable clear tracing of the procedures undertaken by the router.
+The primary objective of this release is to improve the amount of logging to enable clear tracing of the procedures undertaken by the router.
 
 == 1.0 ==
 
-This was the initial release.
+This is the initial release.
