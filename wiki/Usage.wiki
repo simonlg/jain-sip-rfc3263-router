@@ -51,3 +51,5 @@ tx.send();
 }}}
 
 If the transaction fails, poll the next hop from the queue and try again.  When the queue is empty, no more hops could be determined, and message sending has failed.  Depending on the type of failure, you may choose to try some or all of the hops again.
+
+Depending on the time between request-sending attempts, you may wish to invoke the `locate` method again, to see if the DNS has been updated for the domain you are attempting to contact.
