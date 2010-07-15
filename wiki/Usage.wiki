@@ -44,3 +44,5 @@ You should then add the route header to the top of route set, like so:
 {{{
 request.addFirst(route);
 }}}
+
+If the transaction somehow fails to complete, poll the next hop from the queue and try again.
