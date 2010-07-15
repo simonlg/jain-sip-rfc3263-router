@@ -1,6 +1,8 @@
 #summary How to use this project
 #labels Phase-Implementation
 
+The jain-sip-rfc3263-router library can be used in two ways: by indicating a router to use to 
+
 ==Router==
 
 ==Locator==
@@ -29,10 +31,8 @@ SipURI routeUri = addressFactory.createSipURI(null, hop.getHost());
 routeUri.setLrParam();
 routeUri.setPort(hop.getPort());
 if (hop.getTransport().equals("TLS")) {
-    routeUri.setSecure(true);
     routeUri.setTransportParam("tcp");
 } else if (hop.getTransport().equals("SCTP-TLS")) {
-    routeUri.setSecure(true);
     routeUri.setTransportParam("sctp");
 } else {
     routeUri.setTransportParam(hop.getTransport().toLowerCase());
@@ -41,7 +41,7 @@ Address routeAddress = addressFactory.createAddress(routeUri);
 RouteHeader route = createRouteHeader(routeAddress);
 }}}
 
-You should then clone the request, add the route header to the top of route set, and send it.
+You should then clone the request, add the route header to the top of route set, and send it using the most appropriate !ListeningPoint.
 
 {{{
 Request clonedRequest = (Request) request.clone();
