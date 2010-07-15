@@ -17,6 +17,7 @@ import javax.sip.address.Hop;
 import javax.sip.address.Router;
 import javax.sip.address.SipURI;
 import javax.sip.address.URI;
+import javax.sip.header.RouteHeader;
 import javax.sip.message.Request;
 
 import org.apache.log4j.Logger;
@@ -64,7 +65,7 @@ public class DefaultRouter implements Router {
 		}
 		final SipURI requestSipUri = (SipURI) requestUri;
 		
-		final ListIterator<?> routes = request.getHeaders("Route");
+		final ListIterator<?> routes = request.getHeaders(RouteHeader.NAME);
 		if (routes.hasNext()) {
 			LOGGER.debug("Route set found");
 			// We have a Route set.  Get the top route.
