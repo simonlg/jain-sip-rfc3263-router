@@ -23,5 +23,12 @@ You can then loop through the hops and add an appropriate RouteHeader to your me
 
 {{{
 SipURI routeUri = addressFactory.createSipURI(null, hop.getHost());
+routeUri.setLrParam();
 routeUri.setPort(hop.getPort());
+if (hop.getTransport().equals("TLS")) {
+    routeUri.setSecure(true);
+    routeUri.setTransportParam("tcp");
+} else {
+    routeUri.setTransportParam(hop.getTransport().toLowerCase());
+}
 }}}
