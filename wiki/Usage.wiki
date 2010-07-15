@@ -5,6 +5,19 @@ The jain-sip-rfc3263-router library can be used in two ways: by specifying the !
 
 ==Router==
 
+To use the jain-sip-rfc3263-router Router, simply set the *javax.sip.ROUTER_PATH* property to "com.google.code.rfc3263.DefaultRouter" in the Properties argument used to create a new SipStack:
+
+{{{
+Properties properties = new Properties();
+properties.setProperty("javax.sip.ROUTER_PATH", "com.google.code.rfc3263.DefaultRouter");
+}}}
+
+SipFactory factory = SipFactory.getInstance();
+SipStack stack = factory.createSipStack(properties);
+}}}
+
+The router is *stateless*, so a request with an identical Request-URI (or top Route header where appropriate) will always be sent to the same server in a constant DNS environment (subject to caching).
+
 ==Location Service==
 
 The first thing you should attempt is to retrieve a list of hops from the location service.  You create a new instance of Locator by passing in a list of preferred transports, in order of preference.  Here, we are stating that we prefer TCP to UDP.  We then attempt to find the next hops for `sip:bob@biloxi.com`:
