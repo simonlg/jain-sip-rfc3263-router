@@ -39,10 +39,13 @@ Address routeAddress = addressFactory.createAddress(routeUri);
 RouteHeader route = createRouteHeader(routeAddress);
 }}}
 
-You should then add the route header to the top of route set, like so:
+You should then clone the request, add the route header to the top of route set, and send it.
 
 {{{
-request.addFirst(route);
+Request clonedRequest = (Request) request.clone();
+clonedRequest.addFirst(route);
+ClientTransaction tx = sipProvider.getNewClientTransaction(clonedRequest);
+tx.send();
 }}}
 
-If the transaction somehow fails to complete, poll the next hop from the queue and try again.
+If the transaction fails, poll the next hop from the queue and try again.
