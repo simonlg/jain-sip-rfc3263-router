@@ -18,7 +18,7 @@ Locator locator = new Locator(transports);
 Queue<Hop> hops = locator.locate(uri);
 }}}
 
-You can then loop through the hops and add an appropriate !RouteHeader to your message to tell the default JAIN-SIP router where to send your request.
+When attempting to send a request you should poll the queue for the most appropriate hop.  The hop should be used to create a new route header like so:
 
 {{{
 HeaderFactory headerFactory = factory.createHeaderFactory();
@@ -37,4 +37,10 @@ if (hop.getTransport().equals("TLS")) {
 }
 Address routeAddress = addressFactory.createAddress(routeUri);
 RouteHeader route = createRouteHeader(routeAddress);
+}}}
+
+You should then add the route header to the top of route set, like so:
+
+{{{
+request.addFirst(route);
 }}}
