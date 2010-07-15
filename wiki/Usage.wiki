@@ -19,7 +19,7 @@ Note that `javax.sip.USE_ROUTER_FOR_ALL_URIS` property must either be absent or 
 
 ===Potential Problems===
 
-The router is *stateless*, so a request with an identical Request-URI (or top Route header where appropriate) will always be sent to the same group of servers in a constant DNS environment (subject to DNS caching).  This may cause problems if the SIP server recommended by DNS is invalid or temporarily unavailable, in which case you may choose to use the location service manually (see below) to specify an alternative route, should one exist.
+The router is *stateless*, so a request with an identical Request-URI (or top Route header where appropriate) will always be sent to the same server or group of servers in a constant DNS environment (subject to DNS caching).  This may cause problems if the SIP server recommended by DNS is invalid or temporarily unavailable, in which case you may choose to use the location service manually (see below) to specify an alternative route, should one exist.
 
 ==Location Service==
 
