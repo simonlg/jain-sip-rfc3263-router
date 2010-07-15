@@ -8,12 +8,12 @@
 {{{
 SipFactory factory = SipFactory.getInstance();
 AddressFactory addressFactory = factory.createAddressFactory();
-SipURI uri = addressFactory.createSipURI();
+SipURI uri = addressFactory.createSipURI("bob", "biloxi.com");
 
 List<String> transports = new LinkedList<String>();
 transports.add("TCP");
 transports.add("UDP");
 
 Locator locator = new Locator(transports);
-Queue<Hop> hops = locator.locate("bob", "biloxi.com");
+Queue<Hop> hops = locator.locate(uri);
 }}}
