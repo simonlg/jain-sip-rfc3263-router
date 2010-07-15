@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import javax.sip.address.Hop;
@@ -62,7 +64,7 @@ public class Locator {
 		this.prefTransports = transports;
 	}
 	
-	protected Hop locateNumeric(SipURI uri) {
+	protected Queue<Hop> locateNumeric(SipURI uri) {
 		final String domain = getTarget(uri);
 		
 		final String hopAddress;
@@ -109,7 +111,11 @@ public class Locator {
 		}
 		
 		LOGGER.debug("Determined IP address and port for " + uri + ": " + hopAddress + ":" + hopPort);
-		return new HopImpl(hopAddress, hopPort, hopTransport);
+		
+		final Queue<Hop> hops = new LinkedList<Hop>();
+		hops.add(new HopImpl(hopAddress, hopPort, hopTransport));
+		
+		return hops;
 	}
 	
 	private String getDefaultTransportForScheme(SipURI uri) {
@@ -149,12 +155,10 @@ public class Locator {
 		}
 	}
 
-	protected Hop locateNonNumeric(SipURI uri) throws UnknownHostException {
-		String domain = getTarget(uri);
+	protected Queue<Hop> locateNonNumeric(SipURI uri) throws UnknownHostException {
+		final Queue<Hop> hops = new LinkedList<Hop>();
 		
-		String hopHost = null;
-		String hopAddress = null;
-		int hopPort = -1;
+		String domain = getTarget(uri);
 		String hopTransport = null;
 		
 		LOGGER.debug("Selecting transport for " + uri);
@@ -204,11 +208,12 @@ public class Locator {
 				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 				if (isValid(services)) {
 					LOGGER.debug("Found " + services.size() + " SRV record(s)");
-					ServiceRecord service = selectServiceRecord(services);
+					List<ServiceRecord> sortedServices = sortServiceRecords(services);
 					
 					hopTransport = serviceTransportMap.get(pointer.getService());
-					hopPort = service.getPort();
-					hopHost = service.getTarget();
+					for (ServiceRecord service : sortedServices) {
+						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+					}
 				}
 			} else {
 				LOGGER.debug("No NAPTR records found for " + domain);
@@ -226,20 +231,18 @@ public class Locator {
 					final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 					if (isValid(services)) {
 						LOGGER.debug("Found " + services.size() + " SRV record(s) for " + serviceId);
-						ServiceRecord service = selectServiceRecord(services);
-
-						hopHost = service.getTarget();
-						hopPort = service.getPort();
+						List<ServiceRecord> sortedServices = sortServiceRecords(services);
 						hopTransport = prefTransport;
-						
-						break;
+						for (ServiceRecord service : sortedServices) {
+							hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+						}
 					} else {
 						LOGGER.debug("No valid SRV records for " + serviceId);
 					}
 				}
 			}
 			
-			if (hopPort == -1 || hopHost == null) {
+			if (hops.size() == 0) {
 				LOGGER.debug("No SRV records found  " + domain);
 				// 4.1 Para 13
 				//
@@ -265,8 +268,7 @@ public class Locator {
 			// name.  The result will be a list of IP addresses, each of which can
 			// be contacted at the specific port from the URI and transport protocol
 			// determined previously.
-			hopPort = uri.getPort();
-			hopAddress = lookupAddress(domain);
+			hops.add(new HopImpl(domain, uri.getPort(), hopTransport));
 		} else {
 			LOGGER.debug("No port is present in the URI");
 			// 4.2 Para 4
@@ -275,9 +277,9 @@ public class Locator {
 			// in the URI, the client performs an SRV query on the record returned
 			// from the NAPTR processing of Section 4.1, if such processing was
 			// performed.
-			if (hopPort != -1 && hopHost != null) {
+			if (hops.size() > 0) {
 				LOGGER.debug("SRV records found during transport selection");
-				hopAddress = lookupAddress(hopHost);
+				// Nothing to do here: hops were created earlier.
 			} else if (uri.getTransportParam() != null) {
 				LOGGER.debug("Transport parameter was specified");
 				// 4.2 Para 4
@@ -293,11 +295,10 @@ public class Locator {
 				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 				if (isValid(services)) {
 					LOGGER.debug("Found " + services.size() + " SRV records");
-					ServiceRecord service = selectServiceRecord(services);
-					
-					hopPort = service.getPort();
-					hopHost = service.getTarget();
-					hopAddress = lookupAddress(service.getTarget());
+					List<ServiceRecord> sortedServices = sortServiceRecords(services);
+					for (ServiceRecord service : sortedServices) {
+						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+					}
 				} else {
 					LOGGER.debug("No valid SRV records for " + serviceId);
 					// 4.2 Para 5
@@ -307,9 +308,7 @@ public class Locator {
 					// addresses, each of which can be contacted using the transport
 					// protocol determined previously, at the default port for that
 					// transport.
-					hopPort = getDefaultPortForTransport(hopTransport);
-					hopHost = domain;
-					hopAddress = lookupAddress(domain);
+					hops.add(new HopImpl(domain, getDefaultPortForTransport(hopTransport), hopTransport));
 				}
 			} else {
 				// 4.2 Para 5
@@ -319,23 +318,11 @@ public class Locator {
 				// addresses, each of which can be contacted using the transport
 				// protocol determined previously, at the default port for that
 				// transport.
-				hopPort = getDefaultPortForTransport(hopTransport);
-				hopHost = domain;
-				hopAddress = lookupAddress(domain); 
+				hops.add(new HopImpl(domain, getDefaultPortForTransport(hopTransport), hopTransport));
 			}
 		}
 		
-		if (hopAddress != null && hopPort != -1) {
-			LOGGER.debug("Determined IP address and port for " + uri + ": " + hopAddress + ":" + hopPort);
-		} else {
-			LOGGER.debug("Failed to determine IP address and port for " + uri);
-		}
-		
-		if (hopAddress != null && hopPort != -1 && hopTransport != null) {
-			return new HopImpl(hopAddress, hopPort, hopTransport);
-		} else {
-			return null;
-		}
+		return hops;
 	}
 
 	private PointerRecord selectPointerRecord(List<PointerRecord> pointers) {
@@ -356,16 +343,33 @@ public class Locator {
 		}
 	}
 	
+	private Queue<Hop> resolveHops(Queue<Hop> hops) {
+		Queue<Hop> resolvedHops = new LinkedList<Hop>();
+		
+		for (Hop hop : hops) {
+			final Set<AddressRecord> addresses = resolver.lookupAddressRecords(hop.getHost());
+			for (AddressRecord address : addresses) {
+				final String ipAddress = address.getAddress().getHostAddress();
+				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
+				if (resolvedHops.contains(resolvedHop) == false) {
+					resolvedHops.add(resolvedHop);
+				}
+			}
+		}
+		
+		return resolvedHops;
+	}
+	
 	private AddressRecord selectAddressRecord(Set<AddressRecord> addresses) {
 		LOGGER.debug("Using first IP address record from set");
 		return addresses.iterator().next();
 	}
 	
-	private ServiceRecord selectServiceRecord(List<ServiceRecord> services) {
+	private List<ServiceRecord> sortServiceRecords(List<ServiceRecord> services) {
 		LOGGER.debug("Selecting service record from record set");
 		
 		final ServiceRecordSelector selector = new ServiceRecordSelector(services);
-		return selector.select().iterator().next();
+		return selector.select();
 	}
 	
 	private void discardInvalidPointers(List<PointerRecord> pointers, boolean isSecure) {
@@ -432,23 +436,23 @@ public class Locator {
 		}
 	}
 
-	public Hop locate(SipURI uri) throws UnknownHostException {
+	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
 		LOGGER.debug("Locating SIP server for " + uri);
 		final String target = getTarget(uri);
 
-		final Hop hop;
+		final Queue<Hop> hops;
 		if (isNumeric(target)) {
-			hop = locateNumeric(uri);
+			hops = locateNumeric(uri);
 		} else {
-			hop = locateNonNumeric(uri);
+			hops = resolveHops(locateNonNumeric(uri));
 		}
-		if (hop == null) {
+		if (hops.size() == 0) {
 			LOGGER.debug("No next hop could be determined for " + uri);
 		} else {
-			LOGGER.debug("Next hop for " + uri + " is " + hop);
+			LOGGER.debug("Hop list for " + uri + " is " + hops);
 		}
 		
-		return hop;
+		return hops;
 	}
 	
 	protected List<String> filterTransports(boolean isSecure) {

@@ -48,7 +48,7 @@ public abstract class AbstractResolverTest {
 	}
 	
 	private void test(Hop expected, SipURI uri) throws UnknownHostException {
-		Assert.assertEquals(expected, locator.locate(uri));
+		Assert.assertEquals(expected, locator.locate(uri).poll());
 	}
 	
 	private SipURI getNumericURI() throws ParseException {
