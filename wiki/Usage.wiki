@@ -42,7 +42,7 @@ Locator locator = new Locator(transports);
 Queue<Hop> hops = locator.locate(uri);
 }}}
 
-When attempting to send a request you should poll the queue for the most appropriate hop.  The hop should be used to create a new route header like so:
+When attempting to send a request you should poll the queue for the most appropriate hop.  The hop should be used to create a new Route header like so:
 
 {{{
 HeaderFactory headerFactory = factory.createHeaderFactory();
@@ -58,7 +58,7 @@ if (hop.getTransport().equals("TLS")) {
     routeUri.setTransportParam(hop.getTransport().toLowerCase());
 }
 Address routeAddress = addressFactory.createAddress(routeUri);
-RouteHeader route = createRouteHeader(routeAddress);
+RouteHeader route = headerFactory.createRouteHeader(routeAddress);
 }}}
 
 You should then clone the request, add the route header to the top of route set, and send it using the most appropriate !SipProvider.  For a clear division of security, it might be simpler to use two different providers, and assign secure !ListeningPoint instances (TLS, SCTP-TLS) to one, and insecure !ListeningPoint instances (UDP, TCP, SCTP) to the other.
@@ -73,6 +73,14 @@ if (hop.getTransport().endsWith("TLS")) {
 } else {
     sendingProvider = insecureProvider;
 }
+}}}
+
+Before sending, the request should have the selected Via header set too:
+
+{{{
+ListeningPoint endPoint = sendingProvider.getListeningPoint(hop.getTransport);
+ViaHeader via = headerFactory.createViaHeader(endPoint.getIPAddress(), endPoint.getPort(), hop.getTransport(), null);
+clonedRequest.addHeader(via);
 ClientTransaction tx = sendingProvider.getNewClientTransaction(clonedRequest);
 tx.send();
 }}}
