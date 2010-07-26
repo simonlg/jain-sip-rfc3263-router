@@ -147,8 +147,13 @@ public class DefaultRouter implements Router {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * This method is deprecated, so this method returns the bare
+	 * minimum, which is an empty iterator. 
+	 * 
+	 * @param request the request to retrieve the next hops for.
+	 * @return an empty ListIterator.
 	 */
+	@Deprecated
 	public ListIterator<?> getNextHops(Request request) {
 		return new LinkedList<Hop>().listIterator();
 	}
