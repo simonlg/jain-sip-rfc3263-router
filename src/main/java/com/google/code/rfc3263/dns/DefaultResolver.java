@@ -15,7 +15,13 @@ import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
+/**
+ * This class is the default DNS resolver.  It uses dnsjava.
+ */
 public class DefaultResolver implements Resolver {
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<PointerRecord> lookupPointerRecords(String domain) {
 		final List<PointerRecord> pointers = new ArrayList<PointerRecord>();
 		
@@ -46,6 +52,9 @@ public class DefaultResolver implements Resolver {
 		return pointers;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<ServiceRecord> lookupServiceRecords(String domain) {
 		final List<ServiceRecord> services = new ArrayList<ServiceRecord>();
 		
@@ -74,6 +83,9 @@ public class DefaultResolver implements Resolver {
 		return services;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Set<AddressRecord> lookupAddressRecords(String domain) {
 		final Set<AddressRecord> addresses = new HashSet<AddressRecord>();
 		

@@ -26,19 +26,32 @@ import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.Resolver;
 
 /**
- * TODO: Check MTU
+ * JAIN-SIP router implementation that uses the procedures laid out in RFC 3261
+ * and RFC 3265 to locate the hop to which a given request should be routed.
+ * 
+ * @see <a href="http://www.ietf.org/rfc/rfc3261.txt">RFC 3261</a>
+ * @see <a href="http://www.ietf.org/rfc/rfc3265.txt">RFC 3265</a>
  */
 public class DefaultRouter implements Router {
 	private static final Logger LOGGER = Logger.getLogger(DefaultRouter.class);
 	private final Resolver resolver;
 	private final SipStack sipStack;
 
+	/**
+	 * Creates a new instance of this class.
+	 * 
+	 * @param sipStack the SipStack to use.
+	 * @param outboundProxy the outbound proxy specified by the user.
+	 */
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
 		LOGGER.debug("Router instantiated for " + sipStack);
 		this.sipStack = sipStack;
 		this.resolver = new DefaultResolver();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Hop getNextHop(Request request) throws SipException {
 		LOGGER.debug("Attempting to route the following request \n\n" + request);
 		final SipURI destination;
@@ -119,10 +132,16 @@ public class DefaultRouter implements Router {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ListIterator<?> getNextHops(Request request) {
 		return new LinkedList<Hop>().listIterator();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Hop getOutboundProxy() {
 		return null;
 	}
