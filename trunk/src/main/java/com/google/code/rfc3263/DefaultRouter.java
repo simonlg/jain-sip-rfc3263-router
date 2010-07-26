@@ -3,6 +3,7 @@ package com.google.code.rfc3263;
 import gov.nist.javax.sip.header.Route;
 
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -30,12 +31,13 @@ import com.google.code.rfc3263.dns.Resolver;
  * and RFC 3265 to locate the hop to which a given request should be routed.
  * 
  * @see <a href="http://www.ietf.org/rfc/rfc3261.txt">RFC 3261</a>
- * @see <a href="http://www.ietf.org/rfc/rfc3265.txt">RFC 3265</a>
+ * @see <a href="http://www.ietf.org/rfc/rfc3263.txt">RFC 3263</a>
  */
 public class DefaultRouter implements Router {
 	private static final Logger LOGGER = Logger.getLogger(DefaultRouter.class);
 	private final Resolver resolver;
 	private final SipStack sipStack;
+	private final Hop outboundProxy;
 
 	/**
 	 * Creates a new instance of this class.
@@ -47,6 +49,15 @@ public class DefaultRouter implements Router {
 		LOGGER.debug("Router instantiated for " + sipStack);
 		this.sipStack = sipStack;
 		this.resolver = new DefaultResolver();
+		if (outboundProxy == null) {
+			this.outboundProxy = null;
+		} else {
+			try {
+				this.outboundProxy = HopParser.parseHop(outboundProxy);
+			} catch (ParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	/**
@@ -105,6 +116,9 @@ public class DefaultRouter implements Router {
 				// value in the request
 				destination = routeSipUri;
 			}
+		} else if (outboundProxy != null) {
+			LOGGER.debug("Outbound proxy has been defined, returning proxy hop.");
+			return outboundProxy;
 		} else {
 			LOGGER.debug("No route set found.  Using Request-URI for input");
 			// RFC 3261 Section 8.1.2 Para 1 (Cont)
@@ -143,7 +157,7 @@ public class DefaultRouter implements Router {
 	 * {@inheritDoc}
 	 */
 	public Hop getOutboundProxy() {
-		return null;
+		return outboundProxy;
 	}
 
 	protected List<String> getSupportedTransports() {
