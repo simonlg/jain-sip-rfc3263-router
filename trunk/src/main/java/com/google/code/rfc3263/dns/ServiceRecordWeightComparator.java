@@ -2,7 +2,7 @@ package com.google.code.rfc3263.dns;
 
 import java.util.Comparator;
 
-public class ServiceRecordWeightComparator implements Comparator<ServiceRecord> {
+class ServiceRecordWeightComparator implements Comparator<ServiceRecord> {
 	public int compare(ServiceRecord o1, ServiceRecord o2) {
 		if (o1.getWeight() == o2.getWeight()) {
 			return 0;

@@ -3,7 +3,10 @@ package com.google.code.rfc3263.dns;
 import java.net.InetAddress;
 
 /**
- * Representation of either an A or AAAA record.
+ * This is the representation of either an A or AAAA DNS record.
+ * 
+ * @see <a href="http://www.ietf.org/rfc/rfc1034.txt">RFC 1034</a>
+ * @see <a href="http://www.ietf.org/rfc/rfc3596.txt">RFC 3596</a>
  */
 public class AddressRecord extends Record {
 	private final InetAddress address;

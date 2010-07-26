@@ -60,10 +60,23 @@ public class Locator {
 		serviceIdTransportMap.put("SCTP-TLS", "_sips._sctp.");
 	}
 	
+	/**
+	 * Constructs a new instance of the <code>Locator</code> class using
+	 * the {@link DefaultResolver} and the given list of transports.
+	 *   
+	 * @param transports the transports to use.
+	 */
 	public Locator(List<String> transports) {
 		this(new DefaultResolver(), transports);
 	}
 	
+	/**
+	 * Constructs a new instance of the <code>Locator</code> class using
+	 * the given {@link Resolver} and list of transports.
+	 *  
+	 * @param resolver the resolver to use.
+	 * @param transports the transports to use.
+	 */
 	public Locator(Resolver resolver, List<String> transports) {
 		this.resolver = resolver;
 		this.prefTransports = transports;
@@ -423,6 +436,14 @@ public class Locator {
 		}
 	}
 
+	/**
+	 * Generates a queue of {@see Hop} instances which should be used to route
+	 * the message with the given URI.
+	 * 
+	 * @param uri the URI for which to determine a hop queue.
+	 * @return the hop queue.
+	 * @throws UnknownHostException if the URI host is invalid.
+	 */
 	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
 		LOGGER.debug("Locating SIP server for " + uri);
 		final String target = getTarget(uri);
@@ -481,7 +502,7 @@ public class Locator {
 	 * See RFC 2782
 	 * 
 	 * @param services
-	 * @return
+	 * @return true is the list of services is valid; false otherwise.
 	 */
 	protected boolean isValid(List<ServiceRecord> services) {
 		if (services.size() == 0) {
