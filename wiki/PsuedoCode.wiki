@@ -7,6 +7,8 @@
   * If the target is not numeric AND has a port, use UDP for SIP and TCP for SIPS
   * If the target is not numeric AND has no port: do NAPTR / SRV for the domain in the URI or maddr
 
+If the URI has a transport param, use it.
+
 == Port ==
 
   * If target is numeric and has a port, use that port
@@ -15,7 +17,11 @@
   * If the target is not numeric, and doesn't have a port, do NAPTR / SRV
     * If not NAPTR / SRV, use the default port for transport
 
-Therefore, if the URI has a port, use it.
+If the URI has a port, use it.
 
 == Host ==
 
+"The maddr parameter indicates the server address to be contacted for this user, overriding any address derived from the host field."
+
+  * If the target is numeric, use that
+  * Otherwise 
