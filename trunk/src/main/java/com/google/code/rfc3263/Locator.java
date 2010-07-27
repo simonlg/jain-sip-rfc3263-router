@@ -85,22 +85,26 @@ public class Locator {
 	protected Queue<Hop> locateNumeric(SipURI uri) {
 		final String domain = getTarget(uri);
 		
+		final String transportParam = uri.getTransportParam();
+		final int port = uri.getPort();
+		final boolean isSecure = uri.isSecure();
+		
 		final String hopAddress;
 		final int hopPort;
 		final String hopTransport;
 		
 		LOGGER.debug("Selecting transport for " + uri);
 		
-		if (uri.getTransportParam() != null) {
+		if (transportParam != null) {
 			LOGGER.debug("Transport parameter found");
 			// 4.1 Para 2
 			//
 			// If the URI specifies a transport protocol in the transport parameter,
 			// that transport protocol SHOULD be used.
-			if (uri.isSecure()) {
-				hopTransport = upgradeTransport(uri.getTransportParam());
+			if (isSecure) {
+				hopTransport = upgradeTransport(transportParam);
 			} else {
-				hopTransport = uri.getTransportParam().toUpperCase();
+				hopTransport = transportParam.toUpperCase();
 			}
 		} else {
 			LOGGER.debug("No transport parameter found, so using scheme default transport");
@@ -109,7 +113,7 @@ public class Locator {
 			// Otherwise, if no transport protocol is specified, but the TARGET is a
 			// numeric IP address, the client SHOULD use UDP for a SIP URI, and TCP
 			// for a SIPS URI.
-			hopTransport = getDefaultTransportForScheme(uri);
+			hopTransport = getDefaultTransportForScheme(uri.getScheme(), isSecure);
 		}
 		
 		LOGGER.debug("Transport selected for " + uri + ": " + hopTransport);
@@ -122,8 +126,8 @@ public class Locator {
 		// specified, it uses the default port for the particular transport
 		// protocol.
 		hopAddress = domain;
-		if (uri.getPort() != -1) {
-			hopPort = uri.getPort();
+		if (port != -1) {
+			hopPort = port;
 		} else {
 			hopPort = getDefaultPortForTransport(hopTransport);
 		}
@@ -136,10 +140,10 @@ public class Locator {
 		return hops;
 	}
 	
-	private String getDefaultTransportForScheme(SipURI uri) {
-		LOGGER.debug("Determining default transport for " + uri.getScheme() + ": scheme");
+	private String getDefaultTransportForScheme(String scheme, boolean isSecure) {
+		LOGGER.debug("Determining default transport for " + scheme + ": scheme");
 		String transport;
-		if (uri.isSecure()) {
+		if (isSecure) {
 			LOGGER.debug("Default transport is TCP");
 			transport = upgradeTransport("TCP");
 		} else {
@@ -176,30 +180,34 @@ public class Locator {
 	protected Queue<Hop> locateNonNumeric(SipURI uri) throws UnknownHostException {
 		final Queue<Hop> hops = new LinkedList<Hop>();
 		
+		final String transportParam = uri.getTransportParam();
+		final boolean isSecure = uri.isSecure();
+		final int port = uri.getPort();
+		
 		String domain = getTarget(uri);
 		String hopTransport = null;
 		
 		LOGGER.debug("Selecting transport for " + uri);
 		
-		if (uri.getTransportParam() != null) {
+		if (transportParam != null) {
 			LOGGER.debug("Transport parameter was specified");
 			// 4.1 Para 2
 			//
 			// If the URI specifies a transport protocol in the transport parameter,
 			// that transport protocol SHOULD be used.
-			if (uri.isSecure()) {
-				hopTransport = upgradeTransport(uri.getTransportParam());
+			if (isSecure) {
+				hopTransport = upgradeTransport(transportParam);
 			} else {
-				hopTransport = uri.getTransportParam().toUpperCase();
+				hopTransport = transportParam.toUpperCase();
 			}
-		} else if (uri.getPort() != -1) {
+		} else if (port != -1) {
 			LOGGER.debug("No transport parameter found, so using scheme default transport");
 			// 4.1 Para 3
 			//
 			// ... if no transport protocol is specified, and the TARGET is not 
 			// numeric, but an explicit port is provided, the client SHOULD use 
 			// UDP for a SIP URI, and TCP for a SIPS URI.
-			hopTransport = getDefaultTransportForScheme(uri);
+			hopTransport = getDefaultTransportForScheme(uri.getScheme(), isSecure);
 		} else {
 			LOGGER.debug("No transport parameter or port was specified.");
 			// 4.1 Para 4
@@ -209,7 +217,7 @@ public class Locator {
 			// query for the domain in the URI.
 			LOGGER.debug("Looking up NAPTR records for " + domain);
 			final List<PointerRecord> pointers = resolver.lookupPointerRecords(domain);
-			discardInvalidPointers(pointers, uri.isSecure());
+			discardInvalidPointers(pointers, isSecure);
 			
 			if (pointers.size() > 0) {
 				LOGGER.debug("Found " + pointers.size() + " NAPTR record(s)");
@@ -242,7 +250,7 @@ public class Locator {
 				// Queries are done using the service identifier "_sip" for SIP URIs and
 				// "_sips" for SIPS URIs.  A particular transport is supported if the
 				// query is successful.
-				final List<String> filteredTransports = filterTransports(uri.isSecure());
+				final List<String> filteredTransports = filterTransports(isSecure);
 				for (String prefTransport : filteredTransports) {
 					String serviceId = getServiceIdentifier(prefTransport, domain);
 					LOGGER.debug("Looking up SRV records for " + serviceId);
@@ -266,7 +274,7 @@ public class Locator {
 				//
 				// If no SRV records are found, the client SHOULD use TCP for a SIPS
 				// URI, and UDP for a SIP URI.
-				if (uri.isSecure()) {
+				if (isSecure) {
 					hopTransport = upgradeTransport("TCP");
 				} else {
 					hopTransport = "UDP";
@@ -277,7 +285,7 @@ public class Locator {
 		LOGGER.debug("Transport selected for " + uri + ": " + hopTransport);
 		LOGGER.debug("Determining IP address and port for " + uri);
 		
-		if (uri.getPort() != -1) {
+		if (port != -1) {
 			LOGGER.debug("Port is present in the URI");
 			// 4.2 Para 3
 			//
@@ -286,7 +294,7 @@ public class Locator {
 			// name.  The result will be a list of IP addresses, each of which can
 			// be contacted at the specific port from the URI and transport protocol
 			// determined previously.
-			hops.add(new HopImpl(domain, uri.getPort(), hopTransport));
+			hops.add(new HopImpl(domain, port, hopTransport));
 		} else {
 			LOGGER.debug("No port is present in the URI");
 			// 4.2 Para 4
@@ -298,7 +306,7 @@ public class Locator {
 			if (hops.size() > 0) {
 				LOGGER.debug("SRV records found during transport selection");
 				// Nothing to do here: hops were created earlier.
-			} else if (uri.getTransportParam() != null) {
+			} else if (transportParam != null) {
 				LOGGER.debug("Transport parameter was specified");
 				// 4.2 Para 4
 				//
