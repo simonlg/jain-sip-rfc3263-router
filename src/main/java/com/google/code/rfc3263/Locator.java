@@ -294,7 +294,7 @@ public class Locator {
 			// name.  The result will be a list of IP addresses, each of which can
 			// be contacted at the specific port from the URI and transport protocol
 			// determined previously.
-			hops.add(new HopImpl(domain, port, hopTransport));
+			hops.add(new HopImpl(domain + ".", port, hopTransport));
 		} else {
 			LOGGER.debug("No port is present in the URI");
 			// 4.2 Para 4
@@ -323,7 +323,7 @@ public class Locator {
 					LOGGER.debug("Found " + services.size() + " SRV records");
 					List<ServiceRecord> sortedServices = sortServiceRecords(services);
 					for (ServiceRecord service : sortedServices) {
-						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+						hops.add(new HopImpl(service.getTarget() + ".", service.getPort(), hopTransport));
 					}
 				} else {
 					LOGGER.debug("No valid SRV records for " + serviceId);
@@ -334,7 +334,7 @@ public class Locator {
 					// addresses, each of which can be contacted using the transport
 					// protocol determined previously, at the default port for that
 					// transport.
-					hops.add(new HopImpl(domain, getDefaultPortForTransport(hopTransport), hopTransport));
+					hops.add(new HopImpl(domain + ".", getDefaultPortForTransport(hopTransport), hopTransport));
 				}
 			} else {
 				// 4.2 Para 5
@@ -344,7 +344,7 @@ public class Locator {
 				// addresses, each of which can be contacted using the transport
 				// protocol determined previously, at the default port for that
 				// transport.
-				hops.add(new HopImpl(domain, getDefaultPortForTransport(hopTransport), hopTransport));
+				hops.add(new HopImpl(domain + ".", getDefaultPortForTransport(hopTransport), hopTransport));
 			}
 		}
 		
