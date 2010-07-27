@@ -26,3 +26,5 @@ If the URI has a port, use it.
   * If the target is numeric, use that
   * If the target is not numeric, and a port is present, do an A/AAAA lookup for the host
   * If the target is not numeric, and not port is present, do NAPTR / SRV / A
+    * If no NAPTR, do SRV alone
+    * If no SRV, do A
