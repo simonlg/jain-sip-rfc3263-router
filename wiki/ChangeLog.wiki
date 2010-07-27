@@ -6,8 +6,8 @@
 
 === Issues Fixed ===
 
-  * Fixed Issue 6
-  * Fixed Issue 7
+  * Issue 6
+  * Issue 7
 
 == 1.0.2 ==
 
