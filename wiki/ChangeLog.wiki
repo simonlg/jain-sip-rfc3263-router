@@ -4,6 +4,8 @@
 
 == 1.0.3 ==
 
+This is a bug-fix release.
+
 === Issues Fixed ===
 
   * Issue 6
@@ -11,7 +13,7 @@
 
 == 1.0.2 ==
 
-1.0.2 is a bug-fix and feature release.
+This is a bug-fix and feature release.
 
 === Issues Fixed ===
 
