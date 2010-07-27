@@ -2,15 +2,18 @@
 
 <wiki:toc/>
 
+== 1.0.3 ==
+
+  * Fixed Issue 6
+  * Fixed Issue 7
+
 == 1.0.2 ==
 
 1.0.2 is a bug-fix and feature release.
 
-=== Issues Addressed ==
-
-  * Issue 1
-  * Issue 2
-  * Issue 3
+  * Fixed Issue 1
+  * Fixed Issue 2
+  * Fixed Issue 3
 
 == 1.0.1 ==
 
