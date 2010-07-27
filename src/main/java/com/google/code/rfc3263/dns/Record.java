@@ -1,5 +1,8 @@
 package com.google.code.rfc3263.dns;
 
+/**
+ * Representation of an abstract DNS record.
+ */
 public abstract class Record {
 	private final String name;
 	

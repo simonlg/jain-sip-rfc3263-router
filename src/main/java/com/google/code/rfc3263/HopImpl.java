@@ -13,14 +13,23 @@ class HopImpl implements Hop {
 		this.transport= transport;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getHost() {
 		return host;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getPort() {
 		return port;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getTransport() {
 		return transport;
 	}

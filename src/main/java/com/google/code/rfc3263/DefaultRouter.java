@@ -6,22 +6,19 @@ import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
-import javax.sip.PeerUnavailableException;
 import javax.sip.SipException;
-import javax.sip.SipFactory;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
 import javax.sip.address.Hop;
 import javax.sip.address.Router;
 import javax.sip.address.SipURI;
 import javax.sip.address.URI;
-import javax.sip.header.HeaderFactory;
-import javax.sip.header.ViaHeader;
+import javax.sip.header.RouteHeader;
 import javax.sip.message.Request;
 
 import org.apache.log4j.Logger;
@@ -30,19 +27,42 @@ import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.Resolver;
 
 /**
- * TODO: Check MTU
+ * JAIN-SIP router implementation that uses the procedures laid out in RFC 3261
+ * and RFC 3265 to locate the hop to which a given request should be routed.
+ * 
+ * @see <a href="http://www.ietf.org/rfc/rfc3261.txt">RFC 3261</a>
+ * @see <a href="http://www.ietf.org/rfc/rfc3263.txt">RFC 3263</a>
  */
 public class DefaultRouter implements Router {
 	private static final Logger LOGGER = Logger.getLogger(DefaultRouter.class);
 	private final Resolver resolver;
 	private final SipStack sipStack;
+	private final Hop outboundProxy;
 
+	/**
+	 * Creates a new instance of this class.
+	 * 
+	 * @param sipStack the SipStack to use.
+	 * @param outboundProxy the outbound proxy specified by the user.
+	 */
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
 		LOGGER.debug("Router instantiated for " + sipStack);
 		this.sipStack = sipStack;
 		this.resolver = new DefaultResolver();
+		if (outboundProxy == null) {
+			this.outboundProxy = null;
+		} else {
+			try {
+				this.outboundProxy = HopParser.parseHop(outboundProxy);
+			} catch (ParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Hop getNextHop(Request request) throws SipException {
 		LOGGER.debug("Attempting to route the following request \n\n" + request);
 		final SipURI destination;
@@ -69,7 +89,7 @@ public class DefaultRouter implements Router {
 		}
 		final SipURI requestSipUri = (SipURI) requestUri;
 		
-		final ListIterator<?> routes = request.getHeaders("Route");
+		final ListIterator<?> routes = request.getHeaders(RouteHeader.NAME);
 		if (routes.hasNext()) {
 			LOGGER.debug("Route set found");
 			// We have a Route set.  Get the top route.
@@ -96,6 +116,9 @@ public class DefaultRouter implements Router {
 				// value in the request
 				destination = routeSipUri;
 			}
+		} else if (outboundProxy != null) {
+			LOGGER.debug("Outbound proxy has been defined, returning proxy hop.");
+			return outboundProxy;
 		} else {
 			LOGGER.debug("No route set found.  Using Request-URI for input");
 			// RFC 3261 Section 8.1.2 Para 1 (Cont)
@@ -115,38 +138,31 @@ public class DefaultRouter implements Router {
 		}
 		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
-			Hop hop = locator.locate(destination);
-			
-			if (hop != null) {
-				ViaHeader via = toVia(hop);
-				LOGGER.debug(destination + ": Adding header " + via);
-				request.addHeader(via);
-			}
-			
-			return hop;
+			return locator.locate(destination).iterator().next();
 		} catch (IllegalArgumentException e) {
 			throw new SipException("Rethrowing", e);
 		} catch (UnknownHostException e) {
 			throw new SipException("Rethrowing", e);
-		} catch (ParseException e) {
-			throw new SipException("Rethrowing", e);
-		} catch (InvalidArgumentException e) {
-			throw new SipException("Rethrowing", e);
 		}
 	}
-	
-	private ViaHeader toVia(Hop hop) throws PeerUnavailableException, ParseException, InvalidArgumentException {
-		SipFactory factory = SipFactory.getInstance();
-		HeaderFactory headerFactory = factory.createHeaderFactory();
-		return headerFactory.createViaHeader(hop.getHost(), hop.getPort(), hop.getTransport(), null);
-	}
 
+	/**
+	 * This method is deprecated, so this method returns the bare
+	 * minimum, which is an empty iterator. 
+	 * 
+	 * @param request the request to retrieve the next hops for.
+	 * @return an empty ListIterator.
+	 */
+	@Deprecated
 	public ListIterator<?> getNextHops(Request request) {
-		throw new UnsupportedOperationException();
+		return new LinkedList<Hop>().listIterator();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Hop getOutboundProxy() {
-		return null;
+		return outboundProxy;
 	}
 
 	protected List<String> getSupportedTransports() {

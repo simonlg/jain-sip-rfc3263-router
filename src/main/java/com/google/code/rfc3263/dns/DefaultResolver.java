@@ -1,10 +1,10 @@
 package com.google.code.rfc3263.dns;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
@@ -15,9 +15,15 @@ import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
+/**
+ * This class is the default DNS resolver.  It uses dnsjava.
+ */
 public class DefaultResolver implements Resolver {
-	public SortedSet<PointerRecord> lookupPointerRecords(String domain) {
-		final SortedSet<PointerRecord> pointers = new TreeSet<PointerRecord>();
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<PointerRecord> lookupPointerRecords(String domain) {
+		final List<PointerRecord> pointers = new ArrayList<PointerRecord>();
 		
 		final Record[] records;
 		try {
@@ -46,8 +52,11 @@ public class DefaultResolver implements Resolver {
 		return pointers;
 	}
 
-	public SortedSet<ServiceRecord> lookupServiceRecords(String domain) {
-		final SortedSet<ServiceRecord> services = new TreeSet<ServiceRecord>();
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<ServiceRecord> lookupServiceRecords(String domain) {
+		final List<ServiceRecord> services = new ArrayList<ServiceRecord>();
 		
 		final Record[] records;
 		try {
@@ -74,6 +83,9 @@ public class DefaultResolver implements Resolver {
 		return services;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Set<AddressRecord> lookupAddressRecords(String domain) {
 		final Set<AddressRecord> addresses = new HashSet<AddressRecord>();
 		
