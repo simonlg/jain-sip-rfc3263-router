@@ -1,0 +1,21 @@
+#summary One-sentence summary of this page.
+
+== Transport ==
+
+  * If the transport param is specified, use that
+  * If the target is numeric, use UDP for SIP and TCP for SIPS
+  * If the target is not numeric AND has a port, use UDP for SIP and TCP for SIPS
+  * If the target is not numeric AND has no port: do NAPTR / SRV for the domain in the URI or maddr
+
+== Port ==
+
+  * If target is numeric and has a port, use that port
+  * If target is numeric and has no port, use the default port
+  * If the target is not numeric, and has a port, use that port
+  * If the target is not numeric, and doesn't have a port, do NAPTR / SRV
+    * If not NAPTR / SRV, use the default port for transport
+
+Therefore, if the URI has a port, use it.
+
+== Host ==
+
