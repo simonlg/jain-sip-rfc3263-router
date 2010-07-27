@@ -1,7 +1,7 @@
 #summary List of behaviours the locator should have
 
-Given that the URI has a maddr parameter
-Then the target is the value of maddr
+  * Given that the URI has a maddr parameter
+  * Then the target is the value of maddr
 
-Given that the URI does not have a maddr parameter
-Then the target is the value of the URI host part
+  * Given that the URI does not have a maddr parameter
+  * Then the target is the value of the URI host part
