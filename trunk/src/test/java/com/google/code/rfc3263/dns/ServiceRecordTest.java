@@ -6,9 +6,20 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.theories.DataPoint;
 
+import com.google.code.rfc3263.ObjectTest;
 
-public class ServiceRecordTest {
+public class ServiceRecordTest extends ObjectTest {
+	@DataPoint
+	public static ServiceRecord a = new ServiceRecord("_sip._tcp.example.org.", 2, 1, 5060, "a.sip.example.org.");
+	@DataPoint
+	public static ServiceRecord b = new ServiceRecord("_sip._tcp.example.org.", 1, 1, 5060, "b.sip.example.org.");
+	@DataPoint
+	public static ServiceRecord c = new ServiceRecord("_sip._tcp.example.org.", 1, 1, 5060, "c.sip.example.org.");
+	@DataPoint
+	public static ServiceRecord nullRecord = null;
+	
 	@Test
 	public void prioritySortingTest() {
 		List<ServiceRecord> services = new ArrayList<ServiceRecord>();
