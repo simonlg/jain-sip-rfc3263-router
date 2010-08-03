@@ -1,6 +1,14 @@
 #summary Changes
+#labels Featured
 
 <wiki:toc/>
+
+== Release 1.0.4 ==
+
+Released: 2010-08-03
+
+  * Bugs Fixed
+    * Issue 8
 
 == Release 1.0.3 ==
 
