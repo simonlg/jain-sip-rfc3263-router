@@ -47,6 +47,7 @@ else
 
 == Selecting a Host ==
 
+{{{
 if (target is numeric)
     host = target
 else
@@ -69,9 +70,11 @@ else
                     host = address from SRV / A record
                 else
                     host = address from A record
+}}}
 
 == Selecting a Port ==
 
+{{{
 if (target is numeric)
     if (uri has port)
         port = uri.port
@@ -97,3 +100,4 @@ else
                     port = port from SRV
                 else
                     port = default for transport
+}}}
