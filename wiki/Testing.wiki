@@ -9,10 +9,12 @@ This page contains details of the testing requirements for this project
 
 == Test Requirements from RFC 3263 (Locating SIP Servers) ==
 
+4. Client Usage
+
 == Test Requirements from RFC 2782 (DNS SRV) ==
 
 Usage rules
 
 == Test Requirements from RFC 2915 (DNS NAPTR) ==
 
-The Basic NAPTR Algorithm
+4. The Basic NAPTR Algorithm
