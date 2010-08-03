@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.PointerRecord;
+import com.google.code.rfc3263.dns.PointerRecordSelector;
 import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 import com.google.code.rfc3263.dns.ServiceRecordSelector;
@@ -321,6 +322,7 @@ public class Locator {
 				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 				if (isValid(services)) {
 					LOGGER.debug("Found " + services.size() + " SRV records");
+					LOGGER.debug(services);
 					List<ServiceRecord> sortedServices = sortServiceRecords(services);
 					for (ServiceRecord service : sortedServices) {
 						hops.add(new HopImpl(service.getTarget() + ".", service.getPort(), hopTransport));
@@ -353,7 +355,8 @@ public class Locator {
 
 	private PointerRecord selectPointerRecord(List<PointerRecord> pointers) {
 		LOGGER.debug("Selecting pointer record from record set");
-		return pointers.get(0);
+		PointerRecordSelector selector = new PointerRecordSelector(pointers);
+		return selector.select().get(0);
 	}
 	
 	private Queue<Hop> resolveHops(Queue<Hop> hops) {
