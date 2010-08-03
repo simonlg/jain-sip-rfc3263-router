@@ -24,8 +24,8 @@ Usage rules
 
   * Ordering by order field
   * Ordering by preference field
-  * Flags: not supported
-  * Regexp: not supported
+  * Flags: MUST be "s"
+  * Regexp: MUST be empty.
 
 The resource record will contain an empty regular expression and a replacement value, which is the SRV record for that particular transport protocol.
 
