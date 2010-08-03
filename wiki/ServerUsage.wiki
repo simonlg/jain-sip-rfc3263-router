@@ -1,0 +1,26 @@
+#summary One-sentence summary of this page.
+
+This page provides advice for how to route a response using RFC 3263 when using the guidelines contained in RFC 3261 fail.
+
+{{{
+ListIterator<?> iter = response.getHeaders(ViaHeader.NAME);
+ViaHeader via = (ViaHeader) iter.next();
+
+// What is the format for this parameter?
+String sentBy = via.getParameter("sent-by");
+String sentByHost = ...;
+int sentByPort = ...;
+String transport = via.getTransport();
+if (isNumeric(sentByHost)) {
+    Hop hop = new HopImpl(sentByHost, sentByPort, transport);
+} else {
+   if (sentByPort != -1) {
+       Set<AddressRecord> addresses = resolve.lookupAddressRecords(sentByHost);
+       for (AddressRecord address : addresses) {
+           Hop hop = new HopImpl(address.getAddress(), sentByPort, transport);
+       }
+   } else {
+       // do SRV lookup
+   }
+}
+}}}
