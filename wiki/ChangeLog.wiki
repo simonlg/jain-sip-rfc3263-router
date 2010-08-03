@@ -7,45 +7,46 @@
 
 Released: 2010-08-03 
 
-[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.4.jar Download]
 
   * Bugs Fixed
     * Issue 8
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.4.jar Download]
 
 == Release 1.0.3 ==
 
 Released: 2010-07-26 
 
-[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.3.jar Download]
-
   * Bugs Fixed
     * Issue 6
     * Issue 7
 
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.3.jar Download]
+
 == Release 1.0.2 ==
 
 Released: 2010-07-15 
-
-[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.2.jar Download]
 
   * Bugs Fixed
     * Issue 1
     * Issue 2
     * Issue 3
 
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.2.jar Download]
+
 == Release 1.0.1 ==
 
 Released: 2010-07-14 
 
-[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.1.jar Download]
-
   * Features
     * Added Logging
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.1.jar Download]
 
 == Release 1.0 ==
 
 Released: 2010-07-13.  
 
-[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.jar Download]
-
 This is the initial release.
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.jar Download]
