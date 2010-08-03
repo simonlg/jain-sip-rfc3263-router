@@ -21,3 +21,12 @@ Usage rules
 == Test Requirements from RFC 2915 (DNS NAPTR) ==
 
 4. The Basic NAPTR Algorithm
+
+  * Ordering by order field
+  * Ordering by preference field
+  * Flags: not supported
+  * Regexp: not supported
+
+The resource record will contain an empty regular expression and a replacement value, which is the SRV record for that particular transport protocol.
+
+SRV record means flags must be "s".
