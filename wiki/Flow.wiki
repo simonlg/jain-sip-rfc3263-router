@@ -1,0 +1,18 @@
+#summary One-sentence summary of this page.
+
+== Selecting a Target ==
+
+{{{
+if (uri has maddr parameter)
+    target = maddr parameter
+else
+    target = uri.host-part
+}}}
+
+== Selecting a Transport ==
+
+{{{
+if (uri has transport parameter)
+    transport =  uri.transport
+else
+}}}
