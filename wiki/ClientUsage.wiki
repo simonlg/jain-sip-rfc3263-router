@@ -1,4 +1,5 @@
 #summary How to use this project
+#labels Featured
 
 The jain-sip-rfc3263-router library can be used in two ways: by specifying the !DefaultRouter as the router to be used by JAIN-SIP, or by using the vendor's Router and manually using the location service to add a route set.
 
