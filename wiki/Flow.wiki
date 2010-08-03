@@ -15,4 +15,32 @@ else
 if (uri has transport parameter)
     transport =  uri.transport
 else
+    if (target is numeric)
+        if (uri is secure)
+            transport = TLS
+        else
+            transport = UDP
+    else
+        if (uri has port)
+            if (uri is secure)
+                transport = TLS
+            else
+                transport = UDP
+        else
+            if (naptr records exist for target)
+                if (srv records exist for naptr record)
+                    transport = srv.transport
+                else
+                    if (uri is secure)
+                        transport = TLS
+                    else
+                        transport = UDP
+            else
+                if (srv records exist for target)
+                    transport = srv.transport
+                else
+                    if (uri is secure)
+                        transport = TLS
+                    else
+                        transport = UDP
 }}}
