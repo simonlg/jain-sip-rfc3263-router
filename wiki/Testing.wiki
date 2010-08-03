@@ -5,4 +5,10 @@ This page contains details of the testing requirements for this project
 
 == Test Requirements from RFC 3261 (SIP) ==
 
+3261 tests only the behaviour of the javax.sip.address.Router.
+
 == Test Requirements from RFC 3263 (Locating SIP Servers) ==
+
+== Test Requirements from RFC 2782 (DNS SRV) ==
+
+== Test Requirements from RFC 2915 (DNS NAPTR) ==
