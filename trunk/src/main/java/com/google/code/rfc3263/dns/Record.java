@@ -6,19 +6,35 @@ package com.google.code.rfc3263.dns;
 public abstract class Record {
 	private final String name;
 	
-	public Record(String name) {
+	/**
+	 * Creates a new instance of this class with the given record name.
+	 * 
+	 * @param name the name of the node to which this record pertains.
+	 */
+	protected Record(String name) {
 		this.name = name;
 	}
 	
+	/**
+	 * Returns the name of the node to which this record pertains.
+	 * 
+	 * @return the name of the node.
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return name;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -27,6 +43,9 @@ public abstract class Record {
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

@@ -11,6 +11,15 @@ public final class ServiceRecord extends Record {
 	private final int port;
 	private final String target;
 	
+	/**
+	 * Creates a new instance of this class.
+	 * 
+	 * @param name the name of the node to which this record pertains.
+	 * @param priority
+	 * @param weight
+	 * @param port
+	 * @param target
+	 */
 	public ServiceRecord(String name, int priority, int weight, int port, String target) {
 		super(name);
 		this.priority = priority;
@@ -39,7 +48,6 @@ public final class ServiceRecord extends Record {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append('[');
 		sb.append(super.toString());
 		sb.append(' ');
 		sb.append("IN SRV ");
@@ -50,7 +58,6 @@ public final class ServiceRecord extends Record {
 		sb.append(port);
 		sb.append(' ');
 		sb.append(target);
-		sb.append(']');
 		
 		return sb.toString();
 	}

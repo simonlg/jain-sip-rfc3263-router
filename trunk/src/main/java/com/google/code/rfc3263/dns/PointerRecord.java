@@ -13,6 +13,17 @@ public final class PointerRecord extends Record {
 	private final String regexp;
 	private final String replacement;
 	
+	/**
+	 * Creates a new instance of this record.
+	 * 
+	 * @param name the name of the node to which this record pertains.
+	 * @param order
+	 * @param preference
+	 * @param flags
+	 * @param service
+	 * @param regexp
+	 * @param replacement
+	 */
 	public PointerRecord(String name, int order, int preference, String flags, String service, String regexp, String replacement) {
 		super(name);
 		this.order = order;
@@ -22,7 +33,7 @@ public final class PointerRecord extends Record {
 		this.regexp = regexp;
 		this.replacement = replacement;
 	}
-	
+
 	public int getOrder() {
 		return order;
 	}
@@ -114,7 +125,6 @@ public final class PointerRecord extends Record {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append('[');
 		sb.append(super.toString());
 		sb.append(' ');
 		sb.append("IN NAPTR ");
@@ -135,7 +145,6 @@ public final class PointerRecord extends Record {
 		sb.append('"');
 		sb.append(' ');
 		sb.append(replacement);
-		sb.append(']');
 		
 		return sb.toString();
 	}
