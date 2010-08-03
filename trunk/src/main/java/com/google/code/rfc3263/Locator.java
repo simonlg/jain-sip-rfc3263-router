@@ -185,7 +185,7 @@ public class Locator {
 		final boolean isSecure = uri.isSecure();
 		final int port = uri.getPort();
 		
-		String domain = getTarget(uri);
+		String domain = getTarget(uri) + ".";
 		String hopTransport = null;
 		
 		LOGGER.debug("Selecting transport for " + uri);
@@ -270,7 +270,7 @@ public class Locator {
 			}
 			
 			if (hops.size() == 0) {
-				LOGGER.debug("No SRV records found  " + domain);
+				LOGGER.debug("No SRV records found for " + domain);
 				// 4.1 Para 13
 				//
 				// If no SRV records are found, the client SHOULD use TCP for a SIPS
@@ -295,7 +295,7 @@ public class Locator {
 			// name.  The result will be a list of IP addresses, each of which can
 			// be contacted at the specific port from the URI and transport protocol
 			// determined previously.
-			hops.add(new HopImpl(domain + ".", port, hopTransport));
+			hops.add(new HopImpl(domain, port, hopTransport));
 		} else {
 			LOGGER.debug("No port is present in the URI");
 			// 4.2 Para 4
@@ -325,7 +325,7 @@ public class Locator {
 					LOGGER.debug(services);
 					List<ServiceRecord> sortedServices = sortServiceRecords(services);
 					for (ServiceRecord service : sortedServices) {
-						hops.add(new HopImpl(service.getTarget() + ".", service.getPort(), hopTransport));
+						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
 					}
 				} else {
 					LOGGER.debug("No valid SRV records for " + serviceId);
@@ -336,7 +336,7 @@ public class Locator {
 					// addresses, each of which can be contacted using the transport
 					// protocol determined previously, at the default port for that
 					// transport.
-					hops.add(new HopImpl(domain + ".", getDefaultPortForTransport(hopTransport), hopTransport));
+					hops.add(new HopImpl(domain, getDefaultPortForTransport(hopTransport), hopTransport));
 				}
 			} else {
 				// 4.2 Para 5
@@ -346,7 +346,7 @@ public class Locator {
 				// addresses, each of which can be contacted using the transport
 				// protocol determined previously, at the default port for that
 				// transport.
-				hops.add(new HopImpl(domain + ".", getDefaultPortForTransport(hopTransport), hopTransport));
+				hops.add(new HopImpl(domain, getDefaultPortForTransport(hopTransport), hopTransport));
 			}
 		}
 		
@@ -574,8 +574,8 @@ public class Locator {
 		}
 	}
 	
-	private String getServiceIdentifier(String transport, String host) {
-		LOGGER.debug("Determining service identifier for " + host + "/" + transport);
+	private String getServiceIdentifier(String transport, String domain) {
+		LOGGER.debug("Determining service identifier for " + domain + "/" + transport);
 		StringBuilder sb = new StringBuilder();
 		
 		if (transport.endsWith("TLS")) {
@@ -587,8 +587,7 @@ public class Locator {
 		sb.append("_");
 		sb.append(transport.toLowerCase());
 		sb.append(".");
-		sb.append(host);
-		sb.append(".");
+		sb.append(domain);
 		
 		final String serviceId = sb.toString();
 		LOGGER.debug("Service identifier is " + serviceId);
