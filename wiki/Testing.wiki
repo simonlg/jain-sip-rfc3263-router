@@ -11,6 +11,9 @@ This page contains details of the testing requirements for this project
 
 4. Client Usage
 
+  * Support for stateless proxies is absent, as Locator orders records according to 2782.
+  * Router does not support Server Usage
+
 == Test Requirements from RFC 2782 (DNS SRV) ==
 
 Usage rules
