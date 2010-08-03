@@ -15,6 +15,7 @@ if (isNumeric(sentByHost)) {
     Hop hop = new HopImpl(sentByHost, sentByPort, transport);
 } else {
    if (sentByPort != -1) {
+       // do A or AAAA lookup
        Set<AddressRecord> addresses = resolve.lookupAddressRecords(sentByHost);
        for (AddressRecord address : addresses) {
            Hop hop = new HopImpl(address.getAddress(), sentByPort, transport);
