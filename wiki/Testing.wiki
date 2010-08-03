@@ -14,3 +14,5 @@ This page contains details of the testing requirements for this project
 Usage rules
 
 == Test Requirements from RFC 2915 (DNS NAPTR) ==
+
+The Basic NAPTR Algorithm
