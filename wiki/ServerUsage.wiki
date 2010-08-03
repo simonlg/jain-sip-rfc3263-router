@@ -11,6 +11,7 @@ String sentBy = via.getParameter("sent-by");
 String sentByHost = ...;
 int sentByPort = ...;
 String transport = via.getTransport();
+
 if (isNumeric(sentByHost)) {
     Hop hop = new HopImpl(sentByHost, sentByPort, transport);
 } else {
