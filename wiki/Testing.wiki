@@ -11,4 +11,6 @@ This page contains details of the testing requirements for this project
 
 == Test Requirements from RFC 2782 (DNS SRV) ==
 
+Usage rules
+
 == Test Requirements from RFC 2915 (DNS NAPTR) ==
