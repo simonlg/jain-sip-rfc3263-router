@@ -1,9 +1,11 @@
 package com.google.code.rfc3263.dns;
 
 /**
- * See http://www.ietf.org/rfc/rfc2915.txt
+ * This is the representation of a RFC 2915 NAPTR DNS record.
+ * 
+ * @see <a href="http://www.ietf.org/rfc/rfc2915.txt">RFC 2915</a>
  */
-public final class PointerRecord extends Record implements Comparable<PointerRecord> {
+public final class PointerRecord extends Record {
 	private final int order;
 	private final int preference;
 	private final String flags;
@@ -11,6 +13,17 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 	private final String regexp;
 	private final String replacement;
 	
+	/**
+	 * Creates a new instance of this record.
+	 * 
+	 * @param name the name of the node to which this record pertains.
+	 * @param order
+	 * @param preference
+	 * @param flags
+	 * @param service
+	 * @param regexp
+	 * @param replacement
+	 */
 	public PointerRecord(String name, int order, int preference, String flags, String service, String regexp, String replacement) {
 		super(name);
 		this.order = order;
@@ -20,7 +33,7 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 		this.regexp = regexp;
 		this.replacement = replacement;
 	}
-	
+
 	public int getOrder() {
 		return order;
 	}
@@ -43,21 +56,6 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 	
 	public String getReplacement() {
 		return replacement;
-	}
-
-	public int compareTo(PointerRecord o) {
-		if (order > o.order) {
-			return 1;
-		} else if (order < o.order) {
-			return -1;
-		} else {
-			if (preference > o.preference) {
-				return 1;
-			} else if (preference < o.preference) {
-				return -1;
-			}
-			return replacement.compareTo(o.replacement);
-		}
 	}
 	
 	@Override
@@ -127,7 +125,6 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append('[');
 		sb.append(super.toString());
 		sb.append(' ');
 		sb.append("IN NAPTR ");
@@ -148,7 +145,6 @@ public final class PointerRecord extends Record implements Comparable<PointerRec
 		sb.append('"');
 		sb.append(' ');
 		sb.append(replacement);
-		sb.append(']');
 		
 		return sb.toString();
 	}

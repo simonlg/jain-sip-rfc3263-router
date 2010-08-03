@@ -35,6 +35,11 @@ public abstract class AbstractResolverTest {
 		this.resolver = resolver;
 	}
 	
+	@BeforeClass
+	public static void configureLogging() {
+		BasicConfigurator.configure();
+	}
+	
 	@Before
 	public void setUp() throws Exception {
 		SipFactory factory = SipFactory.getInstance();
@@ -43,7 +48,7 @@ public abstract class AbstractResolverTest {
 	}
 	
 	private void test(Hop expected, SipURI uri) throws UnknownHostException {
-		Assert.assertEquals(expected, locator.locate(uri));
+		Assert.assertEquals(expected, locator.locate(uri).poll());
 	}
 	
 	private SipURI getNumericURI() throws ParseException {
