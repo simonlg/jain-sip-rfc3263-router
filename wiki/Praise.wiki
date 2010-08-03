@@ -1,7 +1,0 @@
-#summary Positive feedback about this project
-
-On announcement of the availability of this project:
-
- "Excellent! ... it is nice to have a stand alone, nicely packaged implementation. It is a valuable contribution."
-
- -- M. Ranganathan (NIST) - JAIN-SIP Implementation Lead on [https://jain-sip.dev.java.net/servlets/ReadMsg?list=users&msgNo=1886 JAIN-SIP Users Mailing List]
