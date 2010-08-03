@@ -44,3 +44,56 @@ else
                     else
                         transport = UDP
 }}}
+
+== Selecting a Host ==
+
+if (target is numeric)
+    host = target
+else
+    if (uri has port)
+        host = address from A record
+    else
+        if (uri has transport)
+            if (srv records exist for target)
+                host = address from SRV / A record
+            else
+                host = address from A record
+        else
+            if (naptr records exist for target)
+                if (srv records exist for naptr record)
+                    host = address from SRV / A record
+                else
+                    host = address from A record
+            else
+                if (srv records exist for target)
+                    host = address from SRV / A record
+                else
+                    host = address from A record
+
+== Selecting a Port ==
+
+if (target is numeric)
+    if (uri has port)
+        port = uri.port
+    else
+        port = default for transport
+else
+    if (uri has port)
+        port = uri.port
+    else
+        if (uri has transport)
+            if (srv records exist for target)
+                port = port from SRV
+            else
+                port = default for transport
+        else
+            if (naptr records exist for target)
+                if (srv records exist for naptr record)
+                    port = port from SRV
+                else
+                    port = default for transport
+            else
+                if (srv records exist for target)
+                    port = port from SRV
+                else
+                    port = default for transport
