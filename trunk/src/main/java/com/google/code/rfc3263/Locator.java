@@ -178,7 +178,7 @@ public class Locator {
 		}
 	}
 
-	protected Queue<Hop> locateNonNumeric(SipURI uri) throws UnknownHostException {
+	protected Queue<Hop> locateNonNumeric(SipURI uri) {
 		final Queue<Hop> hops = new LinkedList<Hop>();
 		
 		final String transportParam = uri.getTransportParam();
@@ -455,7 +455,7 @@ public class Locator {
 	 * @return the hop queue.
 	 * @throws UnknownHostException if the URI host is invalid.
 	 */
-	public Queue<Hop> locate(SipURI uri) throws UnknownHostException {
+	public Queue<Hop> locate(SipURI uri) {
 		LOGGER.debug("Locating SIP server for " + uri);
 		final String target = getTarget(uri);
 
@@ -519,7 +519,11 @@ public class Locator {
 		if (services.size() == 0) {
 			return false;
 		} else if (services.size() == 1) {
-			ServiceRecord service = services.iterator().next();
+			// RFC 2782, Section "The format of the SRV RR"
+			//
+			// A target of "." means that the service is decidedly not
+	        // available at this domain.
+			final ServiceRecord service = services.iterator().next();
 			if (service.getTarget().equals(".")) {
 				return false;
 			} else {
@@ -531,6 +535,16 @@ public class Locator {
 	}
 	
 	protected boolean isValid(PointerRecord pointer) {
+		// RFC 3263, Section 4.1
+		//
+		// The resource record will contain an empty regular expression and a 
+		// replacement value, which is the SRV record for that particular transport 
+		// protocol.
+		//
+		// RFC 2915, Section 4
+		//
+		// The "S" flag means that the next lookup should be for SRV records.
+		
 		return pointer.getRegexp().isEmpty() && pointer.getFlags().equalsIgnoreCase("s"); 
 	}
 	
