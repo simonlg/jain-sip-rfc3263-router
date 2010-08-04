@@ -2,7 +2,6 @@ package com.google.code.rfc3263;
 
 import gov.nist.javax.sip.header.Route;
 
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -140,8 +139,6 @@ public class DefaultRouter implements Router {
 		try {
 			return locator.locate(destination).iterator().next();
 		} catch (IllegalArgumentException e) {
-			throw new SipException("Rethrowing", e);
-		} catch (UnknownHostException e) {
 			throw new SipException("Rethrowing", e);
 		}
 	}
