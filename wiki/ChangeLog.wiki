@@ -3,19 +3,20 @@
 
 <wiki:toc/>
 
-== Release 1.0.5 (SVN r201) ==
+== Release 1.0.5 ==
 
 Released: 2010-08-10
-
+Tag Revision: r201
 
   * Bugs Fixed
     * Issue 9
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.5.jar Download]
 
-== Release 1.0.4 (SVN r163)==
+== Release 1.0.4 ==
 
-Released: 2010-08-03 
+Released: 2010-08-03
+Tag Revision: r163
 
 
   * Bugs Fixed
@@ -23,9 +24,10 @@ Released: 2010-08-03
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.4.jar Download]
 
-== Release 1.0.3 (SVN r137)==
+== Release 1.0.3 ==
 
 Released: 2010-07-26 
+Tag Revision: r137
 
   * Bugs Fixed
     * Issue 6
@@ -33,9 +35,10 @@ Released: 2010-07-26
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.3.jar Download]
 
-== Release 1.0.2 (SVN r123)==
+== Release 1.0.2 ==
 
-Released: 2010-07-15 
+Released: 2010-07-15
+Tag Revision: r123
 
   * Bugs Fixed
     * Issue 1
@@ -44,18 +47,20 @@ Released: 2010-07-15
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.2.jar Download]
 
-== Release 1.0.1 (SVN r65)==
+== Release 1.0.1 ==
 
 Released: 2010-07-14 
+Tag Revision: r65
 
   * Features
     * Added Logging
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.1.jar Download]
 
-== Release 1.0 (SVN r51)==
+== Release 1.0 ==
 
-Released: 2010-07-13.  
+Released: 2010-07-13.
+Tag Revision: r51
 
 This is the initial release.
 
