@@ -15,8 +15,9 @@ Tag Revision: r201
 
 == Release 1.0.4 ==
 
-  * Released: 2010-08-03
-  * Tag Revision: r163
+|| Released || 2010-08-03 ||
+|| Tag Revision: || r163 ||
+
   * Bugs Fixed
     * Issue 8
 
