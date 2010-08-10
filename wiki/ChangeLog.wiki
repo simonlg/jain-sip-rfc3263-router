@@ -3,7 +3,7 @@
 
 <wiki:toc/>
 
-== Release 1.0.5 ==
+== Release 1.0.5 (SVN r201) ==
 
 Released: 2010-08-10
 
@@ -13,7 +13,7 @@ Released: 2010-08-10
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.5.jar Download]
 
-== Release 1.0.4 ==
+== Release 1.0.4 (SVN r163)==
 
 Released: 2010-08-03 
 
@@ -23,7 +23,7 @@ Released: 2010-08-03
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.4.jar Download]
 
-== Release 1.0.3 ==
+== Release 1.0.3 (SVN r137)==
 
 Released: 2010-07-26 
 
@@ -33,7 +33,7 @@ Released: 2010-07-26
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.3.jar Download]
 
-== Release 1.0.2 ==
+== Release 1.0.2 (SVN r123)==
 
 Released: 2010-07-15 
 
@@ -44,7 +44,7 @@ Released: 2010-07-15
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.2.jar Download]
 
-== Release 1.0.1 ==
+== Release 1.0.1 (SVN r65)==
 
 Released: 2010-07-14 
 
@@ -53,7 +53,7 @@ Released: 2010-07-14
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.1.jar Download]
 
-== Release 1.0 ==
+== Release 1.0 (SVN r51)==
 
 Released: 2010-07-13.  
 
