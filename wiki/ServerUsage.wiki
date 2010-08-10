@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary How to use this project as a UAS
 
 This page provides advice for how to route a response using RFC 3263 when using the guidelines contained in RFC 3261 fail.
 
