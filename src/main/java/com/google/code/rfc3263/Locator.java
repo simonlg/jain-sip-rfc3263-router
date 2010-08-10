@@ -1,6 +1,5 @@
 package com.google.code.rfc3263;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
@@ -549,43 +550,64 @@ public class Locator {
 	}
 	
 	protected boolean isNumeric(String target) {
-		LOGGER.debug("Determining if " + target + " is numeric");
-		try {
-			// The contract of InetAddress.getByName states the following:
-			//
-			// "If a literal IP address is supplied, only the validity of
-			// the address format is checked."
-			final InetAddress addr = InetAddress.getByName(target);
+		LOGGER.debug("isNumeric? " + target);
+		boolean numeric = isIPv4Address(target) || isIPv6Reference(target);
+		LOGGER.debug("isNumeric? " + target + ": " + numeric);
+		
+		return numeric;
+	}
+	
+	private boolean isIPv4Address(String host) {
+		// RFC 2234, Section 6.1
+		//
+		// DIGIT          =  %x30-39
+		//
+		// RFC 3261, Section 25.1
+		//
+		// IPv4address    =  1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
+		String ipv4address = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+		
+		LOGGER.debug("isIPv4Address? " + host);
+		
+		final Pattern p = Pattern.compile(ipv4address);
+		final Matcher m = p.matcher(host);
+		boolean matches = m.matches();
+		
+		LOGGER.debug("isIPv4Address? " + host + ": " + matches);
+		
+		return matches;
+	}
+	
+	private boolean isIPv6Reference(String host) {
+		// RFC 2234, Section 6.1
+		//
+		// DIGIT          =  %x30-39
+		// HEXDIG         =  DIGIT / "A" / "B" / "C" / "D" / "E" / "F"
+		String hexdig = "[0-9A-F]";
 
-			// The contract of InetAddress.toString states the following:
-			//
-			// "The string returned is of the form: hostname / literal IP
-			// address. If the host name is unresolved, no reverse name
-			// service loopup is performed. The hostname part will be
-			// represented by an empty string."
-			final String[] parts = addr.toString().split("/");
-
-			// Therefore, since no lookup takes place on an IPv4 or IPv6
-			// address,
-			// the host part will ALWAYS be empty for numeric addresses.
-			if (parts[0].isEmpty()) {
-				// Empty, so an IP address was used.
-				LOGGER.debug(target + " is numeric");
-				return true;
-			}
-			// Non-empty, so a resolvable host name was provided.
-			LOGGER.debug(target + " is NOT numeric");
-			return false;
-		} catch (UnknownHostException e) {
-			// InetAddress.getByName throws this exception "if no IP address
-			// for the host could be found".
-			//
-			// InetAddress will only attempt resolution for host names, so
-			// the argument to this method MUST have been a host name for
-			// this exception to have been thrown.
-			LOGGER.debug(target + " is NOT numeric");
-			return false;
-		}
+		// RFC 3261, Section 25.1
+		//
+		// IPv4address    =  1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
+		String ipv4address = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
+		// hex4           =  1*4HEXDIG
+		String hex4 = hexdig + "{1,4}";
+		// hexseq         =  hex4 *( ":" hex4)
+		String hexseq = hex4 + "(:" + hex4 + ")*";
+		// hexpart        =  hexseq / hexseq "::" [ hexseq ] / "::" [ hexseq ]
+		String hexpart = "(" + hexseq + "|" + hexseq + "::(" + hexseq + ")?|::(" + hexseq + ")?)";
+		// IPv6address    =  hexpart [ ":" IPv4address ]
+		String ipv6address = hexpart + "(:" + ipv4address + ")?";
+		// IPv6reference  =  "[" IPv6address "]"
+		String ipv6reference = "\\[" + ipv6address + "\\]";
+		
+		LOGGER.debug("isIPv6Reference? " + host);
+		
+		final Pattern p = Pattern.compile(ipv6reference, Pattern.CASE_INSENSITIVE);
+		final Matcher m = p.matcher(host);
+		boolean matches = m.matches();
+		
+		LOGGER.debug("isIPv6Reference? " + host + ": " + matches); 
+		return matches;
 	}
 	
 	private String getServiceIdentifier(String transport, String domain) {
