@@ -7,9 +7,7 @@
 
 || *Release Date* || 2010-08-10 ||
 || *Tag Revision* || r201 ||
-
-  * Bugs Fixed
-    * Issue 9
+|| *Bugs Fixed* || Issue 9 ||
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.5.jar Download]
 
@@ -17,9 +15,7 @@
 
 || *Release Date* || 2010-08-03 ||
 || *Tag Revision* || r163 ||
-
-  * Bugs Fixed
-    * Issue 8
+|| *Bugs Fixed* || Issue 8 ||
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.4.jar Download]
 
@@ -27,10 +23,7 @@
 
 || *Release Date* || 2010-07-26 ||
 || *Tag Revision* || r137 ||
-
-  * Bugs Fixed
-    * Issue 6
-    * Issue 7
+|| *Bugs Fixed* || Issue 6, Issue 7 ||
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.3.jar Download]
 
@@ -38,11 +31,7 @@
 
 || *Release Date* || 2010-07-15 ||
 || *Tag Revision* || r123 ||
-
-  * Bugs Fixed
-    * Issue 1
-    * Issue 2
-    * Issue 3
+|| *Bugs Fixed* || Issue 1, Issue 2, Issue 3 ||
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.2.jar Download]
 
@@ -50,9 +39,9 @@
 
 || *Release Date* || 2010-07-14 ||
 || *Tag Revision* || r65 ||
+|| *Bugs Fixed* || None ||
 
-  * Features
-    * Added Logging
+Greatly improved logging.
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.1.jar Download]
 
@@ -60,6 +49,7 @@
 
 || *Release Date* || 2010-07-13 ||
 || *Tag Revision* || r51 ||
+|| *Bugs Fixed* || None ||
 
 This is the initial release.
 
