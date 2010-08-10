@@ -6,6 +6,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -234,6 +235,20 @@ public class LocatorTest {
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
 		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
 		locator.locate(uri);
+	}
+	
+	@Test
+	public void testShouldNotLookupNumericHostIPv6() throws ParseException {
+		replay(resolver);
+
+		SipURI uri = addressFactory.createSipURI(null, "[2001:db8:85a3::8a2e:370:7334]");
+		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Queue<Hop> hops = locator.locate(uri);
+		
+		Hop expected = new HopImpl("2001:db8:85a3::8a2e:370:7334", 5060, "UDP");
+		Hop actual = hops.peek();
+		
+		assertEquals(expected, actual);
 	}
 	
 	@Test

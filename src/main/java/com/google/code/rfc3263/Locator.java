@@ -127,7 +127,11 @@ public class Locator {
 		// the URI also contains a port, it uses that port.  If no port is
 		// specified, it uses the default port for the particular transport
 		// protocol.
-		hopAddress = domain;
+		if (isIPv6Reference(domain)) {
+			hopAddress = domain.substring(1, domain.length() - 1);
+		} else {
+			hopAddress = domain;
+		}
 		if (port != -1) {
 			hopPort = port;
 		} else {
