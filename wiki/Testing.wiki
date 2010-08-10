@@ -1,0 +1,17 @@
+#summary One-sentence summary of this page.
+
+= Environmental Variables =
+
+  * NAPTR
+  * SRV
+  * A / AAAA
+
+= Local Variables =
+
+  * maddr
+  * Route
+  * sip: / sips:
+  * host / ipv4 address / ipv4 reference
+  * port
+  * transport parameter
+    * tcp
