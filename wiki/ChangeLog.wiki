@@ -1,4 +1,4 @@
-#summary Changes
+#summary Changes included in each release
 #labels Featured
 
 <wiki:toc/>
