@@ -25,6 +25,6 @@
 
 = maddr =
 
-{{{
+<pre>
 A client that sends a request to a multicast address MUST add the "maddr" parameter to its Via header field value containing the destination multicast address, and for IPv4, SHOULD add the "ttl" parameter with a value of 1.  Usage of IPv6 multicast is not defined in this specification, and will be a subject of future standardization when the need arises.
-}}}
+</pre>
