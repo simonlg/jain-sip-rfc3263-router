@@ -9,12 +9,11 @@
 = Local Variables =
 
   * maddr
-  * Route
+  * Route (3261)
   * sip: / sips:
-  * host / ipv4 address / ipv4 reference
+  * host / ipv4 address / ipv6 reference
   * port
   * transport parameter
     * tcp
     * udp
     * sctp
-    * *absent*
