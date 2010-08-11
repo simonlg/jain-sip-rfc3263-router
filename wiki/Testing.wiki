@@ -15,3 +15,6 @@
   * port
   * transport parameter
     * tcp
+    * udp
+    * sctp
+    * *absent*
