@@ -84,15 +84,15 @@ public final class LocatorUtils {
 		return matches;
 	}
 	
-	private static void checkTransport(String transport) {
-		if (knownTransports.contains(transport.toUpperCase()) == false) {
-			throw new IllegalArgumentException("Unknown transport: " + transport);
-		}
+	public static boolean isKnownTransport(String transport) {
+		return knownTransports.contains(transport.toUpperCase());
 	}
 
 	public static int getDefaultPortForTransport(String transport) {
 		LOGGER.debug("Determining default port for " + transport);
-		checkTransport(transport);
+		if (isKnownTransport(transport) == false) {
+			throw new IllegalArgumentException("Unknown transport: " + transport);
+		}
 		
 		int port;
 		if (transport.endsWith("TLS")) {
@@ -105,7 +105,9 @@ public final class LocatorUtils {
 	}
 
 	public static String upgradeTransport(String transport) {
-		checkTransport(transport);
+		if (isKnownTransport(transport) == false) {
+			throw new IllegalArgumentException("Unknown transport: " + transport);
+		}
 		
 		if (transport.equalsIgnoreCase("tcp")) {
 			LOGGER.debug("sips: scheme, so upgrading from TCP to TLS");
@@ -154,7 +156,9 @@ public final class LocatorUtils {
 
 	public static String getServiceIdentifier(String transport, String domain) {
 		LOGGER.debug("Determining service identifier for " + domain + "/" + transport);
-		checkTransport(transport);
+		if (isKnownTransport(transport) == false) {
+			throw new IllegalArgumentException("Unknown transport: " + transport);
+		}
 		
 		StringBuilder sb = new StringBuilder();
 		

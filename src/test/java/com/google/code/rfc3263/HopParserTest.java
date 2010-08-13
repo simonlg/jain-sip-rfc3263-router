@@ -19,13 +19,23 @@ public class HopParserTest {
 	}
 	
 	@Test(expected = ParseException.class)
+	public void testNullHopShouldThrowException() throws ParseException {
+		HopParser.parseHop(null);
+	}
+	
+	@Test(expected = ParseException.class)
 	public void testMissingPortShouldThrowException() throws ParseException {
 		HopParser.parseHop("127.0.0.1/TCP");
 	}
 	
 	@Test(expected = ParseException.class)
-	public void testInvalidPortShouldThrowException() throws ParseException {
+	public void testInvalidPortShouldThrowExceptionTooSmall() throws ParseException {
 		HopParser.parseHop("127.0.0.1:-1/TCP");
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testInvalidPortShouldThrowExceptionTooLarge() throws ParseException {
+		HopParser.parseHop("127.0.0.1:100000/TCP");
 	}
 	
 	@Test(expected = ParseException.class)
