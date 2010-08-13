@@ -1,5 +1,7 @@
 package com.google.code.rfc3263.util;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,7 +10,15 @@ import javax.sip.address.SipURI;
 import org.apache.log4j.Logger;
 
 public final class LocatorUtils {
-	public final static Logger LOGGER = Logger.getLogger(LocatorUtils.class);
+	private final static Logger LOGGER = Logger.getLogger(LocatorUtils.class);
+	private final static Set<String> knownTransports = new HashSet<String>();
+	static {
+		knownTransports.add("UDP");
+		knownTransports.add("TCP");
+		knownTransports.add("TLS");
+		knownTransports.add("SCTP");
+		knownTransports.add("SCTP-TLS");
+	}
 	
 	private LocatorUtils() {}
 
@@ -73,9 +83,17 @@ public final class LocatorUtils {
 		
 		return matches;
 	}
+	
+	private static void checkTransport(String transport) {
+		if (knownTransports.contains(transport.toUpperCase()) == false) {
+			throw new IllegalArgumentException("Unknown transport: " + transport);
+		}
+	}
 
 	public static int getDefaultPortForTransport(String transport) {
 		LOGGER.debug("Determining default port for " + transport);
+		checkTransport(transport);
+		
 		int port;
 		if (transport.endsWith("TLS")) {
 			port = 5061;
@@ -87,6 +105,8 @@ public final class LocatorUtils {
 	}
 
 	public static String upgradeTransport(String transport) {
+		checkTransport(transport);
+		
 		if (transport.equalsIgnoreCase("tcp")) {
 			LOGGER.debug("sips: scheme, so upgrading from TCP to TLS");
 			return "TLS";
@@ -104,9 +124,11 @@ public final class LocatorUtils {
 		if ("SIPS".equalsIgnoreCase(scheme)) {
 			LOGGER.debug("Default transport is TCP");
 			transport = upgradeTransport("TCP");
-		} else {
+		} else if ("SIP".equalsIgnoreCase(scheme)) {
 			LOGGER.debug("Default transport is UDP");
 			transport = "UDP";
+		} else {
+			throw new IllegalArgumentException("Unknown scheme: " + scheme);
 		}
 		return transport;
 	}
@@ -132,6 +154,8 @@ public final class LocatorUtils {
 
 	public static String getServiceIdentifier(String transport, String domain) {
 		LOGGER.debug("Determining service identifier for " + domain + "/" + transport);
+		checkTransport(transport);
+		
 		StringBuilder sb = new StringBuilder();
 		
 		if (transport.endsWith("TLS")) {
@@ -141,7 +165,13 @@ public final class LocatorUtils {
 		}
 		
 		sb.append("_");
-		sb.append(transport.toLowerCase());
+		if (transport.equalsIgnoreCase("TLS")) {
+			sb.append("tcp");
+		} else if (transport.equalsIgnoreCase("SCTP-TLS")) {
+			sb.append("sctp");
+		} else {
+			sb.append(transport.toLowerCase());
+		}
 		sb.append(".");
 		sb.append(domain);
 		
