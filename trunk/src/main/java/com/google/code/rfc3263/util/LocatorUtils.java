@@ -7,8 +7,6 @@ import javax.sip.address.SipURI;
 
 import org.apache.log4j.Logger;
 
-import com.google.code.rfc3263.Locator;
-
 public final class LocatorUtils {
 	public final static Logger LOGGER = Logger.getLogger(LocatorUtils.class);
 	

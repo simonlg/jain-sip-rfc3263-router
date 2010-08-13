@@ -1,4 +1,4 @@
-package com.google.code.rfc3263;
+package com.google.code.rfc3263.util;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.google.code.rfc3263.util.LocatorUtils;
 
-public class HostParsingTest {
+public class LocatorUtilsTest {
 	@BeforeClass
 	public static void configureLogging() {
 		BasicConfigurator.configure();
