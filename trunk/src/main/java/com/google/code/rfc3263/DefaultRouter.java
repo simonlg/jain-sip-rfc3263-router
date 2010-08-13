@@ -1,13 +1,12 @@
 package com.google.code.rfc3263;
 
-import gov.nist.javax.sip.header.Route;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Queue;
 
 import javax.sip.ListeningPoint;
 import javax.sip.SipException;
@@ -23,7 +22,6 @@ import javax.sip.message.Request;
 import org.apache.log4j.Logger;
 
 import com.google.code.rfc3263.dns.DefaultResolver;
-import com.google.code.rfc3263.dns.Resolver;
 
 /**
  * JAIN-SIP router implementation that uses the procedures laid out in RFC 3261
@@ -34,9 +32,8 @@ import com.google.code.rfc3263.dns.Resolver;
  */
 public class DefaultRouter implements Router {
 	private static final Logger LOGGER = Logger.getLogger(DefaultRouter.class);
-	private final Resolver resolver;
-	private final SipStack sipStack;
 	private final Hop outboundProxy;
+	private final Locator locator;
 
 	/**
 	 * Creates a new instance of this class.
@@ -45,9 +42,13 @@ public class DefaultRouter implements Router {
 	 * @param outboundProxy the outbound proxy specified by the user.
 	 */
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
+		this(sipStack, outboundProxy, new Locator(new DefaultResolver(), getSupportedTransports(sipStack)));
+	}
+	
+	protected DefaultRouter(SipStack sipStack, String outboundProxy, Locator locator) {
 		LOGGER.debug("Router instantiated for " + sipStack);
-		this.sipStack = sipStack;
-		this.resolver = new DefaultResolver();
+		
+		this.locator = locator;
 		if (outboundProxy == null) {
 			this.outboundProxy = null;
 		} else {
@@ -93,7 +94,7 @@ public class DefaultRouter implements Router {
 			LOGGER.debug("Route set found");
 			// We have a Route set.  Get the top route.
 			// TODO: Should this be popped?
-			final Route route = (Route) routes.next();
+			final RouteHeader route = (RouteHeader) routes.next();
 			final URI routeUri = route.getAddress().getURI();
 			if (routeUri.isSipURI() == false) {
 				LOGGER.warn("Top route in set is not a SIP URI.  Unable to route request");
@@ -135,9 +136,14 @@ public class DefaultRouter implements Router {
 			LOGGER.debug("Request URI is a SIPS URI.  Treating input URI as a SIPS URI too");
 			destination.setSecure(true);
 		}
-		Locator locator = new Locator(resolver, getSupportedTransports());
+//		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
-			return locator.locate(destination).iterator().next();
+			Queue<Hop> hops = locator.locate(destination);
+			if (hops.size() > 0) {
+				return hops.poll();
+			} else {
+				return null;
+			}
 		} catch (IllegalArgumentException e) {
 			throw new SipException("Rethrowing", e);
 		}
@@ -162,7 +168,7 @@ public class DefaultRouter implements Router {
 		return outboundProxy;
 	}
 
-	protected List<String> getSupportedTransports() {
+	protected static List<String> getSupportedTransports(SipStack sipStack) {
 		LOGGER.debug("Determining transports supported by stack");
 		final List<String> supportedTransports = new ArrayList<String>();
 

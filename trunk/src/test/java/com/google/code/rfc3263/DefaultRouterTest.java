@@ -1,6 +1,12 @@
 package com.google.code.rfc3263;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.verify;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
@@ -23,6 +29,7 @@ import javax.sip.header.ViaHeader;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,9 +39,12 @@ public class DefaultRouterTest {
 	private HeaderFactory headerFactory;
 	private MessageFactory messageFactory;
 	private SipStack stack;
+	private Locator locator;
 	
 	@Before
 	public void setUp() throws Exception {
+		locator = createMock(Locator.class);
+		
 		SipFactory factory = SipFactory.getInstance();
 		addressFactory = factory.createAddressFactory();
 		headerFactory = factory.createHeaderFactory();
@@ -44,39 +54,49 @@ public class DefaultRouterTest {
 		properties.put("javax.sip.STACK_NAME", "Test");
 		stack = factory.createSipStack(properties);
 	}
+	
+	@After
+	public void tearDown() {
+		verify(locator);
+	}
 
 	@Test
 	public void testRequestUriShouldBeUsedWithoutProxy() throws Exception {
-		Hop expected = new HopImpl("192.168.0.1", 5060, "UDP");
-		Hop actual = getRouter(null).getNextHop(getRequest());
+		Request request = getRequest();
+		expect(locator.locate((SipURI) request.getRequestURI())).andReturn(new LinkedList<Hop>());
+		replay(locator);
 		
-		Assert.assertEquals(expected, actual);
+		getRouter(null).getNextHop(request);
 	}
 	
 	@Test
 	public void testLooseRouteHeaderShouldBeUsedWhenPresent() throws Exception {
 		final Request request = getRequest();
-		request.addHeader(getRoute(true));
+		final RouteHeader route = getRoute(true);
+		request.addHeader(route);
 		
-		Hop expected = new HopImpl("192.168.0.2", 5060, "UDP");
-		Hop actual = getRouter(null).getNextHop(request);
+		expect(locator.locate((SipURI) route.getAddress().getURI())).andReturn(new LinkedList<Hop>());
+		replay(locator);
 		
-		Assert.assertEquals(expected, actual);
+		getRouter(null).getNextHop(request);
 	}
 	
 	@Test
 	public void testFixedRouteHeaderShouldNeverBeUsed() throws Exception {
 		final Request request = getRequest();
-		request.addHeader(getRoute(false));
+		final RouteHeader route = getRoute(false);
+		request.addHeader(route);
 		
-		Hop expected = new HopImpl("192.168.0.1", 5060, "UDP");
-		Hop actual = getRouter(null).getNextHop(request);
+		expect(locator.locate((SipURI) request.getRequestURI())).andReturn(new LinkedList<Hop>());
+		replay(locator);
 		
-		Assert.assertEquals(expected, actual);
+		getRouter(null).getNextHop(request);
 	}
 	
 	@Test
 	public void testProxyShouldBeUsedInAbsenseOfRoute() throws Exception {
+		replay(locator);
+		
 		Hop expected = new HopImpl("192.168.0.3", 5060, "UDP");
 		Hop actual = getRouter("192.168.0.3:5060/UDP").getNextHop(getRequest());
 		
@@ -85,6 +105,8 @@ public class DefaultRouterTest {
 
 	@Test
 	public void testGetNextHopsShouldReturnEmptyIterator() throws Exception {
+		replay(locator);
+		
 		@SuppressWarnings("deprecation")
 		ListIterator<?> iter = getRouter(null).getNextHops(getRequest());
 		
@@ -94,6 +116,8 @@ public class DefaultRouterTest {
 
 	@Test
 	public void testGetOutboundProxy() {
+		replay(locator);
+		
 		Hop expected = new HopImpl("192.168.0.3", 5060, "UDP");
 		Hop actual = getRouter("192.168.0.3:5060/UDP").getOutboundProxy();
 		
@@ -102,6 +126,8 @@ public class DefaultRouterTest {
 	
 	@Test
 	public void testOutboundProxyShouldBeNullAsDefault() {
+		replay(locator);
+		
 		Hop expected = null;
 		Hop actual = getRouter(null).getOutboundProxy();
 		
@@ -109,7 +135,7 @@ public class DefaultRouterTest {
 	}
 	
 	private Router getRouter(String outboundProxy) {
-		return new DefaultRouter(stack, outboundProxy);
+		return new DefaultRouter(stack, outboundProxy, locator);
 	}
 	
 	private RouteHeader getRoute(boolean loose) throws Exception {
