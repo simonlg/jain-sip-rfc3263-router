@@ -415,7 +415,7 @@ public class Locator {
 	}
 
 	/**
-	 * Generates a queue of {@see Hop} instances which should be used to route
+	 * Generates a queue of {@link Hop} instances which should be used to route
 	 * the message with the given URI.
 	 * 
 	 * @param uri the URI for which to determine a hop queue.
