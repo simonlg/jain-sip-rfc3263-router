@@ -25,7 +25,13 @@ import com.google.code.rfc3263.dns.DefaultResolver;
 
 /**
  * JAIN-SIP router implementation that uses the procedures laid out in RFC 3261
- * and RFC 3265 to locate the hop to which a given request should be routed.
+ * and RFC 3263 to locate the hop to which a given request should be routed.
+ * <p>
+ * This class is stateless, meaning that in a stable DNS environment, multiple invocations
+ * of {@link #getNextHop(javax.sip.Request)} will always return the same hop.  Clients wishing
+ * to react to unstable environments, where a SIP server might be unavailable, should use
+ * the {@link Locator} instead, and use the resulting {@link javax.sip.address.Hop} to create a 
+ * {@link javax.sip.header.RouteHeader} instead.
  * 
  * @see <a href="http://www.ietf.org/rfc/rfc3261.txt">RFC 3261</a>
  * @see <a href="http://www.ietf.org/rfc/rfc3263.txt">RFC 3263</a>
