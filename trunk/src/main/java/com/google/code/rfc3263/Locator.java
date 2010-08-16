@@ -83,7 +83,7 @@ public class Locator {
 		this.prefTransports = transports;
 	}
 	
-	protected Queue<Hop> locateNumeric(SipURI uri) {
+	private Queue<Hop> locateNumeric(SipURI uri) {
 		final String domain = LocatorUtils.getTarget(uri);
 		
 		final String transportParam = uri.getTransportParam();
@@ -145,7 +145,7 @@ public class Locator {
 		return hops;
 	}
 	
-	protected Queue<Hop> locateNonNumeric(SipURI uri) {
+	private Queue<Hop> locateNonNumeric(SipURI uri) {
 		final Queue<Hop> hops = new LinkedList<Hop>();
 		
 		final String transportParam = uri.getTransportParam();
@@ -441,7 +441,7 @@ public class Locator {
 		return hops;
 	}
 	
-	protected List<String> filterTransports(boolean isSecure) {
+	private List<String> filterTransports(boolean isSecure) {
 		if (isSecure) {
 			final List<String> filteredTransports = new ArrayList<String>(prefTransports);
 			Iterator<String> iter = filteredTransports.iterator();
@@ -463,7 +463,7 @@ public class Locator {
 	 * @param services
 	 * @return true is the list of services is valid; false otherwise.
 	 */
-	protected static boolean isValid(List<ServiceRecord> services) {
+	private static boolean isValid(List<ServiceRecord> services) {
 		if (services.size() == 0) {
 			return false;
 		} else if (services.size() == 1) {
@@ -482,7 +482,7 @@ public class Locator {
 		}
 	}
 	
-	protected static boolean isValid(PointerRecord pointer) {
+	private static boolean isValid(PointerRecord pointer) {
 		// RFC 3263, Section 4.1
 		//
 		// The resource record will contain an empty regular expression and a 
