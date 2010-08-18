@@ -240,7 +240,7 @@ public final class LocatorUtils {
 	 * @return the SRV service identifier.
 	 */
 	public static String getServiceIdentifier(String transport, String domain) {
-		LOGGER.debug("Determining service identifier for " + domain + "/" + transport);
+		LOGGER.debug("Determining service identifier for " + transport + " transport to " + domain);
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}

@@ -242,11 +242,7 @@ public class Locator {
 				//
 				// If no SRV records are found, the client SHOULD use TCP for a SIPS
 				// URI, and UDP for a SIP URI.
-				if (isSecure) {
-					hopTransport = LocatorUtils.upgradeTransport("TCP");
-				} else {
-					hopTransport = "UDP";
-				}
+				hopTransport = LocatorUtils.getDefaultTransportForScheme(uri.getScheme());
 			}
 		}
 		
