@@ -3,56 +3,58 @@
 The following snippets should the log4j output from the router when using the [http://code.google.com/p/jain-sip-rfc3263-router/source/browse/trunk/src/example/java/com/google/code/rfc3263/StatelessProxy.java stateless proxy] implementation from the example sources.  The first example shows the router attempting to find a route for `atlanta.com`:
 
 {{{
-0 [main] DEBUG com.google.code.rfc3263.DefaultRouter  - Router instantiated for gov.nist.javax.sip.SipStackImpl@193722c
-644 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Attempting to route the following request 
+0 [main] DEBUG com.google.code.rfc3263.DefaultRouter  - Router instantiated for gov.nist.javax.sip.SipStackImpl@4f80d6
+2492 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Attempting to route the following request 
 
 REGISTER sip:atlanta.com SIP/2.0
-Via: SIP/2.0/UDP 127.0.0.1:5062;rport=5062;branch=z9hG4bKjfifvyov;received=127.0.0.1
+Via: SIP/2.0/UDP 127.0.0.1:5062;rport=5062;branch=z9hG4bKnmefieyn;received=127.0.0.1
 Max-Forwards: 70
 To: "Dave" <sip:alice@atlanta.com>
-From: "Dave" <sip:alice@atlanta.com>;tag=gewqv
+From: "Dave" <sip:alice@atlanta.com>;tag=xbxwl
 Call-ID: hjccavlujocnswe@dgrant-desktop
-CSeq: 953 REGISTER
+CSeq: 1089 REGISTER
 Contact: <sip:alice@127.0.0.1:5062>;expires=3600
 Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE
 User-Agent: Twinkle/1.4.2
 Content-Length: 0
 
 
-644 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - No route set found.  Using Request-URI for input
-650 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Determining transports supported by stack
-650 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Supported transports: [UDP, TCP]
-652 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Locating SIP server for sip:atlanta.com
-653 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:atlanta.com
-653 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is atlanta.com
-653 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? atlanta.com
-653 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? atlanta.com
-653 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? atlanta.com: false
-653 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? atlanta.com
-654 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? atlanta.com: false
-654 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? atlanta.com: false
-654 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:atlanta.com
-654 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is atlanta.com
-654 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Selecting transport for sip:atlanta.com
-654 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No transport parameter or port was specified.
-654 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up NAPTR records for atlanta.com.
-718 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Supported NAPTR services: [SIP+D2T, SIP+D2U]
-718 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No NAPTR records found for atlanta.com.
-718 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for atlanta.com./UDP
-718 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._udp.atlanta.com.
-718 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._udp.atlanta.com.
-719 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No valid SRV records for _sip._udp.atlanta.com.
-719 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for atlanta.com./TCP
-719 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._tcp.atlanta.com.
-719 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._tcp.atlanta.com.
-720 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No valid SRV records for _sip._tcp.atlanta.com.
-720 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No SRV records found for atlanta.com.
-720 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Transport selected for sip:atlanta.com: UDP
-720 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Determining IP address and port for sip:atlanta.com
-720 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No port is present in the URI
-721 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining default port for UDP
-721 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Default port is 5060
-724 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Hop list for sip:atlanta.com is [173.201.96.105:5060/UDP]
+2492 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - No route set found.  Using Request-URI for input
+2498 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Determining transports supported by stack
+2498 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Supported transports: [UDP, TCP]
+2500 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Locating SIP server for sip:atlanta.com
+2500 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:atlanta.com
+2501 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is atlanta.com
+2501 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? atlanta.com
+2501 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? atlanta.com
+2501 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? atlanta.com: false
+2501 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? atlanta.com
+2502 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? atlanta.com: false
+2502 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? atlanta.com: false
+2502 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:atlanta.com
+2502 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is atlanta.com
+2502 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Selecting transport for sip:atlanta.com
+2502 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No transport parameter or port was specified.
+2502 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up NAPTR records for atlanta.com.
+2619 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Supported NAPTR services: [SIP+D2T, SIP+D2U]
+2619 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No NAPTR records found for atlanta.com.
+2620 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for UDP transport to atlanta.com.
+2620 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._udp.atlanta.com.
+2620 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._udp.atlanta.com.
+2651 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No valid SRV records for _sip._udp.atlanta.com.
+2651 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for TCP transport to atlanta.com.
+2651 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._tcp.atlanta.com.
+2651 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._tcp.atlanta.com.
+2677 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No valid SRV records for _sip._tcp.atlanta.com.
+2677 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No SRV records found for atlanta.com.
+2677 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining default transport for sip: scheme
+2677 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Default transport is UDP
+2677 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Transport selected for sip:atlanta.com: UDP
+2677 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Determining IP address and port for sip:atlanta.com
+2677 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No port is present in the URI
+2678 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining default port for UDP
+2678 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Default port is 5060
+2706 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Hop list for sip:atlanta.com is [173.201.96.105:5060/UDP]
 }}}
 
 The following snippet shows the router attempting to find a route for `cisco.com` (which has some DNS support):
