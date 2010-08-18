@@ -49,7 +49,7 @@ The following host configurations should be tested:
 
   * hostname (e.g. example.org)
   * IPv4 address
-  * IPv6 reference (e.g. &#91;::1&#93;)
+  * IPv6 reference (e.g. "[" ::1 "]")
 
 Basic validation is done on IPv4 addresses and IPv6 references, but currently, invalid addresses, like 999.999.999.999 (valid according to 3261) will be parsed as an IP address, which will obviously fail to route.
 
