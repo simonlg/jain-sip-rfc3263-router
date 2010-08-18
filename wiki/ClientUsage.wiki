@@ -82,7 +82,8 @@ ListeningPoint endPoint = sendingProvider.getListeningPoint(hop.getTransport);
 ViaHeader via = headerFactory.createViaHeader(endPoint.getIPAddress(), endPoint.getPort(), hop.getTransport(), null);
 clonedRequest.addHeader(via);
 ClientTransaction tx = sendingProvider.getNewClientTransaction(clonedRequest);
-tx.send();
+Dialog dialog = sendingProvider.getNewDialog(tx);
+dialog.sendRequest(tx);
 }}}
 
 If the transaction fails, poll the next hop from the queue and try again.  When the queue is empty, no more hops could be determined, and message sending has failed.  Depending on the type of failure, you may choose to try some or all of the hops again.
