@@ -1,7 +1,7 @@
 #summary Things to test
 #labels Phase-QA
 
-This page is used as a notice board for recording test strategies.  RFC 3263 provides a large number of variables to incorporate in testing.  In order to fully test the router, we need to be confident that all configurations are tested.
+This page is used as a notice board for recording test strategies.  RFC 3263 provides a large number of variables to incorporate in testing.  In order to fully test the router, we need to be confident that all permutations have been tested.
 
 = Environmental Variables =
 
