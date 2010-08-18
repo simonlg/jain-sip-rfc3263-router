@@ -9,9 +9,9 @@ The following snippets should the log4j output from the router when using the [h
 REGISTER sip:atlanta.com SIP/2.0
 Via: SIP/2.0/UDP 127.0.0.1:5062;rport=5062;branch=z9hG4bKnmefieyn;received=127.0.0.1
 Max-Forwards: 70
-To: "Dave" <sip:alice@atlanta.com>
-From: "Dave" <sip:alice@atlanta.com>;tag=xbxwl
-Call-ID: hjccavlujocnswe@dgrant-desktop
+To: "Alice" <sip:alice@atlanta.com>
+From: "Alice" <sip:alice@atlanta.com>;tag=xbxwl
+Call-ID: hjccavlujocnswe@127.0.0.1
 CSeq: 1089 REGISTER
 Contact: <sip:alice@127.0.0.1:5062>;expires=3600
 Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE
@@ -66,9 +66,9 @@ The following snippet shows the router attempting to find a route for `cisco.com
 REGISTER sip:cisco.com SIP/2.0
 Via: SIP/2.0/UDP 127.0.0.1:5062;rport=5062;branch=z9hG4bKgrjughak;received=127.0.0.1
 Max-Forwards: 70
-To: "Dave" <sip:alice@cisco.com>
-From: "Dave" <sip:alice@cisco.com>;tag=vjjjb
-Call-ID: hjccavlujocnswe@dgrant-desktop
+To: "Alice" <sip:alice@cisco.com>
+From: "Alice" <sip:alice@cisco.com>;tag=vjjjb
+Call-ID: hjccavlujocnswe@127.0.0.1
 CSeq: 1083 REGISTER
 Contact: <sip:alice@127.0.0.1:5062>;expires=3600
 Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE
