@@ -2,20 +2,6 @@
 
 {{{
 0 [main] DEBUG com.google.code.rfc3263.DefaultRouter  - Router instantiated for gov.nist.javax.sip.SipStackImpl@193722c
-Wed Aug 18 12:09:14 BST 2010
-REGISTER sip:atlanta.com SIP/2.0
-Via: SIP/2.0/UDP 127.0.0.1:5062;rport=5062;branch=z9hG4bKjfifvyov;received=127.0.0.1
-Max-Forwards: 70
-To: "Dave" <sip:alice@atlanta.com>
-From: "Dave" <sip:alice@atlanta.com>;tag=gewqv
-Call-ID: hjccavlujocnswe@dgrant-desktop
-CSeq: 953 REGISTER
-Contact: <sip:alice@127.0.0.1:5062>;expires=3600
-Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE
-User-Agent: Twinkle/1.4.2
-Content-Length: 0
-
-
 644 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Attempting to route the following request 
 
 REGISTER sip:atlanta.com SIP/2.0
