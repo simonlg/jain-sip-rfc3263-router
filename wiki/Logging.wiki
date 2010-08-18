@@ -58,57 +58,57 @@ Content-Length: 0
 The following snippet shows the router attempting to find a route for `cisco.com` (which has some DNS support):
 
 {{{
-0 [main] DEBUG com.google.code.rfc3263.DefaultRouter  - Router instantiated for 
-5524 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Attempting to route the following request 
+0 [main] DEBUG com.google.code.rfc3263.DefaultRouter  - Router instantiated for gov.nist.javax.sip.SipStackImpl@12cc95d
+2821 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Attempting to route the following request 
 
 REGISTER sip:cisco.com SIP/2.0
-Via: SIP/2.0/UDP 127.0.0.1:5062;rport=5062;branch=z9hG4bKqmhbbijs;received=127.0.0.1
+Via: SIP/2.0/UDP 127.0.0.1:5062;rport=5062;branch=z9hG4bKgrjughak;received=127.0.0.1
 Max-Forwards: 70
 To: "Dave" <sip:alice@cisco.com>
-From: "Dave" <sip:alice@cisco.com>;tag=kqjmn
+From: "Dave" <sip:alice@cisco.com>;tag=vjjjb
 Call-ID: hjccavlujocnswe@dgrant-desktop
-CSeq: 969 REGISTER
+CSeq: 1083 REGISTER
 Contact: <sip:alice@127.0.0.1:5062>;expires=3600
 Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,PRACK,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE
 User-Agent: Twinkle/1.4.2
 Content-Length: 0
 
 
-5524 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - No route set found.  Using Request-URI for input
-5529 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Determining transports supported by stack
-5530 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Supported transports: [UDP, TCP]
-5531 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Locating SIP server for sip:cisco.com
-5532 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:cisco.com
-5532 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is cisco.com
-5532 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? cisco.com
-5532 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? cisco.com
-5532 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? cisco.com: false
-5532 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? cisco.com
-5533 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? cisco.com: false
-5533 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? cisco.com: false
-5533 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:cisco.com
-5533 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is cisco.com
-5533 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Selecting transport for sip:cisco.com
-5533 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No transport parameter or port was specified.
-5533 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up NAPTR records for cisco.com.
-5722 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Supported NAPTR services: [SIP+D2T, SIP+D2U]
-5722 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No NAPTR records found for cisco.com.
-5722 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for cisco.com./UDP
-5723 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._udp.cisco.com.
-5723 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._udp.cisco.com.
-5846 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No valid SRV records for _sip._udp.cisco.com.
-5846 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for cisco.com./TCP
-5846 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._tcp.cisco.com.
-5846 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._tcp.cisco.com.
-5972 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Found 1 SRV record(s) for _sip._tcp.cisco.com.
-5972 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Selecting service record from record set
-5973 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Sorting service records by priority
-5974 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Sorting service record(s) by weight for priority 1
-5974 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Priority list has only one service record, no need to sort
-5974 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Finished sorting service records
-5975 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Transport selected for sip:cisco.com: TCP
-5975 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Determining IP address and port for sip:cisco.com
-5975 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No port is present in the URI
-5975 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - SRV records found during transport selection
-6386 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Hop list for sip:cisco.com is [64.102.249.42:5060/TCP]
+2823 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - No route set found.  Using Request-URI for input
+2829 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Determining transports supported by stack
+2829 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Supported transports: [UDP, TCP]
+2831 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Locating SIP server for sip:cisco.com
+2831 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:cisco.com
+2832 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is cisco.com
+2832 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? cisco.com
+2832 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? cisco.com
+2832 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv4Address? cisco.com: false
+2832 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? cisco.com
+2833 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isIPv6Reference? cisco.com: false
+2833 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - isNumeric? cisco.com: false
+2833 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Resolving TARGET for sip:cisco.com
+2833 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - TARGET is cisco.com
+2833 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Selecting transport for sip:cisco.com
+2833 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No transport parameter or port was specified.
+2833 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up NAPTR records for cisco.com.
+2898 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Supported NAPTR services: [SIP+D2T, SIP+D2U]
+2898 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No NAPTR records found for cisco.com.
+2898 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for UDP transport to cisco.com.
+2898 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._udp.cisco.com.
+2898 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._udp.cisco.com.
+2899 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No valid SRV records for _sip._udp.cisco.com.
+2899 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining service identifier for TCP transport to cisco.com.
+2899 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Service identifier is _sip._tcp.cisco.com.
+2899 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Looking up SRV records for _sip._tcp.cisco.com.
+3032 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Found 1 SRV record(s) for _sip._tcp.cisco.com.
+3032 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Selecting service record from record set
+3033 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Sorting service records by priority
+3034 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Sorting service record(s) by weight for priority 1
+3034 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Priority list has only one service record, no need to sort
+3034 [EventScannerThread] DEBUG com.google.code.rfc3263.dns.ServiceRecordSelector  - Finished sorting service records
+3035 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Transport selected for sip:cisco.com: TCP
+3035 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Determining IP address and port for sip:cisco.com
+3035 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No port is present in the URI
+3035 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - SRV records found during transport selection
+3160 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Hop list for sip:cisco.com is [64.102.249.42:5060/TCP]
 }}}
