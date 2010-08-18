@@ -41,7 +41,7 @@ The following scheme configurations should be tested:
   * sip
   * sips
 
-We should also test the router attempting to route a tel scheme.
+We should also test the router attempting to route a tel scheme to make sure the router acts correctly according to the contract it advertises (i.e. sip or sips only).
 
 == Host ==
 
