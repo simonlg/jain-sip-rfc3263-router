@@ -1,7 +1,7 @@
 #summary Things to test
 #labels Phase-QA
 
-This page is used as a notice board for recording test strategies.  RFC 3263 provides a large number of variables to incorporate in testing.
+This page is used as a notice board for recording test strategies.  RFC 3263 provides a large number of variables to incorporate in testing.  In order to fully test the router, we need to be confident that all configurations are tested.
 
 = Environmental Variables =
 
@@ -13,21 +13,62 @@ We should test combinations of the presence of the various DNS records, e.g.
 
 It would seem illegal for a DNS server to not chain its records correctly, but it is possible through misconfiguration.  For example, if the DNS server has an NAPTR record, we would expect to see a corresponding SRV record.  Likewise, if the DNS server has a SRV record, we would expect to see a corresponding A or AAAA record.
 
+During testing, this environment will need to be mocked out.
+
 = Local Variables =
 
-  * maddr
-     * host
-  * Route (3261)
-  * sip: / sips:
-  * host 
-     * hostname
-     * IPv4address
-     * IPv6reference
-  * port
-  * transport parameter
-    * tcp
-    * udp
-    * sctp
+== Target Selection ==
+
+The following target configurations should be tested:
+
+  * SIP-URI with no maddr parameter
+  * SIP-URI with maddr parameter
+
+== Route Set ==
+
+The following route set configurations should be tested:
+
+  * No !RouteHeader
+  * !RouteHeader with loose routing
+  * !RouteHeader with strict routing
+
+== Scheme ==
+
+The following scheme configurations should be tested:
+
+  * sip
+  * sips
+
+We should also test the router attempting to route a tel scheme.
+
+== Host ==
+
+The following host configurations should be tested:
+
+  * hostname (e.g. example.org)
+  * IPv4 address
+  * IPv6 reference (e.g. [::1])
+
+Basic validation is done on IPv4 addresses and IPv6 references, but currently, invalid addresses, like 999.999.999.999 (valid according to 3261) will be parsed as an IP address, which will obviously fail to route.
+
+== Port ==
+
+The following port configurations should be tested:
+
+  * Present
+  * Absent
+
+We don't validate the port number (apart from when parsing the outbound proxy) for being in a valid tcp or udp range (0 - 65536).
+
+== Transport Parameter ==
+
+The following transport parameters should be tested:
+
+  * tcp
+  * udp
+  * sctp
+
+There is some debate over whether "tls" is a valid transport, but for the purposes of the router, "tls" is invalid.
 
 = maddr =
 
