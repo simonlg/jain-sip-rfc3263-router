@@ -1,4 +1,5 @@
 #summary Logging example
+#labels Phase-Support
 
 The following snippets should the log4j output from the router when using the [http://code.google.com/p/jain-sip-rfc3263-router/source/browse/trunk/src/example/java/com/google/code/rfc3263/StatelessProxy.java stateless proxy] implementation from the example sources.  The first example shows the router attempting to find a route for `atlanta.com`:
 
@@ -55,6 +56,7 @@ Content-Length: 0
 2678 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Determining default port for UDP
 2678 [EventScannerThread] DEBUG com.google.code.rfc3263.util.LocatorUtils  - Default port is 5060
 2706 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Hop list for sip:atlanta.com is [173.201.96.105:5060/UDP]
+2708 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Next hop for request is 173.201.96.105:5060/UDP
 }}}
 
 The following snippet shows the router attempting to find a route for `cisco.com` (which has some DNS support):
@@ -113,4 +115,5 @@ Content-Length: 0
 3035 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - No port is present in the URI
 3035 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - SRV records found during transport selection
 3160 [EventScannerThread] DEBUG com.google.code.rfc3263.Locator  - Hop list for sip:cisco.com is [64.102.249.42:5060/TCP]
+3162 [EventScannerThread] DEBUG com.google.code.rfc3263.DefaultRouter  - Next hop for request is 64.102.249.42:5060/TCP
 }}}
