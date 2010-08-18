@@ -140,11 +140,12 @@ public class DefaultRouter implements Router {
 		try {
 			Locator locator = new Locator(getSupportedTransports());
 			Queue<Hop> hops = locator.locate(destination);
+			Hop top = null;
 			if (hops.size() > 0) {
-				return hops.poll();
-			} else {
-				return null;
+				top = hops.poll();
 			}
+			LOGGER.debug("Next hop for request is " + top);
+			return top;
 		} catch (IllegalArgumentException e) {
 			throw new SipException("Rethrowing", e);
 		}
