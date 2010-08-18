@@ -21,8 +21,6 @@ import javax.sip.message.Request;
 
 import org.apache.log4j.Logger;
 
-import com.google.code.rfc3263.dns.DefaultResolver;
-
 /**
  * JAIN-SIP router implementation that uses the procedures laid out in RFC 3261
  * and RFC 3263 to locate the hop to which a given request should be routed.
@@ -39,7 +37,7 @@ import com.google.code.rfc3263.dns.DefaultResolver;
 public class DefaultRouter implements Router {
 	private static final Logger LOGGER = Logger.getLogger(DefaultRouter.class);
 	private final Hop outboundProxy;
-	private final Locator locator;
+	private final SipStack sipStack;
 
 	/**
 	 * Creates a new instance of this class.
@@ -48,13 +46,9 @@ public class DefaultRouter implements Router {
 	 * @param outboundProxy the outbound proxy specified by the user.
 	 */
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
-		this(sipStack, outboundProxy, new Locator(new DefaultResolver(), getSupportedTransports(sipStack)));
-	}
-	
-	protected DefaultRouter(SipStack sipStack, String outboundProxy, Locator locator) {
 		LOGGER.debug("Router instantiated for " + sipStack);
-		
-		this.locator = locator;
+
+		this.sipStack = sipStack;
 		if (outboundProxy == null) {
 			this.outboundProxy = null;
 		} else {
@@ -144,6 +138,7 @@ public class DefaultRouter implements Router {
 		}
 //		Locator locator = new Locator(resolver, getSupportedTransports());
 		try {
+			Locator locator = new Locator(getSupportedTransports());
 			Queue<Hop> hops = locator.locate(destination);
 			if (hops.size() > 0) {
 				return hops.poll();
@@ -174,7 +169,7 @@ public class DefaultRouter implements Router {
 		return outboundProxy;
 	}
 
-	protected static List<String> getSupportedTransports(SipStack sipStack) {
+	protected List<String> getSupportedTransports() {
 		LOGGER.debug("Determining transports supported by stack");
 		final List<String> supportedTransports = new ArrayList<String>();
 
