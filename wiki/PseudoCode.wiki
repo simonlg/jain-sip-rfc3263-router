@@ -1,5 +1,7 @@
 #summary Summary of 3263 behaviour
 
+This page is primarily for development purposes.  It summarises RFC 3263 as pseudo-code.
+
 == Selecting a Target ==
 
 {{{
