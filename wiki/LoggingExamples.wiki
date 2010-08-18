@@ -1,7 +1,7 @@
 #summary Example logging output from the router
 #labels Phase-Support
 
-The following snippets should the log4j output from the router when using the [http://code.google.com/p/jain-sip-rfc3263-router/source/browse/trunk/src/example/java/com/google/code/rfc3263/StatelessProxy.java stateless proxy] implementation from the example sources.  The first example shows the router attempting to find a route for `atlanta.com`:
+The following snippets show the log4j output from the router when using the [http://code.google.com/p/jain-sip-rfc3263-router/source/browse/trunk/src/example/java/com/google/code/rfc3263/StatelessProxy.java stateless proxy] implementation from the example sources.  The first example shows the router attempting to find a route for `atlanta.com`:
 
 {{{
 0 [main] DEBUG com.google.code.rfc3263.DefaultRouter  - Router instantiated for gov.nist.javax.sip.SipStackImpl@4f80d6
