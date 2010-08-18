@@ -32,6 +32,8 @@ The following route set configurations should be tested:
   * !RouteHeader with loose routing
   * !RouteHeader with strict routing
 
+The route set is a bit different to the other variables here, since it is examined to determine *which* SIP URI is subjected to the RFC 3263 treatment.
+
 == Scheme ==
 
 The following scheme configurations should be tested:
