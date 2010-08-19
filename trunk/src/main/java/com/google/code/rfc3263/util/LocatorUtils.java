@@ -33,9 +33,9 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if an IPv4 or IPv6 string, <code>false</code> otherwise.
 	 */
 	public static boolean isNumeric(String host) {
-		LOGGER.debug("isNumeric? " + host);
+		LOGGER.debug("isNumeric(" + host + ")");
 		boolean numeric = LocatorUtils.isIPv4Address(host) || LocatorUtils.isIPv6Reference(host);
-		LOGGER.debug("isNumeric? " + host + ": " + numeric);
+		LOGGER.debug("isNumeric(" + host + "): " + numeric);
 		
 		return numeric;
 	}
@@ -50,6 +50,8 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if the provided host is an IPv4 address, <code>false</code> otherwise.
 	 */
 	public static boolean isIPv4Address(String host) {
+		LOGGER.debug("isIPv4Address(" + host + ")");
+		
 		// RFC 2234, Section 6.1
 		//
 		// DIGIT          =  %x30-39
@@ -59,13 +61,11 @@ public final class LocatorUtils {
 		// IPv4address    =  1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
 		String ipv4address = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}";
 		
-		LOGGER.debug("isIPv4Address? " + host);
-		
 		final Pattern p = Pattern.compile(ipv4address);
 		final Matcher m = p.matcher(host);
 		boolean matches = m.matches();
 		
-		LOGGER.debug("isIPv4Address? " + host + ": " + matches);
+		LOGGER.debug("isIPv4Address(" + host + "): " + matches);
 		
 		return matches;
 	}
@@ -81,6 +81,8 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if the host is an IPv6 reference, <code>false</code> otherwise.
 	 */
 	public static boolean isIPv6Reference(String host) {
+		LOGGER.debug("isIPv6Reference(" + host + ")");
+		
 		// RFC 2234, Section 6.1
 		//
 		// DIGIT          =  %x30-39
@@ -102,13 +104,11 @@ public final class LocatorUtils {
 		// IPv6reference  =  "[" IPv6address "]"
 		String ipv6reference = "\\[" + ipv6address + "\\]";
 		
-		LOGGER.debug("isIPv6Reference? " + host);
-		
 		final Pattern p = Pattern.compile(ipv6reference, Pattern.CASE_INSENSITIVE);
 		final Matcher m = p.matcher(host);
 		boolean matches = m.matches();
 		
-		LOGGER.debug("isIPv6Reference? " + host + ": " + matches);
+		LOGGER.debug("isIPv6Reference(" + host + "): " + matches);
 		
 		return matches;
 	}
@@ -121,7 +121,11 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if the transport is known, <code>false</code> otherwise.
 	 */
 	public static boolean isKnownTransport(String transport) {
-		return knownTransports.contains(transport.toUpperCase());
+		LOGGER.debug("isKnownTransport(" + transport + ")");
+		boolean known = knownTransports.contains(transport.toUpperCase());
+		LOGGER.debug("isKnownTransport(" + transport + "): " + known);
+		
+		return known;
 	}
 
 	/**
@@ -135,7 +139,7 @@ public final class LocatorUtils {
 	 * @return the default port number for the provided transport.
 	 */
 	public static int getDefaultPortForTransport(String transport) {
-		LOGGER.debug("Determining default port for " + transport);
+		LOGGER.debug("getDefaultPortForTransport(" + transport + ")");
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}
@@ -146,7 +150,8 @@ public final class LocatorUtils {
 		} else {
 			port = 5060;
 		}
-		LOGGER.debug("Default port is " + port);
+		LOGGER.debug("getDefaultPortForTransport(" + transport + "): " + port);
+		
 		return port;
 	}
 
@@ -160,19 +165,22 @@ public final class LocatorUtils {
 	 * @return the upgraded transport.
 	 */
 	public static String upgradeTransport(String transport) {
+		LOGGER.debug("upgradeTransport(" + transport + ")");
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}
 		
+		String upgradedTransport;
 		if (transport.equalsIgnoreCase("tcp")) {
-			LOGGER.debug("sips: scheme, so upgrading from TCP to TLS");
-			return "TLS";
+			upgradedTransport = "TLS";
 		} else if (transport.equalsIgnoreCase("sctp")) {
-			LOGGER.debug("sips: scheme, so upgrading from SCTP to SCTP-TLS");
-			return "SCTP-TLS";
+			upgradedTransport = "SCTP-TLS";
 		} else {
 			throw new IllegalArgumentException("Cannot upgrade " + transport);
-		}
+		}		
+		LOGGER.debug("upgradeTransport(" + transport + "): " + upgradedTransport);
+		
+		return upgradedTransport;
 	}
 
 	/**
@@ -186,17 +194,17 @@ public final class LocatorUtils {
 	 * @return the default transport for the provided scheme.
 	 */
 	public static String getDefaultTransportForScheme(String scheme) {
-		LOGGER.debug("Determining default transport for " + scheme + ": scheme");
+		LOGGER.debug("getDefaultTransportForScheme(" + scheme + ")");
 		String transport;
 		if ("SIPS".equalsIgnoreCase(scheme)) {
-			LOGGER.debug("Default transport is TCP");
 			transport = upgradeTransport("TCP");
 		} else if ("SIP".equalsIgnoreCase(scheme)) {
-			LOGGER.debug("Default transport is UDP");
 			transport = "UDP";
 		} else {
 			throw new IllegalArgumentException("Unknown scheme: " + scheme);
 		}
+		
+		LOGGER.debug("getDefaultTransportForScheme(" + scheme + "): " + transport);
 		return transport;
 	}
 
@@ -210,7 +218,7 @@ public final class LocatorUtils {
 	 * @return the target.
 	 */
 	public static String getTarget(SipURI uri) {
-		LOGGER.debug("Resolving TARGET for " + uri);
+		LOGGER.debug("getTarget(" + uri + ")");
 		// RFC 3263 Section 4 Para 5
 	
 		// We define TARGET as the value of the maddr parameter of
@@ -224,7 +232,7 @@ public final class LocatorUtils {
 		} else {
 			target = uri.getHost();
 		}
-		LOGGER.debug("TARGET is " + target);
+		LOGGER.debug("getTarget(" + uri + "): " + target);
 		return target;
 	}
 
@@ -240,7 +248,7 @@ public final class LocatorUtils {
 	 * @return the SRV service identifier.
 	 */
 	public static String getServiceIdentifier(String transport, String domain) {
-		LOGGER.debug("Determining service identifier for " + transport + " transport to " + domain);
+		LOGGER.debug("getServiceIdentifier(" + transport + ", " + domain + ")");
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}
@@ -265,7 +273,7 @@ public final class LocatorUtils {
 		sb.append(domain);
 		
 		final String serviceId = sb.toString();
-		LOGGER.debug("Service identifier is " + serviceId);
+		LOGGER.debug("getServiceIdentifier(" + transport + ", " + domain + "): " + serviceId);
 		
 		return serviceId;
 	}

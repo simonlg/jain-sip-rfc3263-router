@@ -29,9 +29,11 @@ import javax.sip.header.ViaHeader;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -41,6 +43,11 @@ public class DefaultRouterTest {
 	private MessageFactory messageFactory;
 	private SipStack stack;
 	private Locator locator;
+	
+	@BeforeClass
+	public static void configureLogging() {
+		BasicConfigurator.configure();
+	}
 	
 	@Before
 	public void setUp() throws Exception {
