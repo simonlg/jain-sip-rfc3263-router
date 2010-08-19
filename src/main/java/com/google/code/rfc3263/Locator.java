@@ -271,7 +271,8 @@ public class Locator {
 				LOGGER.debug("SRV records found during transport selection");
 				// Nothing to do here: hops were created earlier.
 			} else if (transportParam != null) {
-				LOGGER.debug("Transport parameter was specified");
+				LOGGER.debug("Transport was sepecified explicitly, so no NAPTR processing was performed.");
+				LOGGER.debug("Performing an SRV query for " + hopTransport);
 				// 4.2 Para 4
 				//
 				// If [NAPTR processing] was not [performed], because a transport was 
@@ -284,14 +285,14 @@ public class Locator {
 				LOGGER.debug("Looking up SRV records for " + serviceId);
 				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
 				if (isValid(services)) {
-					LOGGER.debug("Found " + services.size() + " SRV records");
+					LOGGER.debug("Found " + services.size() + " SRV records for " + serviceId + ", so use provided targets and ports");
 					LOGGER.debug(services);
 					List<ServiceRecord> sortedServices = sortServiceRecords(services);
 					for (ServiceRecord service : sortedServices) {
 						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
 					}
 				} else {
-					LOGGER.debug("No valid SRV records for " + serviceId);
+					LOGGER.debug("No valid SRV records found for " + serviceId + ", so use default port for " + hopTransport);
 					// 4.2 Para 5
 					//
 					// If no SRV records were found, the client performs an A or AAAA record
@@ -302,6 +303,7 @@ public class Locator {
 					hops.add(new HopImpl(domain, LocatorUtils.getDefaultPortForTransport(hopTransport), hopTransport));
 				}
 			} else {
+				LOGGER.debug("No port was discovered during transport selection, so use default port for selected transport");
 				// 4.2 Para 5
 				//
 				// If no SRV records were found, the client performs an A or AAAA record
@@ -419,7 +421,7 @@ public class Locator {
 	 * @throws UnknownHostException if the URI host is invalid.
 	 */
 	public Queue<Hop> locate(SipURI uri) {
-		LOGGER.debug("Locating SIP server for " + uri);
+		LOGGER.debug("locate(" + uri + ")");
 		final String target = LocatorUtils.getTarget(uri);
 
 		final Queue<Hop> hops;
@@ -428,11 +430,7 @@ public class Locator {
 		} else {
 			hops = resolveHops(locateNonNumeric(uri));
 		}
-		if (hops.size() == 0) {
-			LOGGER.debug("No next hop could be determined for " + uri);
-		} else {
-			LOGGER.debug("Hop list for " + uri + " is " + hops);
-		}
+		LOGGER.debug("locate(" + uri + "): " + hops);
 		
 		return hops;
 	}

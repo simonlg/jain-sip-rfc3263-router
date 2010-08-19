@@ -15,8 +15,6 @@ import javax.sip.SipStack;
 import javax.sip.address.Hop;
 import javax.sip.address.Router;
 import javax.sip.address.SipURI;
-import javax.sip.address.URI;
-import javax.sip.header.RouteHeader;
 import javax.sip.message.Request;
 
 import org.apache.log4j.Logger;
@@ -64,79 +62,16 @@ public class DefaultRouter implements Router {
 	 * {@inheritDoc}
 	 */
 	public Hop getNextHop(Request request) throws SipException {
-		LOGGER.debug("Attempting to route the following request \n\n" + request);
-		final SipURI destination;
-		// RFC 3261 Section 8.1.2 Para 1
-		//
-		// The destination for the request is then computed.  Unless there is
-		// local policy specifying otherwise, the destination MUST be determined
-		// by applying the DNS procedures described in [4] as follows.  If the
-		// first element in the route set indicated a strict router (resulting
-		// in forming the request as described in Section 12.2.1.1), the
-		// procedures MUST be applied to the Request-URI of the request.
-		// Otherwise, the procedures are applied to the first Route header field
-		// value in the request (if one exists), or to the request's Request-URI
-		// if there is no Route header field present.  These procedures yield an
-		// ordered set of address, port, and transports to attempt.  Independent
-		// of which URI is used as input to the procedures of [4], if the
-		// Request-URI specifies a SIPS resource, the UAC MUST follow the
-		// procedures of [4] as if the input URI were a SIPS URI.
-
-		final URI requestUri = request.getRequestURI();
-		if (requestUri.isSipURI() == false) {
-			LOGGER.warn("Request-URI is not a SIP URI.  Unable to route request");
-			throw new SipException("Can't route non-SIP URI" + requestUri);
-		}
-		final SipURI requestSipUri = (SipURI) requestUri;
+		LOGGER.debug("getNextHop(" + request + ")");
 		
-		final ListIterator<?> routes = request.getHeaders(RouteHeader.NAME);
-		if (routes.hasNext()) {
-			LOGGER.debug("Route set found");
-			// We have a Route set.  Get the top route.
-			// TODO: Should this be popped?
-			final RouteHeader route = (RouteHeader) routes.next();
-			final URI routeUri = route.getAddress().getURI();
-			if (routeUri.isSipURI() == false) {
-				LOGGER.warn("Top route in set is not a SIP URI.  Unable to route request");
-				throw new SipException("Can't route non-SIP URI" + routeUri);
-			}
-			final SipURI routeSipUri = (SipURI) routeUri;
-			if (routeSipUri.hasLrParam() == false) {
-				LOGGER.debug("First element in route set indicates a strict router.  Using Request-URI for input");
-				// RFC 3261 Section 8.1.2 Para 1 (Cont)
-				//
-				// If the first element in the route set indicated a strict router, 
-				// the procedures MUST be applied to the Request-URI of the request.
-				destination = requestSipUri;
-			} else {
-				LOGGER.debug("First element in route set indicates a loose router.  Using route for input");
-				// RFC 3261 Section 8.1.2 Para 1 (Cont)
-				//
-				// Otherwise, the procedures are applied to the first Route header field
-				// value in the request
-				destination = routeSipUri;
-			}
-		} else if (outboundProxy != null) {
+		
+		if (outboundProxy != null) {
 			LOGGER.debug("Outbound proxy has been defined, returning proxy hop.");
+			LOGGER.debug("getNextHop(" + request + "): " + outboundProxy);
 			return outboundProxy;
-		} else {
-			LOGGER.debug("No route set found.  Using Request-URI for input");
-			// RFC 3261 Section 8.1.2 Para 1 (Cont)
-			//
-			// Otherwise, the procedures are applied to ... the request's Request-URI
-			// if there is no Route header field present.
-			destination = requestSipUri;
 		}
 		
-		// RFC 3261 Section 8.1.2 Para 1 (Cont)
-		//
-		// if the Request-URI specifies a SIPS resource, the UAC MUST follow 
-		// the procedures of [4] as if the input URI were a SIPS URI.
-		if (requestSipUri.isSecure()) {
-			LOGGER.debug("Request URI is a SIPS URI.  Treating input URI as a SIPS URI too");
-			destination.setSecure(true);
-		}
-//		Locator locator = new Locator(resolver, getSupportedTransports());
+		final SipURI destination = DestinationSelector.select(request);
 		try {
 			Locator locator = new Locator(getSupportedTransports());
 			Queue<Hop> hops = locator.locate(destination);
@@ -144,7 +79,7 @@ public class DefaultRouter implements Router {
 			if (hops.size() > 0) {
 				top = hops.poll();
 			}
-			LOGGER.debug("Next hop for request is " + top);
+			LOGGER.debug("getNextHop(" + request + "): " + top);
 			return top;
 		} catch (IllegalArgumentException e) {
 			throw new SipException("Rethrowing", e);
@@ -176,9 +111,11 @@ public class DefaultRouter implements Router {
 
 		final Iterator<?> providers = sipStack.getSipProviders();
 		while (providers.hasNext()) {
-			SipProvider provider = (SipProvider) providers.next();
+			final SipProvider provider = (SipProvider) providers.next();
 			for (ListeningPoint endpoint : provider.getListeningPoints()) {
-				supportedTransports.add(endpoint.getTransport().toUpperCase());
+				final String transport = endpoint.getTransport().toUpperCase();
+				LOGGER.debug("Found ListeningPoint " + endpoint.getIPAddress() + ":" + endpoint.getPort() + "/" + endpoint.getTransport());
+				supportedTransports.add(transport);
 			}
 		}
 		
