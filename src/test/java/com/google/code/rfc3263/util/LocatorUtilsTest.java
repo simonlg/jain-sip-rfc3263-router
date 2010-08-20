@@ -11,11 +11,6 @@ import org.junit.Test;
 import com.google.code.rfc3263.util.LocatorUtils;
 
 public class LocatorUtilsTest {
-	@BeforeClass
-	public static void configureLogging() {
-		BasicConfigurator.configure();
-	}
-
 	@Test
 	public void testIsNumericIPv4() {
 		assertTrue(LocatorUtils.isNumeric("192.168.0.1"));

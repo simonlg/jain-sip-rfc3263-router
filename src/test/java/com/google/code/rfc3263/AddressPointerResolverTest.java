@@ -11,11 +11,8 @@ import com.google.code.rfc3263.dns.Resolver;
  * A/AAAA	Y
  */
 public class AddressPointerResolverTest extends AddressResolverTest {
-	public AddressPointerResolverTest() {
-		this(new AddressPointerResolver());
-	}
-	
-	public AddressPointerResolverTest(Resolver resolver) {
-		super(resolver);
+	@Override
+	public Resolver getResolver() {
+		return new AddressPointerResolver();
 	}
 }

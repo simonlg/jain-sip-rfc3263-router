@@ -14,12 +14,9 @@ import com.google.code.rfc3263.dns.AddressServiceResolver;
  * A/AAAA	Y
  */
 public class AddressServiceResolverTest extends AddressResolverTest {
-	public AddressServiceResolverTest() {
-		super(new AddressServiceResolver());
-	}
-	
-	public AddressServiceResolverTest(Resolver resolver) {
-		super(resolver);
+	@Override
+	public Resolver getResolver() {
+		return new AddressServiceResolver();
 	}
 	
 	@Override

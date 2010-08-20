@@ -16,12 +16,8 @@ import com.google.code.rfc3263.dns.Resolver;
  * A/AAAA	N
  */
 public class BaseResolverTest extends AbstractResolverTest {
-	public BaseResolverTest() {
-		this(new BaseResolver());
-	}
-	
-	public BaseResolverTest(Resolver resolver) {
-		super(resolver);
+	public Resolver getResolver() {
+		return new BaseResolver();
 	}
 	
 	@Override
