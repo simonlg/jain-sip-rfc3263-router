@@ -9,10 +9,8 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.code.rfc3263.dns.Resolver;
@@ -27,24 +25,16 @@ public abstract class AbstractResolverTest {
 	public final static String TEST_SECURE_TRANSPORT = "TLS";
 	public final static int TEST_PORT = 15060;
 	
-	private final Resolver resolver;
+	private Resolver resolver;
 	private Locator locator;
 	private AddressFactory addressFactory;
 	
-	public AbstractResolverTest(Resolver resolver) {
-		this.resolver = resolver;
-	}
-	
-	@BeforeClass
-	public static void configureLogging() {
-		BasicConfigurator.configure();
-	}
-	
 	@Before
 	public void setUp() throws Exception {
+		this.resolver = getResolver();
 		SipFactory factory = SipFactory.getInstance();
-		addressFactory = factory.createAddressFactory();
-		locator = new Locator(resolver, getTransports());
+		this.addressFactory = factory.createAddressFactory();
+		this.locator = new Locator(resolver, getTransports());
 	}
 	
 	private void test(Hop expected, SipURI uri) throws UnknownHostException {
@@ -195,6 +185,7 @@ public abstract class AbstractResolverTest {
 		test(getHopForSecureHostWithTransport(), uri);
 	}
 	
+	protected abstract Resolver getResolver();
 	protected abstract Hop getHopForNumericHost();
 	protected abstract Hop getHopForNumericHostWithTransportAndPort();
 	protected abstract Hop getHopForNumericHostWithPort();

@@ -1,6 +1,7 @@
 package com.google.code.rfc3263;
 
 import com.google.code.rfc3263.dns.AddressPointerServiceResolver;
+import com.google.code.rfc3263.dns.Resolver;
 
 /**
  * Tests for location in the following DNS environment:
@@ -10,7 +11,8 @@ import com.google.code.rfc3263.dns.AddressPointerServiceResolver;
  * A/AAAA	Y
  */
 public class AddressServicePointerResolverTest extends AddressServiceResolverTest {
-	public AddressServicePointerResolverTest() {
-		super(new AddressPointerServiceResolver());
+	@Override
+	public Resolver getResolver() {
+		return new AddressPointerServiceResolver();
 	}
 }
