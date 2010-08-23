@@ -18,7 +18,7 @@ public class HopParser {
 		transports.add("TCP");
 		transports.add("TLS");
 		transports.add("SCTP");
-		transports.add("SCTP-TLS");
+		transports.add("TLS-SCTP");
 	}
 	
 	/**

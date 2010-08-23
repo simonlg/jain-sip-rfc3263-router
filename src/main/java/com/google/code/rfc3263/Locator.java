@@ -1,6 +1,7 @@
 package com.google.code.rfc3263;
 
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import javax.sip.ListeningPoint;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
@@ -50,7 +52,7 @@ public class Locator {
 		serviceTransportMap.put("SIPS+D2T", "TLS");
 		serviceTransportMap.put("SIP+D2U", "UDP");
 		serviceTransportMap.put("SIP+D2S", "SCTP");
-		serviceTransportMap.put("SIPS+D2S", "SCTP-TLS");
+		serviceTransportMap.put("SIPS+D2S", "TLS-SCTP");
 	}
 	private Map<String, String> serviceIdTransportMap = new HashMap<String, String>();
 	{
@@ -58,7 +60,7 @@ public class Locator {
 		serviceIdTransportMap.put("TLS", "_sips._tcp.");
 		serviceIdTransportMap.put("UDP", "_sip._udp.");
 		serviceIdTransportMap.put("SCTP", "_sip._sctp.");
-		serviceIdTransportMap.put("SCTP-TLS", "_sips._sctp.");
+		serviceIdTransportMap.put("TLS-SCTP", "_sips._sctp.");
 	}
 	
 	/**
@@ -83,12 +85,12 @@ public class Locator {
 		this.prefTransports = transports;
 	}
 	
-	private Queue<Hop> locateNumeric(SipURI uri) {
+	private Hop locateNumeric(SipURI uri) {
 		final String domain = LocatorUtils.getTarget(uri);
 		
-		final String transportParam = uri.getTransportParam();
+		final String transportParam = getTransportParam(uri);
+		final boolean isSecure = isSecure(uri);
 		final int port = uri.getPort();
-		final boolean isSecure = uri.isSecure();
 		
 		final String hopAddress;
 		final int hopPort;
@@ -103,7 +105,12 @@ public class Locator {
 			// If the URI specifies a transport protocol in the transport parameter,
 			// that transport protocol SHOULD be used.
 			if (isSecure) {
-				hopTransport = LocatorUtils.upgradeTransport(transportParam);
+				try {
+					hopTransport = LocatorUtils.upgradeTransport(transportParam);
+				} catch (IllegalArgumentException e) {
+					// User is trying to use secure UDP
+					return null;
+				}
 			} else {
 				hopTransport = transportParam.toUpperCase();
 			}
@@ -139,17 +146,14 @@ public class Locator {
 		
 		LOGGER.debug("Determined IP address and port for " + uri + ": " + hopAddress + ":" + hopPort);
 		
-		final Queue<Hop> hops = new LinkedList<Hop>();
-		hops.add(new HopImpl(hopAddress, hopPort, hopTransport));
-		
-		return hops;
+		return new HopImpl(hopAddress, hopPort, hopTransport);
 	}
 	
 	private Queue<Hop> locateNonNumeric(SipURI uri) {
 		final Queue<Hop> hops = new LinkedList<Hop>();
 		
-		final String transportParam = uri.getTransportParam();
-		final boolean isSecure = uri.isSecure();
+		final String transportParam = getTransportParam(uri);
+		final boolean isSecure = isSecure(uri);
 		final int port = uri.getPort();
 		
 		String domain = LocatorUtils.getTarget(uri) + ".";
@@ -164,7 +168,12 @@ public class Locator {
 			// If the URI specifies a transport protocol in the transport parameter,
 			// that transport protocol SHOULD be used.
 			if (isSecure) {
-				hopTransport = LocatorUtils.upgradeTransport(transportParam);
+				try {
+					hopTransport = LocatorUtils.upgradeTransport(transportParam);
+				} catch (IllegalArgumentException e) {
+					// User is trying to use secure UDP
+					return hops;
+				}
 			} else {
 				hopTransport = transportParam.toUpperCase();
 			}
@@ -377,7 +386,7 @@ public class Locator {
 		if (prefTransports.contains("TLS") == false) {
 			validServiceFields.remove("SIPS+D2T");
 		}
-		if (prefTransports.contains("SCTP-TLS") == false) {
+		if (prefTransports.contains("TLS-SCTP") == false) {
 			validServiceFields.remove("SIPS+D2S");
 		}
 		
@@ -424,11 +433,14 @@ public class Locator {
 		LOGGER.debug("locate(" + uri + ")");
 		final String target = LocatorUtils.getTarget(uri);
 
-		final Queue<Hop> hops;
+		final Queue<Hop> hops = new LinkedList<Hop>();
 		if (LocatorUtils.isNumeric(target)) {
-			hops = locateNumeric(uri);
+			Hop hop = locateNumeric(uri);
+			if (hop != null) {
+				hops.add(hop);
+			}
 		} else {
-			hops = resolveHops(locateNonNumeric(uri));
+			hops.addAll(resolveHops(locateNonNumeric(uri)));
 		}
 		LOGGER.debug("locate(" + uri + "): " + hops);
 		
@@ -474,6 +486,20 @@ public class Locator {
 		} else {
 			return true;
 		}
+	}
+	
+	private String getTransportParam(SipURI uri) {
+		if ("tls".equals(uri.getTransportParam())) {
+			return "tcp";
+		}
+		return uri.getTransportParam();
+	}
+	
+	private boolean isSecure(SipURI uri) {
+		if ("tls".equals(uri.getTransportParam())) {
+			return true;
+		}
+		return uri.isSecure();
 	}
 	
 	private static boolean isValid(PointerRecord pointer) {

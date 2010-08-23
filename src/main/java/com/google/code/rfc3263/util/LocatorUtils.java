@@ -20,7 +20,7 @@ public final class LocatorUtils {
 		knownTransports.add("TCP");
 		knownTransports.add("TLS");
 		knownTransports.add("SCTP");
-		knownTransports.add("SCTP-TLS");
+		knownTransports.add("TLS-SCTP");
 	}
 	
 	private LocatorUtils() {}
@@ -145,7 +145,7 @@ public final class LocatorUtils {
 		}
 		
 		int port;
-		if (transport.endsWith("TLS")) {
+		if (transport.startsWith("TLS")) {
 			port = 5061;
 		} else {
 			port = 5060;
@@ -174,7 +174,7 @@ public final class LocatorUtils {
 		if (transport.equalsIgnoreCase("tcp")) {
 			upgradedTransport = "TLS";
 		} else if (transport.equalsIgnoreCase("sctp")) {
-			upgradedTransport = "SCTP-TLS";
+			upgradedTransport = "TLS-SCTP";
 		} else {
 			throw new IllegalArgumentException("Cannot upgrade " + transport);
 		}		
@@ -255,7 +255,7 @@ public final class LocatorUtils {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		if (transport.endsWith("TLS")) {
+		if (transport.startsWith("TLS")) {
 			sb.append("_sips.");
 		} else {
 			sb.append("_sip.");
@@ -264,7 +264,7 @@ public final class LocatorUtils {
 		sb.append("_");
 		if (transport.equalsIgnoreCase("TLS")) {
 			sb.append("tcp");
-		} else if (transport.equalsIgnoreCase("SCTP-TLS")) {
+		} else if (transport.equalsIgnoreCase("TLS-SCTP")) {
 			sb.append("sctp");
 		} else {
 			sb.append(transport.toLowerCase());
