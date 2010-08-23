@@ -1,14 +1,10 @@
 package com.google.code.rfc3263.util;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-import org.apache.log4j.BasicConfigurator;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.google.code.rfc3263.util.LocatorUtils;
 
 public class LocatorUtilsTest {
 	@Test
@@ -83,8 +79,8 @@ public class LocatorUtilsTest {
 	}
 	
 	@Test
-	public void defaultPortForSctpTlsIs5061() {
-		assertEquals(5061, LocatorUtils.getDefaultPortForTransport("SCTP-TLS"));
+	public void defaultPortForTlsSctpIs5061() {
+		assertEquals(5061, LocatorUtils.getDefaultPortForTransport("TLS-SCTP"));
 	}
 	
 	@Test
@@ -94,7 +90,7 @@ public class LocatorUtilsTest {
 	
 	@Test
 	public void shouldUpgradeSctpToSctpTls() {
-		assertEquals("SCTP-TLS", LocatorUtils.upgradeTransport("SCTP"));
+		assertEquals("TLS-SCTP", LocatorUtils.upgradeTransport("SCTP"));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -114,7 +110,7 @@ public class LocatorUtilsTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldFailToUpgradeSctpTls() {
-		LocatorUtils.upgradeTransport("SCTP-TLS");
+		LocatorUtils.upgradeTransport("TLS-SCTP");
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -159,6 +155,6 @@ public class LocatorUtilsTest {
 	
 	@Test
 	public void testGetServiceIdentifierForSctpTls() {
-		assertEquals("_sips._sctp.example.org.", LocatorUtils.getServiceIdentifier("SCTP-TLS", "example.org."));
+		assertEquals("_sips._sctp.example.org.", LocatorUtils.getServiceIdentifier("TLS-SCTP", "example.org."));
 	}
 }

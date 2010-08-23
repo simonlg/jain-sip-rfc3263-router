@@ -1,12 +1,8 @@
 package com.google.code.rfc3263;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
@@ -29,10 +25,8 @@ import javax.sip.header.ViaHeader;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DefaultRouterTest {
@@ -40,12 +34,9 @@ public class DefaultRouterTest {
 	private HeaderFactory headerFactory;
 	private MessageFactory messageFactory;
 	private SipStack stack;
-	private Locator locator;
-	
+
 	@Before
 	public void setUp() throws Exception {
-		locator = createMock(Locator.class);
-		
 		SipFactory factory = SipFactory.getInstance();
 		addressFactory = factory.createAddressFactory();
 		headerFactory = factory.createHeaderFactory();
@@ -55,49 +46,34 @@ public class DefaultRouterTest {
 		properties.put("javax.sip.STACK_NAME", "Test");
 		stack = factory.createSipStack(properties);
 	}
-	
-	@After
-	public void tearDown() {
-		verify(locator);
-	}
 
-	@Ignore @Test
+	@Test
 	public void testRequestUriShouldBeUsedWithoutProxy() throws Exception {
 		Request request = getRequest();
-		expect(locator.locate((SipURI) request.getRequestURI())).andReturn(new LinkedList<Hop>());
-		replay(locator);
 		
-		getRouter(null).getNextHop(request);
+		assertEquals(request.getRequestURI(), DefaultRouter.selectDestination(request));
 	}
 	
-	@Ignore @Test
+	@Test
 	public void testLooseRouteHeaderShouldBeUsedWhenPresent() throws Exception {
 		final Request request = getRequest();
 		final RouteHeader route = getRoute(true);
 		request.addHeader(route);
 		
-		expect(locator.locate((SipURI) route.getAddress().getURI())).andReturn(new LinkedList<Hop>());
-		replay(locator);
-		
-		getRouter(null).getNextHop(request);
+		assertEquals(route.getAddress().getURI(), DefaultRouter.selectDestination(request));
 	}
 	
-	@Ignore @Test
+	@Test
 	public void testFixedRouteHeaderShouldNeverBeUsed() throws Exception {
 		final Request request = getRequest();
 		final RouteHeader route = getRoute(false);
 		request.addHeader(route);
 		
-		expect(locator.locate((SipURI) request.getRequestURI())).andReturn(new LinkedList<Hop>());
-		replay(locator);
-		
-		getRouter(null).getNextHop(request);
+		assertEquals(request.getRequestURI(), DefaultRouter.selectDestination(request));
 	}
 	
 	@Test
 	public void testProxyShouldBeUsedInAbsenseOfRoute() throws Exception {
-		replay(locator);
-		
 		Hop expected = new HopImpl("192.168.0.3", 5060, "UDP");
 		Hop actual = getRouter("192.168.0.3:5060/UDP").getNextHop(getRequest());
 		
@@ -106,8 +82,6 @@ public class DefaultRouterTest {
 
 	@Test
 	public void testGetNextHopsShouldReturnEmptyIterator() throws Exception {
-		replay(locator);
-		
 		@SuppressWarnings("deprecation")
 		ListIterator<?> iter = getRouter(null).getNextHops(getRequest());
 		
@@ -117,8 +91,6 @@ public class DefaultRouterTest {
 
 	@Test
 	public void testGetOutboundProxy() {
-		replay(locator);
-		
 		Hop expected = new HopImpl("192.168.0.3", 5060, "UDP");
 		Hop actual = getRouter("192.168.0.3:5060/UDP").getOutboundProxy();
 		
@@ -127,8 +99,6 @@ public class DefaultRouterTest {
 	
 	@Test
 	public void testOutboundProxyShouldBeNullAsDefault() {
-		replay(locator);
-		
 		Hop expected = null;
 		Hop actual = getRouter(null).getOutboundProxy();
 		
