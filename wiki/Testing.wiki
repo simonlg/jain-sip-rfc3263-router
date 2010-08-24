@@ -17,14 +17,14 @@ During testing, this environment will need to be mocked out.
 
 = Local Variables =
 
-== Target Selection ==
+== Maddr Selection ==
 
-The following target configurations should be tested:
+The following maddr parameters should be tested:
 
-  * SIP-URI with no maddr parameter
-  * SIP-URI with host maddr parameter
-  * SIP-URI with IPv4 maddr parameter
-  * SIP-URI with IPv6 maddr parameter
+  * *none*
+  * hostname
+  * IPv4 address
+  * IPv6 reference
 
 == Scheme ==
 
@@ -39,9 +39,9 @@ We should also test the router attempting to route a tel scheme to make sure the
 
 The following host configurations should be tested:
 
-  * hostname (e.g. example.org)
+  * hostname
   * IPv4 address
-  * IPv6 reference (e.g. "[" ::1 "]")
+  * IPv6 reference
 
 Basic validation is done on IPv4 addresses and IPv6 references, but currently, invalid addresses, like 999.999.999.999 (valid according to 3261) will be parsed as an IP address, which will obviously fail to route.
 
@@ -49,8 +49,8 @@ Basic validation is done on IPv4 addresses and IPv6 references, but currently, i
 
 The following port configurations should be tested:
 
-  * Present
-  * Absent
+  * *non*
+  * 1234
 
 We don't validate the port number (apart from when parsing the outbound proxy) for being in a valid tcp or udp range (0 - 65536).
 
@@ -58,11 +58,11 @@ We don't validate the port number (apart from when parsing the outbound proxy) f
 
 The following transport parameters should be tested:
 
+  * *none*
   * tcp
   * udp
   * sctp
   * tls
-  * *none*
 
 "tls" is a special case, but should still be handled.  For the purposes of the router, URIs with "transport=tls" will be treated like sips addresses.
 
