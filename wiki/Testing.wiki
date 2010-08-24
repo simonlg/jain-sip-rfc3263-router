@@ -69,8 +69,9 @@ The following transport parameters should be tested:
   * tcp
   * udp
   * sctp
+  * tls
 
-There is some debate over whether "tls" is a valid transport, but for the purposes of the router, "tls" is invalid.
+"tls" is a special case, but should still be handled.  For the purposes of the router, URIs with "transport=tls" will be treated like sips addresses.
 
 = maddr =
 
