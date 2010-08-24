@@ -8,7 +8,7 @@ This page provides in-depth insight into the internal working of the router.
 
 = The "tls" Transport Parameter =
 
-SipURIs with a transport parameter set to `tls` will be treated as if they are `sips` URIs with a transport parameter set to `tcp`.  Therefore:
+SipURIs with a transport parameter set to `tls` with either a `sip` or `sips` scheme will be treated as if they are `sips` URIs with a transport parameter set to `tcp`.  Therefore:
 
 {{{
 sip:example.org;transport=tls
