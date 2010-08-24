@@ -1,7 +1,6 @@
 package com.google.code.rfc3263;
 
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +11,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import javax.sip.ListeningPoint;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
@@ -205,17 +203,19 @@ public class Locator {
 				// the discovery of the most preferred transport protocol of the 
 				// server that is supported by the client, as well as an SRV 
 				// record for the server.
-				PointerRecord pointer = selectPointerRecord(pointers);
-				String serviceId = pointer.getReplacement();
-				LOGGER.debug("Looking up SRV records for " + serviceId);
-				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
-				if (isValid(services)) {
-					LOGGER.debug("Found " + services.size() + " SRV record(s)");
-					List<ServiceRecord> sortedServices = sortServiceRecords(services);
-					
-					hopTransport = serviceTransportMap.get(pointer.getService());
-					for (ServiceRecord service : sortedServices) {
-						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+				List<PointerRecord> sortedPointers = sortPointerRecords(pointers);
+				for (PointerRecord pointer : sortedPointers) {
+					String serviceId = pointer.getReplacement();
+					LOGGER.debug("Looking up SRV records for " + serviceId);
+					final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+					if (isValid(services)) {
+						LOGGER.debug("Found " + services.size() + " SRV record(s)");
+						List<ServiceRecord> sortedServices = sortServiceRecords(services);
+						
+						hopTransport = serviceTransportMap.get(pointer.getService());
+						for (ServiceRecord service : sortedServices) {
+							hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+						}
 					}
 				}
 			} else {
@@ -327,10 +327,11 @@ public class Locator {
 		return hops;
 	}
 
-	private static PointerRecord selectPointerRecord(List<PointerRecord> pointers) {
+	private static List<PointerRecord> sortPointerRecords(List<PointerRecord> pointers) {
 		LOGGER.debug("Selecting pointer record from record set");
 		PointerRecordSelector selector = new PointerRecordSelector(pointers);
-		return selector.select().get(0);
+		
+		return selector.select();
 	}
 	
 	private Queue<Hop> resolveHops(Queue<Hop> hops) {
