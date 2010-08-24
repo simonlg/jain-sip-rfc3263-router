@@ -6,9 +6,6 @@
 
 Add your content here.
 
-= transport=tls =
+= The "tls" Transport Parameter =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+SipURIs with a transport parameter set to `tls` will be treated as if they are `sips` URIs with a transport parameter set to `tcp`.
