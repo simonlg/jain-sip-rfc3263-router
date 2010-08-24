@@ -49,7 +49,7 @@ Basic validation is done on IPv4 addresses and IPv6 references, but currently, i
 
 The following port configurations should be tested:
 
-  * *non*
+  * *none*
   * 1234
 
 We don't validate the port number (apart from when parsing the outbound proxy) for being in a valid tcp or udp range (0 - 65536).
