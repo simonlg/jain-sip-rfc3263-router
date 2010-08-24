@@ -1,11 +1,9 @@
 package com.google.code.rfc3263.dns;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -48,38 +46,8 @@ public class ServiceRecordSelector {
 			return services;
 		}
 		
-		List<ServiceRecord> weightedList = new LinkedList<ServiceRecord>();
-		Collections.sort(services, new ServiceRecordWeightComparator());
+		Collections.sort(services, new ServiceRecordDeterministicComparator());
 		
-		final Random rnd = new Random();
-		while (services.size() > 0) {
-			int totalWeight = getTotalWeight(services);
-			int targetWeight = rnd.nextInt(totalWeight + 1);
-
-			LOGGER.debug("Total weight is " + totalWeight + "; target weight is " + targetWeight);
-			final Iterator<ServiceRecord> iter = services.iterator();
-			while (iter.hasNext()) {
-				final ServiceRecord service = iter.next();
-				targetWeight -= Math.min(service.getWeight(), targetWeight);
-				LOGGER.debug("Target weight is now " + targetWeight);
-				if (targetWeight == 0) {
-					LOGGER.debug("Service record selected");
-					weightedList.add(service);
-					iter.remove();
-					
-					break;
-				}
-			}
-		}
-		
-		return weightedList;
-	}
-	
-	private int getTotalWeight(List<ServiceRecord> services) {
-		int totalWeight = 0;
-		for (ServiceRecord service : services) {
-			totalWeight += service.getWeight();
-		}
-		return totalWeight;
+		return services;
 	}
 }
