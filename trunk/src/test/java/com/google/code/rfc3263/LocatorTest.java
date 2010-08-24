@@ -319,6 +319,7 @@ public class LocatorTest {
 		
 		expect(resolver.lookupPointerRecords("example.org.")).andReturn(pointers);
 		expect(resolver.lookupServiceRecords("_sip._tcp.example.net.")).andReturn(new ArrayList<ServiceRecord>());
+		expect(resolver.lookupServiceRecords("_sip._udp.example.net.")).andReturn(new ArrayList<ServiceRecord>());
 		expect(resolver.lookupAddressRecords("example.org.")).andReturn(new HashSet<AddressRecord>());
 		replay(resolver);
 
