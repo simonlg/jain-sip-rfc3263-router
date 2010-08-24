@@ -20,6 +20,7 @@ We should test combinations of the presence of the various DNS records, e.g.
 == A and AAAA ==
 
    * *none*
+   * present
 
 It would seem illegal for a DNS server to not chain its records correctly, but it is possible through misconfiguration.  For example, if the DNS server has an NAPTR record, we would expect to see a corresponding SRV record.  Likewise, if the DNS server has a SRV record, we would expect to see a corresponding A or AAAA record.
 
