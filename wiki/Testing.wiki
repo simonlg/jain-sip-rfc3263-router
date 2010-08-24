@@ -68,7 +68,7 @@ The following transport parameters should be tested:
 
 == Total Tests ==
 
-maddr (4) * scheme (2) * host (3) * port (2) * transport (5) = 240 combinations
+maddr (4) x scheme (2) x host (3) x port (2) x transport (5) = 240 combinations
 
 = maddr =
 
