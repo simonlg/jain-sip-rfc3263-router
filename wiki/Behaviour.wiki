@@ -8,4 +8,14 @@ Add your content here.
 
 = The "tls" Transport Parameter =
 
-SipURIs with a transport parameter set to `tls` will be treated as if they are `sips` URIs with a transport parameter set to `tcp`.
+SipURIs with a transport parameter set to `tls` will be treated as if they are `sips` URIs with a transport parameter set to `tcp`.  Therefore:
+
+{{{
+sip:example.org;transport=tls
+}}}
+
+becomes:
+
+{{{
+sips:example.org;transport=tcp
+}}}
