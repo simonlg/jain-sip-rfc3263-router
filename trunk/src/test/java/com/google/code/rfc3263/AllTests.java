@@ -1,9 +1,9 @@
 package com.google.code.rfc3263;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Queue;
-import java.util.Set;
 
 import javax.sip.SipFactory;
 import javax.sip.address.AddressFactory;
@@ -18,13 +18,13 @@ public class AllTests {
 		SipFactory factory = SipFactory.getInstance();
 		AddressFactory addressFactory = factory.createAddressFactory();
 		
-		Set<SipURI> uris = new HashSet<SipURI>();
+		Collection<SipURI> uris = new ArrayList<SipURI>();
 		
-		for (String host : Arrays.asList("example.org", "127.0.0.1", "[::1]")) {
+		for (String host : Arrays.asList("example.org", "192.168.0.1", "[fe80:0:0:0:0:0:c0a8:1]")) {
 			for (int port : Arrays.asList(-1, 1234)) {
 				for (boolean secure : Arrays.asList(true, false)) {
-					for (String transport : Arrays.asList("udp", "tcp", "tls", null)) {
-						for (String maddr : Arrays.asList("example.net", "127.0.0.2", "[::2]", null)) {
+					for (String transport : Arrays.asList("udp", "tcp", "sctp", "tls", null)) {
+						for (String maddr : Arrays.asList("example.net", "192.168.0.2", "[fe80:0:0:0:0:0:c0a8:2]", null)) {
 							SipURI uri = addressFactory.createSipURI(null, host);
 							if (transport != null) {
 								uri.setTransportParam(transport);
