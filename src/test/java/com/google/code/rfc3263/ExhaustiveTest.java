@@ -34,7 +34,10 @@ import com.google.code.rfc3263.dns.ServiceRecord;
  * example.net resolves to 192.168.0.4
  */
 @RunWith(LabelledParameterized.class)
-public class AllTests {
+public class ExhaustiveTest {
+	private static String EXAMPLE_DOT_ORG_IP = "192.168.0.3";
+	private static String EXAMPLE_DOT_NET_IP = "192.168.0.4";
+	
 	@Parameters
 	public static Collection<Object[]> getParameters() throws Exception {
 		SipFactory factory = SipFactory.getInstance();
@@ -265,182 +268,182 @@ public class AllTests {
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS-SCTP");;
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");;
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");;
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:example.org:1234");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "TLS");;
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=udp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=udp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=udp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=udp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:example.org:1234");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_ORG_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
@@ -465,177 +468,177 @@ public class AllTests {
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=udp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=udp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=udp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=udp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
@@ -665,182 +668,182 @@ public class AllTests {
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:192.168.0.1:1234");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=udp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=udp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=udp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=udp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:192.168.0.1:1234");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.1", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
@@ -865,182 +868,182 @@ public class AllTests {
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5061, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1];maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=udp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=udp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=udp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=udp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] =  new HopImpl("192.168.0.2", 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5060, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5060, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5061, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1];maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 5060, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
@@ -1065,182 +1068,182 @@ public class AllTests {
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "TLS-SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sips:[fe80:0:0:0:0:0:c0a8:1]:1234");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=udp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=udp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=udp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=udp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tcp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "TCP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=sctp");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "SCTP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;transport=tls");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "TLS");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;maddr=example.net");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl(EXAMPLE_DOT_NET_IP, 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;maddr=192.168.0.2");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("192.168.0.2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234;maddr=[fe80:0:0:0:0:0:c0a8:2]");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:2", 1234, "UDP");
 		params.add(paramPoint);
 
 		paramPoint = new Object[2];
 		paramPoint[0] = (SipURI) addressFactory.createURI("sip:[fe80:0:0:0:0:0:c0a8:1]:1234");
-		paramPoint[1] = null;
+		paramPoint[1] = new HopImpl("fe80:0:0:0:0:0:c0a8:1", 1234, "UDP");
 		params.add(paramPoint);
 		
 		return params;
@@ -1250,7 +1253,7 @@ public class AllTests {
 	private Hop expectedHop;
 	private Locator locator;
 	
-	public AllTests(SipURI uri, Hop expectedHop) {
+	public ExhaustiveTest(SipURI uri, Hop expectedHop) {
 		this.uri = uri;
 		this.expectedHop = expectedHop;
 	}
