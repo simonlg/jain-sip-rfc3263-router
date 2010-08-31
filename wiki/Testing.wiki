@@ -87,7 +87,7 @@ RFC 3261, Section 18.1.1
 
  A client that sends a request to a multicast address MUST add the "maddr" parameter to its Via header field value containing the destination multicast address, and for IPv4, SHOULD add the "ttl" parameter with a value of 1.  Usage of IPv6 multicast is not defined in this specification, and will be a subject of future standardization when the need arises.
 
-Does this mean that if the maddr parameter is present, that the transport must be UDP?  It *should* be UDP, but can be abused.  Typically, this address should be:
+Does this mean that if the maddr parameter is present, that the transport must be UDP?  It *should* be UDP, but can be abused.  Typically, we would expect this address to be:
 
   * sip.mcast.net
   * 224.0.1.75 (IPv4)
