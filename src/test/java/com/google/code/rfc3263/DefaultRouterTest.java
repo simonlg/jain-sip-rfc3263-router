@@ -105,6 +105,18 @@ public class DefaultRouterTest {
 		Assert.assertEquals(expected, actual);
 	}
 	
+	@Test
+	public void testMcastShouldBeUsedWhenPresent() throws Exception {
+		final Request request = getRequest();
+		SipURI requestUri = (SipURI) request.getRequestURI();
+		requestUri.setMAddrParam("sip.mcast.net");
+		
+		Hop expected = new HopImpl("224.0.1.75", 5060 , "UDP");
+		Hop actual = getRouter(null).getNextHop(request);
+		
+		assertEquals(expected, actual);
+	}
+	
 	private Router getRouter(String outboundProxy) {
 		return new DefaultRouter(stack, outboundProxy);
 	}

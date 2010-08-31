@@ -30,7 +30,17 @@ public class AddressRecord extends Record {
 	public InetAddress getAddress() {
 		 return address;
 	}
-	
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append(super.toString());
+		sb.append("IN A ");
+		sb.append(address.getHostAddress());
+		
+		return sb.toString();
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -59,15 +69,5 @@ public class AddressRecord extends Record {
 			return false;
 		}
 		return true;
-	}
-
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append(super.toString());
-		sb.append("IN A");
-		sb.append(address.getHostAddress());
-		
-		return sb.toString();
 	}
 }
