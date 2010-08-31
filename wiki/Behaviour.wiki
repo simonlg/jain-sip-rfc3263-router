@@ -39,3 +39,7 @@ becomes:
 {{{
 sips:example.org;transport=tcp
 }}}
+
+= Grouping of Address Records =
+
+How are *A* and *AAAA* records sorted?
