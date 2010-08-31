@@ -146,7 +146,7 @@ public class ExhaustiveAddressServiceTest extends ExhaustiveAddressTest {
 		expect(resolver.lookupServiceRecords("_sip._sctp.example.net.")).andReturn(netSipSctpServices).anyTimes();
 		expect(resolver.lookupServiceRecords("_sips._tcp.example.net.")).andReturn(netSipsTcpServices).anyTimes();
 		expect(resolver.lookupServiceRecords("_sips._sctp.example.net.")).andReturn(netSipsSctpServices).anyTimes();
-		
+
 		expect(resolver.lookupPointerRecords("example.org.")).andReturn(Collections.<PointerRecord>emptyList()).anyTimes();
 		expect(resolver.lookupPointerRecords("example.net.")).andReturn(Collections.<PointerRecord>emptyList()).anyTimes();
 		
@@ -158,6 +158,7 @@ public class ExhaustiveAddressServiceTest extends ExhaustiveAddressTest {
 		super(uriString);
 	}
 
+	@Override
 	public String getHop(String uri) throws Exception {
 		if (transportMap.containsKey(uri)) {
 			return transportMap.get(uri);
