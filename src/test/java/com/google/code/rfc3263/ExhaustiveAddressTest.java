@@ -11,8 +11,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sip.address.Hop;
-
 import org.easymock.EasyMock;
 import org.junit.Before;
 
@@ -22,7 +20,7 @@ import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
 public class ExhaustiveAddressTest extends ExhaustiveTest {
-	public static Map<String, String> transportMap;
+	private static Map<String, String> transportMap;
 	private Locator locator;
 	
 	static {
@@ -306,11 +304,9 @@ public class ExhaustiveAddressTest extends ExhaustiveTest {
 		super(uriString);
 	}
 
-	public Hop getHop(String uri) throws Exception {
-		final String hopString = transportMap.get(uri);
-		
-		if (hopString != null) {
-			return HopParser.parseHop(hopString);
+	public String getHop(String uri) throws Exception {
+		if (transportMap.containsKey(uri)) {
+			return transportMap.get(uri);
 		} else {
 			return null;
 		}

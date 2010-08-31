@@ -454,7 +454,7 @@ public class Locator {
 			Iterator<String> iter = filteredTransports.iterator();
 			while (iter.hasNext()) {
 				// TLS or SCTP-TLS
-				if (iter.next().endsWith("TLS") == false) {
+				if (iter.next().startsWith("TLS") == false) {
 					iter.remove();
 				}
 			}

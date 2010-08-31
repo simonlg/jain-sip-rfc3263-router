@@ -66,11 +66,17 @@ public abstract class ExhaustiveTest {
 	}
 	
 	public abstract Locator getLocator();
-	public abstract Hop getHop(String uri) throws Exception;
+	public abstract String getHop(String uri) throws Exception;
 	
 	@Test
 	public void testHops() throws Exception {
-		final Hop expectedHop = getHop(uriString);
+		final String hopString = getHop(uriString);
+		final Hop expectedHop;
+		if (hopString == null) {
+			expectedHop = null;
+		} else {
+			expectedHop = HopParser.parseHop(hopString);
+		}
 		
 		final SipURI uri = (SipURI) addressFactory.createURI(uriString);
 		final Queue<Hop> actualHops = getLocator().locate(uri);
