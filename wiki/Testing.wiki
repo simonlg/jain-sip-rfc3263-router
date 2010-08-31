@@ -5,6 +5,8 @@ This page is used as a notice board for recording test strategies.  RFC 3263 pro
 
 = Environmental Variables =
 
+See EnvironmentalTesting.
+
 We should test combinations of the presence of the various DNS records, e.g.
 
 == NAPTR ==
