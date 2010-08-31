@@ -1,4 +1,11 @@
 #summary Testing the router in different environments
 #labels Phase-QA
 
-Testing the router in different DNS environments is critical to ensuring reliability.
+Testing the router in different DNS environments is critical to ensuring reliability.  The environment is defined by the presence and configuration of four different records:
+
+  * NAPTR
+  * SRV
+  * A
+  * AAAA
+
+of the above, A and AAAA have equivalent meaning, since the results are grouped.
