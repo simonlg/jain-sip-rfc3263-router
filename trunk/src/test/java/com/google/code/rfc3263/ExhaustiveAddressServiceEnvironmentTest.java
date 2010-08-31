@@ -21,7 +21,7 @@ import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
-public class ExhaustiveAddressServiceTest extends ExhaustiveAddressTest {
+public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEnvironmentTest {
 	private static Map<String, String> transportMap;
 	private Locator locator;
 	
@@ -154,7 +154,7 @@ public class ExhaustiveAddressServiceTest extends ExhaustiveAddressTest {
 		locator = new Locator(resolver, Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"));
 	}
 	
-	public ExhaustiveAddressServiceTest(String uriString) {
+	public ExhaustiveAddressServiceEnvironmentTest(String uriString) {
 		super(uriString);
 	}
 

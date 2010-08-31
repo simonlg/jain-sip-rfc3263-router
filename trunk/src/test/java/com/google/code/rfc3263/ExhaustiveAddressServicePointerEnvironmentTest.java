@@ -20,7 +20,7 @@ import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecord;
 
-public class ExhaustiveAddressServicePointerTest extends ExhaustiveAddressServiceTest {
+public class ExhaustiveAddressServicePointerEnvironmentTest extends ExhaustiveAddressServiceEnvironmentTest {
 	private static Map<String, String> transportMap;
 	private Locator locator;
 	
@@ -147,7 +147,7 @@ final Resolver resolver = EasyMock.createMock(Resolver.class);
 		locator = new Locator(resolver, Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"));
 	}
 	
-	public ExhaustiveAddressServicePointerTest(String uriString) {
+	public ExhaustiveAddressServicePointerEnvironmentTest(String uriString) {
 		super(uriString);
 	}
 
