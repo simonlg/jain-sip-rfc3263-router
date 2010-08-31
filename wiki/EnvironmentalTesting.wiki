@@ -8,4 +8,4 @@ Testing the router in different DNS environments is critical to ensuring reliabi
   * A
   * AAAA
 
-of the above, A and AAAA have equivalent meaning, since the results are grouped.
+Of the above, A and AAAA have equivalent meaning, since the results are grouped.
