@@ -42,4 +42,4 @@ sips:example.org;transport=tcp
 
 = Grouping of Address Records =
 
-How are *A* and *AAAA* records sorted?
+The resolver interfaces declares a Set as the return type of the lookupAddressRecords method, so the order of *A* and *AAAA* records (which are merged in the Set) is not guaranteed to be in the order as presented by the DNS server.
