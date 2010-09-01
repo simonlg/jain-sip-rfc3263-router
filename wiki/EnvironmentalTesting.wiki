@@ -10,7 +10,7 @@ Testing the router in different DNS environments is critical to ensuring reliabi
 
 Of the above, A and AAAA have equivalent meaning, since the results are grouped.
 
-= NAPTR =
+== NAPTR ==
 
 Example:
 
@@ -21,7 +21,7 @@ IN NAPTR 102 10 "S" "SIP+D2T" "" _sip._tcp.example.com.
 
 Routing results are affected by the _order_ (low to high) and _preference_ (low to high) of NAPTR records.
 
-= SRV =
+== SRV ==
 
 Example:
 
@@ -33,3 +33,11 @@ _sip._udp.example.com. 86400 IN SRV 1 5 5060 backup.example.com.
 SRV records are sorted primarily by _priority_ (low to high).  2782 states that records with equal _priority_ field values should then select a record using a weighted random function with reference to the _weight_ field.
 
 However, to ensure that stateless proxies always retrieve the same record, 3263 changes the selection algorithm so that lower weights are used first, and there is no random element.  Since records of equal _priority_ and _weight_ may be present, we further sort by the _target_ field.
+
+== Environments ==
+
+|| *A* || *SRV* || *NAPTR* ||
+|| N || N || N ||
+|| Y || N || N ||
+|| Y || Y || N ||
+|| Y || Y || Y ||
