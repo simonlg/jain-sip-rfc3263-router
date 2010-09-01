@@ -31,7 +31,6 @@ Noting that UDP is the only supported transport, the router then performs a DNS 
 
 {{{
 _sip._udp.biloxi.com. 86400 IN SRV 0 5 5060 server10.biloxi.com.
-
-The router will now lookup A and AAAA records for server10.biloxi.com.
-
 }}}
+
+Now the router knows the transport (UDP), the port (5060) and the server (server10.biloxi.com.).  The router will now lookup A and AAAA records for server10.biloxi.com. and route the request.
