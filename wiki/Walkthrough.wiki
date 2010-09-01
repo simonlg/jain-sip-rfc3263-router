@@ -26,7 +26,7 @@ There is no transport parameter or port set, so the first step will be to determ
 The router does a DNS query for NAPTR records for biloxi.com, and the nameserver returns the following:
 
 {{{
-IN NAPTR 100 10 "S" "SIP+D2U" "" _sip._udp.biloxi.com.
+biloxi.com. IN NAPTR 100 10 "S" "SIP+D2U" "" _sip._udp.biloxi.com.
 }}}
 
 Noting that UDP is the only supported transport, the router then performs a DNS query for the SRV record mentioned in the NAPTR record above:
