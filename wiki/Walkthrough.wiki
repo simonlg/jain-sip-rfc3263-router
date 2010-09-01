@@ -1,6 +1,6 @@
 #summary One-sentence summary of this page.
 
-This walkthrough shows how the router would be applied to the example "Session Setup" messages from 3261.  The following message has just arrived at Alice's proxy (atlanta.com)
+This walkthrough shows how the router would be applied to the example "Session Setup" messages from 3261.  The following message has just arrived at Alice's proxy (atlanta.com), which is using only UDP.
 
 {{{
 INVITE sip:bob@biloxi.com SIP/2.0
@@ -13,4 +13,25 @@ CSeq: 314159 INVITE
 Contact: <sip:alice@pc33.atlanta.com>
 Content-Type: application/sdp
 Content-Length: 142
+}}}
+
+The router examines the message, and determines that the correct URI to route for is `sip:bob@biloxi.com`.
+
+== Determining the Transport ==
+
+There is no transport parameter or port set, so the first step will be to determine what transports biloxi.com supports.
+
+The router does a DNS query for NAPTR records for biloxi.com, and the nameserver returns the following:
+
+{{{
+IN NAPTR 100 10 "S" "SIP+D2U" "" _sip._udp.biloxi.com.
+}}}
+
+Noting that UDP is the only supported transport, the router then performs a DNS query for the SRV record mentioned in the NAPTR record above:
+
+{{{
+_sip._udp.biloxi.com. 86400 IN SRV 0 5 5060 server10.biloxi.com.
+
+The router will now lookup A and AAAA records for server10.biloxi.com.
+
 }}}
