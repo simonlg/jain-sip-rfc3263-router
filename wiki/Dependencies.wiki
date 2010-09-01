@@ -6,6 +6,6 @@
 || [http://jcp.org/en/jsr/detail?id=32 JAIN SIP API] || 1.2.1 || Runtime ||
 || [http://www.xbill.org/dnsjava/ dnsjava] || 2.0.8 || Runtime ||
 || [http://logging.apache.org/log4j/1.2/index.html log4j] || 1.2.14 || Runtime ||
-|| [https://jain-sip.dev.java.net/ JAIN SIP RI] || 1.2.146 || Compile ||
+|| [https://jain-sip.dev.java.net/ JAIN SIP RI] || 1.2.146 || Test ||
 || [http://www.junit.org/ JUnit] || 4.8.1 || Test ||
 || [http://easymock.org/ EasyMock] || 2.2 || Test ||
