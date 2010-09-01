@@ -1,5 +1,7 @@
 #summary How to use this project as a UAS
 
+*NOTE*: This page needs some investigation.  It appears that JAIN-SIP can't be customised to route responses.
+
 This page provides advice for how to route a response using RFC 3263 when using the guidelines contained in RFC 3261 fail.
 
 {{{
