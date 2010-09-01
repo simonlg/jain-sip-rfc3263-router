@@ -38,6 +38,6 @@ However, to ensure that stateless proxies always retrieve the same record, 3263 
 
 || *A* || *S* || *N* ||
 || ✘ || ✘ || ✘ ||
-|| Y || ✘ || ✘ ||
-|| Y || Y || ✘ ||
-|| Y || Y || Y ||
+|| ✔ || ✘ || ✘ ||
+|| ✔ || ✔ || ✘ ||
+|| ✔ || ✔ || ✔ ||
