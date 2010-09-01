@@ -15,7 +15,9 @@ Content-Type: application/sdp
 Content-Length: 142
 }}}
 
-The router examines the message, and determines that the correct URI to route for is `sip:bob@biloxi.com`.
+== Determining the URI ==
+
+The router examines the message, discovers no Route headers, and thus determines that the correct URI to route for is the request URI, `sip:bob@biloxi.com`.
 
 == Determining the Transport ==
 
