@@ -4,7 +4,7 @@
 ==Runtime==
 
   * [http://jcp.org/en/jsr/detail?id=32 JAIN SIP API]
-  * [http://www.xbill.org/dnsjava/ dnsjava]
+  * [http://www.xbill.org/dnsjava/ dnsjava] 2.0.8
   * [http://logging.apache.org/log4j/1.2/index.html log4j]
 
 ==Testing==
