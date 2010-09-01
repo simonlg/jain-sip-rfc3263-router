@@ -37,7 +37,7 @@ However, to ensure that stateless proxies always retrieve the same record, 3263 
 == Environments ==
 
 || *A* || *S* || *N* ||
-|| <font color="red">✘</font> || ✘ || ✘ ||
-|| ✔ || ✘ || ✘ ||
-|| ✔ || ✔ || ✘ ||
-|| ✔ || ✔ || ✔ ||
+|| <font color="red">✘</font> || <font color="red">✘</font> || <font color="red">✘</font> ||
+|| <font color="green">✔</font> || <font color="red">✘</font> || <font color="red">✘</font> ||
+|| <font color="green">✔</font> || <font color="green">✔</font> || <font color="red">✘</font> ||
+|| <font color="green">✔</font> || <font color="green">✔</font> || <font color="green">✔</font> ||
