@@ -18,11 +18,11 @@ Content-Length: 142
 
 == Determining the URI ==
 
-The router examines the message, finds no Route headers, and thus determines that the correct URI to route for is the request URI, `sip:bob@biloxi.com`.
+The router examines the message, finds no `Route` headers, and thus determines that the correct URI to route for is the request URI, `sip:bob@biloxi.com`.
 
 == Determining the Transport ==
 
-There is no transport parameter or port set, so the first step will be to determine what transports biloxi.com supports.
+There is no transport parameter or port configured, so the first step will be to determine what transports biloxi.com supports.
 
 The router does a DNS query for NAPTR records for biloxi.com, and the nameserver returns the following:
 
