@@ -9,3 +9,11 @@ Testing the router in different DNS environments is critical to ensuring reliabi
   * AAAA
 
 Of the above, A and AAAA have equivalent meaning, since the results are grouped.
+
+= NAPTR =
+
+Routing results are affected by the _order_ and _preference_ of NAPTR records.
+
+= SRV =
+
+Routing results are affected by the _priority_ and _weight_ of SRV records.
