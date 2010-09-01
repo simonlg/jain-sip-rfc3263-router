@@ -41,3 +41,9 @@ However, to ensure that stateless proxies always retrieve the same record, 3263 
 || <font color="green">✔</font> || <font color="red">✘</font> || <font color="red">✘</font> ||
 || <font color="green">✔</font> || <font color="green">✔</font> || <font color="red">✘</font> ||
 || <font color="green">✔</font> || <font color="green">✔</font> || <font color="green">✔</font> ||
+
+=== Key ===
+
+  * A = A or AAAA records
+  * S = SRV records
+  * N = NAPTR records
