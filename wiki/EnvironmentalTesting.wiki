@@ -36,7 +36,7 @@ However, to ensure that stateless proxies always retrieve the same record, 3263 
 
 == Environments ==
 
-|| *A* || *SRV* || *NAPTR* ||
+|| *A* || *S* || *N* ||
 || N || N || N ||
 || Y || N || N ||
 || Y || Y || N ||
