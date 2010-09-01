@@ -3,9 +3,9 @@
 
 
 || *Dependency* || *Version* || *Maven Repository* || *Phase* ||
-|| [http://jcp.org/en/jsr/detail?id=32 JAIN SIP API] || 1.2.1 || JBoss || Runtime ||
-|| [http://www.xbill.org/dnsjava/ dnsjava] || 2.0.8 || JBoss || Runtime ||
-|| [http://logging.apache.org/log4j/1.2/index.html log4j] || 1.2.14 || JBoss || Runtime ||
-|| [https://jain-sip.dev.java.net/ JAIN SIP RI] || 1.2.146 || JBoss || Test ||
+|| [http://jcp.org/en/jsr/detail?id=32 JAIN SIP API] || 1.2.1 || [http://repository.jboss.org/maven2/javax/sip/jain-sip-api/1.2.1/ JBoss] || Runtime ||
+|| [http://www.xbill.org/dnsjava/ dnsjava] || 2.0.8 || iBiblio || Runtime ||
+|| [http://logging.apache.org/log4j/1.2/index.html log4j] || 1.2.14 || [http://repository.jboss.org/maven2/log4j/log4j/1.2.14/ JBoss] || Runtime ||
+|| [https://jain-sip.dev.java.net/ JAIN SIP RI] || 1.2.146 || [http://repository.jboss.org/maven2/javax/sip/jain-sip-ri/ JBoss] || Test ||
 || [http://www.junit.org/ JUnit] || 4.8.1 || JBoss || Test ||
-|| [http://easymock.org/ EasyMock] || 2.2 || JBoss || Test ||
+|| [http://easymock.org/ EasyMock] || 2.2 || iBiblio || Test ||
