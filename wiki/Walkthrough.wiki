@@ -17,7 +17,7 @@ Content-Length: 142
 
 == Determining the URI ==
 
-The router examines the message, discovers no Route headers, and thus determines that the correct URI to route for is the request URI, `sip:bob@biloxi.com`.
+The router examines the message, finds no Route headers, and thus determines that the correct URI to route for is the request URI, `sip:bob@biloxi.com`.
 
 == Determining the Transport ==
 
