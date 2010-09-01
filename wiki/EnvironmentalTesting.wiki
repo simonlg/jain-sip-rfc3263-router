@@ -12,6 +12,11 @@ Of the above, A and AAAA have equivalent meaning, since the results are grouped.
 
 = NAPTR =
 
+{{{
+IN NAPTR 100 10 "S" "SIP+D2U" "" _sip._udp.example.com.
+IN NAPTR 102 10 "S" "SIP+D2T" "" _sip._tcp.example.com.
+}}}
+
 Routing results are affected by the _order_ and _preference_ of NAPTR records.
 
 = SRV =
