@@ -34,7 +34,9 @@ SRV records are sorted primarily by _priority_ (low to high).  2782 states that 
 
 However, to ensure that stateless proxies always retrieve the same record, 3263 changes the selection algorithm so that lower weights are used first, and there is no random element.  Since records of equal _priority_ and _weight_ may be present, we further sort by the _target_ field.
 
-== Environments ==
+== Existing Test Environments ==
+
+The router is currently tested in the following environments:
 
 || *A* || *S* || *N* ||
 || <font color="red">✘</font> || <font color="red">✘</font> || <font color="red">✘</font> ||
