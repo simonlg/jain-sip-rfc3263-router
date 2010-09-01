@@ -18,6 +18,7 @@ Routing results are affected by the _order_ and _preference_ of NAPTR records.
 
 {{{
 _sip._tcp.example.com. 86400 IN SRV 0 5 5060 sipserver.example.com.
+_sip._udp.example.com. 86400 IN SRV 0 5 5060 sipserver.example.com.
 }}}
 
 Routing results are sorted by the _priority_, then _weight_ of SRV records.  In accordance with 3263, we sort SRV records by the _target_ field too.
