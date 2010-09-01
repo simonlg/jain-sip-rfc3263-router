@@ -26,8 +26,8 @@ Routing results are affected by the _order_ (low to high) and _preference_ (low 
 Example:
 
 {{{
-_sip._tcp.example.com. 86400 IN SRV 0 5 5060 sipserver.example.com.
-_sip._udp.example.com. 86400 IN SRV 0 5 5060 sipserver.example.com.
+_sip._tcp.example.com. 86400 IN SRV 0 5 5060 primary.example.com.
+_sip._udp.example.com. 86400 IN SRV 1 5 5060 backup.example.com.
 }}}
 
 SRV records are sorted primarily by _priority_ (low to high).  2782 states that records with equal _priority_ field values should then select a record using a weighted random function with reference to the _weight_ field.
