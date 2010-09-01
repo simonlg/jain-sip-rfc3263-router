@@ -17,7 +17,7 @@ IN NAPTR 100 10 "S" "SIP+D2U" "" _sip._udp.example.com.
 IN NAPTR 102 10 "S" "SIP+D2T" "" _sip._tcp.example.com.
 }}}
 
-Routing results are affected by the _order_ and _preference_ of NAPTR records.
+Routing results are affected by the _order_ (low to high) and _preference_ (low to high) of NAPTR records.
 
 = SRV =
 
@@ -26,4 +26,4 @@ _sip._tcp.example.com. 86400 IN SRV 0 5 5060 sipserver.example.com.
 _sip._udp.example.com. 86400 IN SRV 0 5 5060 sipserver.example.com.
 }}}
 
-Routing results are sorted by the _priority_, then _weight_ of SRV records.  In accordance with 3263, we sort SRV records by the _target_ field too.
+Routing results are sorted by the _priority_ (low to high), then _weight_ (high to low) of SRV records.  In accordance with 3263, we sort SRV records by the _target_ field too.
