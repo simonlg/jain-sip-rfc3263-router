@@ -6,6 +6,7 @@
 || [http://jcp.org/en/jsr/detail?id=32 JAIN SIP API] || 1.2.1 || [http://repository.jboss.org/maven2/javax/sip/jain-sip-api/1.2.1/ JBoss] || Runtime ||
 || [http://www.xbill.org/dnsjava/ dnsjava] || 2.0.8 || [http://mirrors.ibiblio.org/pub/mirrors/maven2/dnsjava/dnsjava/2.0.8/ ibiblio] || Runtime ||
 || [http://logging.apache.org/log4j/1.2/index.html log4j] || 1.2.14 || [http://repository.jboss.org/maven2/log4j/log4j/1.2.14/ JBoss] || Runtime ||
+|| [http://www.javaconcurrencyinpractice.com/ JCIP Annotations] || 1.0 || [http://repository.jboss.org/maven2/net/jcip/jcip-annotations/1.0/ JBoss] || Runtime ||
 || [https://jain-sip.dev.java.net/ JAIN SIP RI] || 1.2.146 || [http://repository.jboss.org/maven2/javax/sip/jain-sip-ri/ JBoss] || Test ||
 || [http://www.junit.org/ JUnit] || 4.8.1 || [http://repository.jboss.org/maven2/junit/junit/4.8.1/ JBoss] || Test ||
 || [http://easymock.org/ EasyMock] || 2.2 || [http://mirrors.ibiblio.org/pub/mirrors/maven2/easymock/easymockclassextension/2.2/ ibiblio] || Test ||
