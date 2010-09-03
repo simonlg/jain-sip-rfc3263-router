@@ -1,8 +1,11 @@
 package com.google.code.rfc3263.dns;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * Representation of an abstract DNS record.
  */
+@Immutable
 public abstract class Record {
 	private final String name;
 	

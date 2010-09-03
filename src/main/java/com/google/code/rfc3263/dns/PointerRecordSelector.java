@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.log4j.Logger;
 
+@ThreadSafe
 public class PointerRecordSelector {
 	private final Logger LOGGER = Logger.getLogger(PointerRecordSelector.class);
 	private final List<PointerRecord> pointers;

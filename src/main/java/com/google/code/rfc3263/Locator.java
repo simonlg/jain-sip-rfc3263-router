@@ -14,6 +14,8 @@ import java.util.Set;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.log4j.Logger;
 
 import com.google.code.rfc3263.dns.AddressRecord;
@@ -25,6 +27,13 @@ import com.google.code.rfc3263.dns.ServiceRecord;
 import com.google.code.rfc3263.dns.ServiceRecordSelector;
 import com.google.code.rfc3263.util.LocatorUtils;
 
+/**
+ * This class provides the mechanism defined by RFC 3263 for ascertaining the hops to try
+ * for a particular request.
+ * 
+ * This class is thread-safe.
+ */
+@ThreadSafe
 public class Locator {
 	private final static Logger LOGGER = Logger.getLogger(Locator.class);
 	/**

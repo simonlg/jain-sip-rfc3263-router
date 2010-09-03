@@ -13,48 +13,48 @@ public class HopParserTest {
 	@Test
 	public void testParseHop() throws ParseException {
 		Hop expectedHop = new HopImpl("127.0.0.1", 5060, "TCP");
-		Hop actualHop = HopParser.parseHop("127.0.0.1:5060/TCP");
+		Hop actualHop = HopImpl.getInstance("127.0.0.1:5060/TCP");
 		
 		Assert.assertEquals(expectedHop, actualHop);
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testNullHopShouldThrowException() throws ParseException {
-		HopParser.parseHop(null);
+		HopImpl.getInstance(null);
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testMissingPortShouldThrowException() throws ParseException {
-		HopParser.parseHop("127.0.0.1/TCP");
+		HopImpl.getInstance("127.0.0.1/TCP");
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testInvalidPortShouldThrowExceptionTooSmall() throws ParseException {
-		HopParser.parseHop("127.0.0.1:-1/TCP");
+		HopImpl.getInstance("127.0.0.1:-1/TCP");
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testInvalidPortShouldThrowExceptionTooLarge() throws ParseException {
-		HopParser.parseHop("127.0.0.1:100000/TCP");
+		HopImpl.getInstance("127.0.0.1:100000/TCP");
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testMissingTransportShouldThrowException() throws ParseException {
-		HopParser.parseHop("127.0.0.1:5060");
+		HopImpl.getInstance("127.0.0.1:5060");
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testUnknownTransportShouldThrowException() throws ParseException {
-		HopParser.parseHop("127.0.0.1:5060/FOO");
+		HopImpl.getInstance("127.0.0.1:5060/FOO");
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testMissingAddressShouldThrowException() throws ParseException {
-		HopParser.parseHop(":5060/TCP");
+		HopImpl.getInstance(":5060/TCP");
 	}
 	
 	@Test(expected = ParseException.class)
 	public void testHostAddressShouldThrowException() throws ParseException {
-		HopParser.parseHop("example.org:5060/TCP");
+		HopImpl.getInstance("example.org:5060/TCP");
 	}
 }

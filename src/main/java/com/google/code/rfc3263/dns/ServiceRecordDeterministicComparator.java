@@ -2,7 +2,10 @@ package com.google.code.rfc3263.dns;
 
 import java.util.Comparator;
 
+import net.jcip.annotations.ThreadSafe;
+
 // Sorts by weight, then by target
+@ThreadSafe
 class ServiceRecordDeterministicComparator implements Comparator<ServiceRecord> {
 	public int compare(ServiceRecord o1, ServiceRecord o2) {
 		if (o1.getWeight() == o2.getWeight()) {

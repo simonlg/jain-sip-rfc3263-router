@@ -7,11 +7,14 @@ import java.util.regex.Pattern;
 
 import javax.sip.address.SipURI;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.log4j.Logger;
 
 /**
  * This class contains a collection of useful utility methods.
  */
+@ThreadSafe
 public final class LocatorUtils {
 	private final static Logger LOGGER = Logger.getLogger(LocatorUtils.class);
 	private final static Set<String> knownTransports = new HashSet<String>();
@@ -116,6 +119,15 @@ public final class LocatorUtils {
 	/**
 	 * Returns <code>true</code> if the provided transport is defined by a
 	 * standards-track SIP document.
+	 * <p>
+	 * Namely:
+	 * <ul>
+	 * <li>UDP</li>
+	 * <li>TCP</li>
+	 * <li>TLS</li>
+	 * <li>SCTP</li>
+	 * <li>TLS-SCTP</li>
+	 * </ul>
 	 * 
 	 * @param transport the transport to check.
 	 * @return <code>true</code> if the transport is known, <code>false</code> otherwise.

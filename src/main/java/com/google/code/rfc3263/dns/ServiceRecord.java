@@ -1,10 +1,13 @@
 package com.google.code.rfc3263.dns;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * This is the representation of a RFC 2782 SRV DNS record.
  * 
  * @see <a href="http://www.ietf.org/rfc/rfc2782.txt">RFC 2782</a>
  */
+@Immutable
 public final class ServiceRecord extends Record {
 	private final int priority;
 	private final int weight;

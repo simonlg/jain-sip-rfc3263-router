@@ -75,7 +75,7 @@ public abstract class ExhaustiveTest {
 		if (hopString == null) {
 			expectedHop = null;
 		} else {
-			expectedHop = HopParser.parseHop(hopString);
+			expectedHop = HopImpl.getInstance(hopString);
 		}
 		
 		final SipURI uri = (SipURI) addressFactory.createURI(uriString);
