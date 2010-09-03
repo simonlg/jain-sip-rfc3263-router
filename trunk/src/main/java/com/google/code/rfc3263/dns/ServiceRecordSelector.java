@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.log4j.Logger;
 
+@ThreadSafe
 public class ServiceRecordSelector {
 	private final Logger LOGGER = Logger.getLogger(ServiceRecordSelector.class);
 	private final List<ServiceRecord> services;

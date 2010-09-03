@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Lookup;
@@ -16,8 +18,11 @@ import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
 /**
- * This class is the default DNS resolver.  It uses dnsjava.
+ * This class is the default DNS resolver, which uses dnsjava.
+ * <p>
+ * This class is thread-safe.
  */
+@ThreadSafe
 public class DefaultResolver implements Resolver {
 	/**
 	 * {@inheritDoc}

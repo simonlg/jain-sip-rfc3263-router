@@ -2,12 +2,15 @@ package com.google.code.rfc3263.dns;
 
 import java.net.InetAddress;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * This is the representation of an A or AAAA DNS record.
  * 
  * @see <a href="http://www.ietf.org/rfc/rfc1035.txt">RFC 1035</a>
  * @see <a href="http://www.ietf.org/rfc/rfc3596.txt">RFC 3596</a>
  */
+@Immutable
 public class AddressRecord extends Record {
 	private final InetAddress address;
 	

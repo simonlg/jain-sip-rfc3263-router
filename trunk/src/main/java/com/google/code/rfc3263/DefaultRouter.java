@@ -19,6 +19,8 @@ import javax.sip.address.URI;
 import javax.sip.header.RouteHeader;
 import javax.sip.message.Request;
 
+import net.jcip.annotations.ThreadSafe;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -33,7 +35,10 @@ import org.apache.log4j.Logger;
  * 
  * @see <a href="http://www.ietf.org/rfc/rfc3261.txt">RFC 3261</a>
  * @see <a href="http://www.ietf.org/rfc/rfc3263.txt">RFC 3263</a>
+ * 
+ * This class is thread-safe.
  */
+@ThreadSafe
 public class DefaultRouter implements Router {
 	private static final Logger LOGGER = Logger.getLogger(DefaultRouter.class);
 	private final Hop outboundProxy;
@@ -53,7 +58,7 @@ public class DefaultRouter implements Router {
 			this.outboundProxy = null;
 		} else {
 			try {
-				this.outboundProxy = HopParser.parseHop(outboundProxy);
+				this.outboundProxy = HopImpl.getInstance(outboundProxy);
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
 			}

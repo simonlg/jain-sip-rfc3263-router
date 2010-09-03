@@ -46,6 +46,11 @@
 			<artifactId>dnsjava</artifactId>
 			<version>2.0.8</version>
 		</dependency>
+		<dependency>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 	<scm>
 		<connection>scm:svn:http://jain-sip-rfc3263-router.googlecode.com/svn/</connection>
@@ -80,6 +85,7 @@
 					<links>
 						<link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
 						<link>http://snad.ncsl.nist.gov/proj/iptel/jain-sip-1.2/javadoc/</link>
+						<link>http://www.javaconcurrencyinpractice.com/annotations/doc/</link>
 					</links>
 				</configuration>
 			</plugin>
