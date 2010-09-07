@@ -4,7 +4,13 @@ import java.util.Comparator;
 
 import net.jcip.annotations.ThreadSafe;
 
-// Sorts by weight, then by target
+/**
+ * This class sorts each ServiceRecord by weight field, and then by target field.
+ * <p>
+ * This algorithm is suggested by RFC 3263, and is deliberately different to the 
+ * regular SRV sorting algorithm discussed in RFC 2782.  The difference serves to
+ * eliminate randomness.
+ */
 @ThreadSafe
 class ServiceRecordDeterministicComparator implements Comparator<ServiceRecord> {
 	public int compare(ServiceRecord o1, ServiceRecord o2) {

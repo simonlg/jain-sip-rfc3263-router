@@ -10,6 +10,9 @@ import com.google.code.rfc3263.util.LocatorUtils;
 
 import net.jcip.annotations.Immutable;
 
+/**
+ * This is an implementation of the Hop interface.
+ */
 @Immutable
 class HopImpl implements Hop {
 	private final String host;
@@ -93,6 +96,8 @@ class HopImpl implements Hop {
 
 	/**
 	 * Parses the provided string into a Hop.
+	 * <p>
+	 * It's not quite clear how IPv6 hops should be parsed.
 	 * 
 	 * @param proxy the string to parse.
 	 * @return the parsed Hop.

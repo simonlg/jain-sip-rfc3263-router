@@ -10,6 +10,12 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This class is used for sorting ServiceRecords.
+ * <p>
+ * This class groups each ServiceRecord according to its priority into a TreeMap (indexed
+ * by priority), and then sorts each group by weight, and then by target name. 
+ */
 @ThreadSafe
 public class ServiceRecordSelector {
 	private final Logger LOGGER = Logger.getLogger(ServiceRecordSelector.class);

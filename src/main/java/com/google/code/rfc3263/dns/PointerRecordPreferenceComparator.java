@@ -4,6 +4,9 @@ import java.util.Comparator;
 
 import net.jcip.annotations.ThreadSafe;
 
+/**
+ * This class is used for sorting NAPTR records by preference field.
+ */
 @ThreadSafe
 class PointerRecordPreferenceComparator implements Comparator<PointerRecord> {
 	public int compare(PointerRecord o1, PointerRecord o2) {
