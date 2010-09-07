@@ -4,6 +4,9 @@ import java.util.Comparator;
 
 import net.jcip.annotations.ThreadSafe;
 
+/**
+ * This class sorts ServiceRecords by priority field as discussing in RFC 2782.
+ */
 @ThreadSafe
 class ServiceRecordPriorityComparator implements Comparator<ServiceRecord> {
 	public int compare(ServiceRecord o1, ServiceRecord o2) {

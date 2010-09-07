@@ -10,6 +10,12 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This class is used for sorting NAPTR records.
+ * <p>
+ * The algorithm employed by this class is the algorithm specified in RFC 2915,
+ * that is, records are sorted first by order, and then by preference.
+ */
 @ThreadSafe
 public class PointerRecordSelector {
 	private final Logger LOGGER = Logger.getLogger(PointerRecordSelector.class);

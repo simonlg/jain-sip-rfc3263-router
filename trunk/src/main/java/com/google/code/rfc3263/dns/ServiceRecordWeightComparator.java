@@ -4,6 +4,12 @@ import java.util.Comparator;
 
 import net.jcip.annotations.ThreadSafe;
 
+/**
+ * This class is used for ordering ServiceRecord instances by weight field.
+ * <p>
+ * This class has been superceded by ServiceRecordDeterministicComparator.
+ */
+@Deprecated
 @ThreadSafe
 class ServiceRecordWeightComparator implements Comparator<ServiceRecord> {
 	public int compare(ServiceRecord o1, ServiceRecord o2) {
