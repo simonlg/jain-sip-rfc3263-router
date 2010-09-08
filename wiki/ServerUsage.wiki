@@ -1,6 +1,6 @@
 #summary How to use this project as a UAS
 
-*NOTE*: This page needs some investigation.  It appears that JAIN-SIP can't be customised to route responses.
+*NOTE*: This page needs some investigation.  It appears that JAIN-SIP can't be customised to route responses.  What about [http://www-x.antd.nist.gov/proj/iptel/jain-sip-1.2/javadoc/gov/nist/javax/sip/DefaultAddressResolver.html gov.nist.javax.sip.DefaultAddressResolver]
 
 ----
 
