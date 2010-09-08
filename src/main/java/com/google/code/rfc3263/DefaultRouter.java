@@ -83,8 +83,10 @@ public class DefaultRouter implements Router {
 			Locator locator = new Locator(getSupportedTransports());
 			Queue<Hop> hops = locator.locate(destination);
 			Hop top = null;
+			// Take a peek at the first hop.  There's no good reason to poll 
+			// it in this situation.
 			if (hops.size() > 0) {
-				top = hops.poll();
+				top = hops.peek();
 			}
 			LOGGER.debug("getNextHop(" + request + "): " + top);
 			return top;
@@ -102,6 +104,9 @@ public class DefaultRouter implements Router {
 	 */
 	@Deprecated
 	public ListIterator<?> getNextHops(Request request) {
+		// It would probably be preferable to a client to use this method instead
+		// of having to use the Locator, but we can't really ask someone to use
+		// a deprecated method.
 		return new LinkedList<Hop>().listIterator();
 	}
 

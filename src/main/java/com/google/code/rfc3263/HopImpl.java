@@ -96,13 +96,12 @@ class HopImpl implements Hop {
 
 	/**
 	 * Parses the provided string into a Hop.
-	 * <p>
-	 * It's not quite clear how IPv6 hops should be parsed.
 	 * 
 	 * @param proxy the string to parse.
 	 * @return the parsed Hop.
 	 */
 	static Hop getInstance(String hop) throws ParseException {
+		// Hops should use the [::1]:5060/TLS style.
 		if (hop == null) {
 			throw new ParseException("Failed to parse null hop", 0);
 		}
