@@ -3,6 +3,14 @@
 
 <wiki:toc/>
 
+== Release 1.0.8 ==
+
+|| *Release Date* || 2010-09-10 ||
+|| *Tag Revision* || r300 ||
+|| *Bugs Fixed* || Issue 12, Issue 13 ||
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.8.jar Download]
+
 == Release 1.0.7 ==
 
 || *Release Date* || 2010-08-24 ||
