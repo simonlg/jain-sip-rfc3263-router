@@ -1,14 +1,12 @@
 package com.google.code.rfc3263;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 
 import javax.sip.address.Hop;
 
-import com.google.code.rfc3263.util.LocatorUtils;
-
 import net.jcip.annotations.Immutable;
+
+import com.google.code.rfc3263.util.LocatorUtils;
 
 /**
  * This is an implementation of the Hop interface.
