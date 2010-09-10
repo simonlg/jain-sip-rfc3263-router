@@ -53,11 +53,6 @@ public class HopParserTest {
 		HopImpl.getInstance(":5060/TCP");
 	}
 	
-	@Test(expected = ParseException.class)
-	public void testHostAddressShouldThrowException() throws ParseException {
-		HopImpl.getInstance("example.org:5060/TCP");
-	}
-	
 	@Test
 	public void testHostnameHost() throws ParseException {
 		Hop hop = HopImpl.getInstance("example.org:5060/TCP");

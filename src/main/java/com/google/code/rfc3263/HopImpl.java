@@ -48,7 +48,11 @@ class HopImpl implements Hop {
 	
 	@Override
 	public String toString() {
-		return host + ":" + port + "/" + transport;
+		if (host.indexOf(":") == -1) {
+			return host + ":" + port + "/" + transport;
+		} else {
+			return "[" + host + "]:" + port + "/" + transport;
+		}
 	}
 
 	@Override
@@ -105,45 +109,49 @@ class HopImpl implements Hop {
 		if (hop == null) {
 			throw new ParseException("Failed to parse null hop", 0);
 		}
-		if (hop.indexOf('/') == -1) {
-			throw new ParseException("Failed to parse transport", -1);
+		int closingSquareBracket = hop.indexOf("]");
+		int portColon = hop.indexOf(":", closingSquareBracket);
+		if (portColon == -1) {
+			// We MUST have a colon before the port number.
+			throw new ParseException("Missing port delimiter", -1);
 		}
-		int transportStartsAt = hop.lastIndexOf('/');
-		String transport = hop.substring(transportStartsAt + 1);
-		if (LocatorUtils.isKnownTransport(transport) == false) {
-			throw new ParseException("Invalid transport", transportStartsAt);
+		int transportSlash = hop.indexOf("/", portColon);
+		if (transportSlash == -1) {
+			// We MUST have a forward slash before the transport.
+			throw new ParseException("Missing transport delimiter", -1);
 		}
 		
-		// Can't search for the index of a colon to guarantee a port exists, as
-		// we might have an IPv6 address.  We'll find an error when we try to
-		// parse the port number as an int.
-		int portStartsAt = hop.lastIndexOf(':');
-		String port = hop.substring(portStartsAt + 1, transportStartsAt);
-		int portNum;
+		// Check the port number
+		final String port = hop.substring(portColon + 1, transportSlash);
+		final int portNum;
 		try {
 			 portNum = Integer.parseInt(port);			
 		} catch (NumberFormatException e) {
-			ParseException pe = new ParseException("Failed to parse port number", portStartsAt);
+			ParseException pe = new ParseException("Failed to parse port number", portColon);
 			pe.initCause(e);
 			
 			throw pe;
 		}
-		// Now, what constitutes a valid port number?
+		// Check the port number range
 		if (portNum < 0 || portNum > 65535) {
-			throw new ParseException("Port number is not valid for TCP or UDP", portStartsAt);
+			throw new ParseException("Port number is not valid for TCP or UDP", portColon);
 		}
 		
-		String address = hop.substring(0, portStartsAt);
-		try {
-			InetAddress inetAddress = InetAddress.getByName(address);
-			String[] parts = inetAddress.toString().split("\\/");
-			if (parts[0].isEmpty() == false) {
-				throw new ParseException("Address was not an IP address", 0);
-			}
-		} catch (UnknownHostException e) {
-			throw new ParseException("Address was not an IP address", 0);
+		// Check the transport
+		final String transport = hop.substring(transportSlash + 1);
+		if (LocatorUtils.isKnownTransport(transport) == false) {
+			throw new ParseException("Invalid transport", transportSlash);
 		}
 		
-		return new HopImpl(address, portNum, transport);
+		final String address = hop.substring(0, portColon);
+		if (LocatorUtils.isNumeric(address) == false && address.length() == 0) {
+			throw new ParseException("Invalid host", 0);
+		}
+		
+		if (LocatorUtils.isIPv6Reference(address)) {
+			return new HopImpl(address.substring(1, address.length() - 1), portNum, transport);
+		} else {
+			return new HopImpl(address, portNum, transport);
+		}
 	}
 }
