@@ -24,7 +24,7 @@ The router is *stateless*, so a request with an identical Request-URI (or top Ro
 
 ===Non-SIP URIs===
 
-Non-SIP URIs, such as `tel:`, are *not supported* by the RFC3263 specification.  Applications which wish to route SIP and non-SIP URIs are invited to extend the router from this project as show in [http://code.google.com/p/jain-sip-rfc3263-router/source/browse/trunk/src/example/java/com/google/code/rfc3263/PstnRouter.java this example].
+Non-SIP URIs, such as `tel:`, are *not supported* by the RFC3263 specification.  Applications which wish to route SIP and non-SIP URIs are invited to extend the router from this project as shown in [http://code.google.com/p/jain-sip-rfc3263-router/source/browse/trunk/src/example/java/com/google/code/rfc3263/PstnRouter.java this example].
 
 ==Location Service==
 
