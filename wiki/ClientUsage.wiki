@@ -53,7 +53,7 @@ routeUri.setLrParam();
 routeUri.setPort(hop.getPort());
 if (hop.getTransport().equals("TLS")) {
     routeUri.setTransportParam("tcp");
-} else if (hop.getTransport().equals("SCTP-TLS")) {
+} else if (hop.getTransport().equals("TLS-SCTP")) {
     routeUri.setTransportParam("sctp");
 } else {
     routeUri.setTransportParam(hop.getTransport().toLowerCase());
@@ -69,7 +69,7 @@ Request clonedRequest = (Request) request.clone();
 clonedRequest.addFirst(route);
 
 SipProvider sendingProvider;
-if (hop.getTransport().endsWith("TLS")) {
+if (hop.getTransport().startsWith("TLS")) {
     sendingProvider = secureProvider;
 } else {
     sendingProvider = insecureProvider;
