@@ -214,6 +214,7 @@ public class Locator {
 				// record for the server.
 				List<PointerRecord> sortedPointers = sortPointerRecords(pointers);
 				for (PointerRecord pointer : sortedPointers) {
+					LOGGER.debug("Processing NAPTR record: " + pointer);
 					String serviceId = pointer.getReplacement();
 					LOGGER.debug("Looking up SRV records for " + serviceId);
 					final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
@@ -223,6 +224,7 @@ public class Locator {
 						
 						hopTransport = serviceTransportMap.get(pointer.getService());
 						for (ServiceRecord service : sortedServices) {
+							LOGGER.debug("Processing SRV record: " + service);
 							hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
 						}
 					}
@@ -246,6 +248,7 @@ public class Locator {
 						List<ServiceRecord> sortedServices = sortServiceRecords(services);
 						hopTransport = prefTransport;
 						for (ServiceRecord service : sortedServices) {
+							LOGGER.debug("Processing SRV record: " + service);
 							hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
 						}
 					} else {
@@ -307,6 +310,7 @@ public class Locator {
 					LOGGER.debug(services);
 					List<ServiceRecord> sortedServices = sortServiceRecords(services);
 					for (ServiceRecord service : sortedServices) {
+						LOGGER.debug("Processing SRV record: " + service);
 						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
 					}
 				} else {
@@ -347,8 +351,10 @@ public class Locator {
 		Queue<Hop> resolvedHops = new LinkedList<Hop>();
 		
 		for (Hop hop : hops) {
+			LOGGER.debug("Resolving hop: " + hop);
 			final Set<AddressRecord> addresses = resolver.lookupAddressRecords(hop.getHost());
 			for (AddressRecord address : addresses) {
+				LOGGER.debug("Processing A/AAAA record: " + address);
 				final String ipAddress = address.getAddress().getHostAddress();
 				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
 				if (resolvedHops.contains(resolvedHop) == false) {
