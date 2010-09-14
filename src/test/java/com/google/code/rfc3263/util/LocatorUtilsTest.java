@@ -5,6 +5,8 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import org.junit.Test;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.TextParseException;
 
 public class LocatorUtilsTest {
 	@Test
@@ -129,32 +131,32 @@ public class LocatorUtilsTest {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testGetServiceIdentifierForInvalidTransport() {
-		LocatorUtils.getServiceIdentifier("FOO", "example.org.");
+	public void testGetServiceIdentifierForInvalidTransport() throws TextParseException {
+		LocatorUtils.getServiceIdentifier("FOO", new Name("example.org."));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForUdp() {
-		assertEquals("_sip._udp.example.org.", LocatorUtils.getServiceIdentifier("UDP", "example.org."));
+	public void testGetServiceIdentifierForUdp() throws TextParseException {
+		assertEquals(new Name("_sip._udp.example.org."), LocatorUtils.getServiceIdentifier("UDP", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForTcp() {
-		assertEquals("_sip._tcp.example.org.", LocatorUtils.getServiceIdentifier("TCP", "example.org."));
+	public void testGetServiceIdentifierForTcp() throws TextParseException {
+		assertEquals(new Name("_sip._tcp.example.org."), LocatorUtils.getServiceIdentifier("TCP", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForTls() {
-		assertEquals("_sips._tcp.example.org.", LocatorUtils.getServiceIdentifier("TLS", "example.org."));
+	public void testGetServiceIdentifierForTls() throws TextParseException {
+		assertEquals(new Name("_sips._tcp.example.org."), LocatorUtils.getServiceIdentifier("TLS", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForSctp() {
-		assertEquals("_sip._sctp.example.org.", LocatorUtils.getServiceIdentifier("SCTP", "example.org."));
+	public void testGetServiceIdentifierForSctp() throws TextParseException {
+		assertEquals(new Name("_sip._sctp.example.org."), LocatorUtils.getServiceIdentifier("SCTP", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForSctpTls() {
-		assertEquals("_sips._sctp.example.org.", LocatorUtils.getServiceIdentifier("TLS-SCTP", "example.org."));
+	public void testGetServiceIdentifierForSctpTls() throws TextParseException {
+		assertEquals(new Name("_sips._sctp.example.org."), LocatorUtils.getServiceIdentifier("TLS-SCTP", new Name("example.org.")));
 	}
 }
