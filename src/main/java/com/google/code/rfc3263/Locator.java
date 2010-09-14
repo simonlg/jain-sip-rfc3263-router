@@ -17,10 +17,14 @@ import javax.sip.address.SipURI;
 import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.ARecord;
 import org.xbill.DNS.NAPTRRecord;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.NameTooLongException;
 import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TextParseException;
 
-import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.PointerRecordSelector;
 import com.google.code.rfc3263.dns.Resolver;
@@ -60,14 +64,6 @@ public class Locator {
 		serviceTransportMap.put("SIP+D2U", "UDP");
 		serviceTransportMap.put("SIP+D2S", "SCTP");
 		serviceTransportMap.put("SIPS+D2S", "TLS-SCTP");
-	}
-	private Map<String, String> serviceIdTransportMap = new HashMap<String, String>();
-	{
-		serviceIdTransportMap.put("TCP", "_sip._tcp.");
-		serviceIdTransportMap.put("TLS", "_sips._tcp.");
-		serviceIdTransportMap.put("UDP", "_sip._udp.");
-		serviceIdTransportMap.put("SCTP", "_sip._sctp.");
-		serviceIdTransportMap.put("TLS-SCTP", "_sips._sctp.");
 	}
 	
 	/**
@@ -156,14 +152,23 @@ public class Locator {
 		return new HopImpl(hopAddress, hopPort, hopTransport);
 	}
 	
-	private Queue<Hop> locateNonNumeric(SipURI uri) {
-		final Queue<Hop> hops = new LinkedList<Hop>();
+	private Queue<UnresolvedHop> locateNonNumeric(SipURI uri) {
+		final Queue<UnresolvedHop> hops = new LinkedList<UnresolvedHop>();
 		
 		final String transportParam = getTransportParam(uri);
 		final boolean isSecure = isSecure(uri);
 		final int port = uri.getPort();
 		
-		String domain = LocatorUtils.getTarget(uri) + ".";
+		Name domain;
+		try {
+			domain = Name.concatenate(new Name(LocatorUtils.getTarget(uri)), Name.root);
+		} catch (TextParseException e) {
+			// TODO DNS Exception
+			throw new RuntimeException(e);
+		} catch (NameTooLongException e) {
+			// TODO DNS Exception
+			throw new RuntimeException(e);
+		}
 		String hopTransport = null;
 		
 		LOGGER.debug("Selecting transport for " + uri);
@@ -200,7 +205,7 @@ public class Locator {
 			// target is not a numeric IP address, the client SHOULD perform a NAPTR
 			// query for the domain in the URI.
 			LOGGER.debug("Looking up NAPTR records for " + domain);
-			final List<NAPTRRecord> pointers = resolver.lookupPointerRecords(domain);
+			final List<NAPTRRecord> pointers = resolver.lookupNAPTRRecords(domain);
 			discardInvalidPointers(pointers, isSecure);
 			
 			if (pointers.size() > 0) {
@@ -215,9 +220,9 @@ public class Locator {
 				List<NAPTRRecord> sortedPointers = sortPointerRecords(pointers);
 				for (NAPTRRecord pointer : sortedPointers) {
 					LOGGER.debug("Processing NAPTR record: " + pointer);
-					String serviceId = pointer.getReplacement().toString();
+					Name serviceId = pointer.getReplacement();
 					LOGGER.debug("Looking up SRV records for " + serviceId);
-					final List<SRVRecord> services = resolver.lookupServiceRecords(serviceId);
+					final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 					if (isValid(services)) {
 						LOGGER.debug("Found " + services.size() + " SRV record(s)");
 						List<SRVRecord> sortedServices = sortServiceRecords(services);
@@ -225,7 +230,7 @@ public class Locator {
 						hopTransport = serviceTransportMap.get(pointer.getService());
 						for (SRVRecord service : sortedServices) {
 							LOGGER.debug("Processing SRV record: " + service);
-							hops.add(new HopImpl(service.getTarget().toString(), service.getPort(), hopTransport));
+							hops.add(new UnresolvedHop(service.getTarget(), service.getPort(), hopTransport));
 						}
 					}
 				}
@@ -240,16 +245,16 @@ public class Locator {
 				// query is successful.
 				final List<String> filteredTransports = filterTransports(isSecure);
 				for (String prefTransport : filteredTransports) {
-					String serviceId = LocatorUtils.getServiceIdentifier(prefTransport, domain);
+					Name serviceId = LocatorUtils.getServiceIdentifier(prefTransport, domain);
 					LOGGER.debug("Looking up SRV records for " + serviceId);
-					final List<SRVRecord> services = resolver.lookupServiceRecords(serviceId);
+					final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 					if (isValid(services)) {
 						LOGGER.debug("Found " + services.size() + " SRV record(s) for " + serviceId);
 						List<SRVRecord> sortedServices = sortServiceRecords(services);
 						hopTransport = prefTransport;
 						for (SRVRecord service : sortedServices) {
 							LOGGER.debug("Processing SRV record: " + service);
-							hops.add(new HopImpl(service.getTarget().toString(), service.getPort(), hopTransport));
+							hops.add(new UnresolvedHop(service.getTarget(), service.getPort(), hopTransport));
 						}
 					} else {
 						LOGGER.debug("No valid SRV records for " + serviceId);
@@ -279,7 +284,7 @@ public class Locator {
 			// name.  The result will be a list of IP addresses, each of which can
 			// be contacted at the specific port from the URI and transport protocol
 			// determined previously.
-			hops.add(new HopImpl(domain, port, hopTransport));
+			hops.add(new UnresolvedHop(domain, port, hopTransport));
 		} else {
 			LOGGER.debug("No port is present in the URI");
 			// 4.2 Para 4
@@ -302,16 +307,16 @@ public class Locator {
 				// For a SIP URI, if the client wishes to use TLS, it also uses the service
 				// identifier "_sips" for that specific transport, otherwise, it uses
 				// "_sip".
-				String serviceId = LocatorUtils.getServiceIdentifier(hopTransport, domain);
+				Name serviceId = LocatorUtils.getServiceIdentifier(hopTransport, domain);
 				LOGGER.debug("Looking up SRV records for " + serviceId);
-				final List<SRVRecord> services = resolver.lookupServiceRecords(serviceId);
+				final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 				if (isValid(services)) {
 					LOGGER.debug("Found " + services.size() + " SRV records for " + serviceId + ", so use provided targets and ports");
 					LOGGER.debug(services);
 					List<SRVRecord> sortedServices = sortServiceRecords(services);
 					for (SRVRecord service : sortedServices) {
 						LOGGER.debug("Processing SRV record: " + service);
-						hops.add(new HopImpl(service.getTarget().toString(), service.getPort(), hopTransport));
+						hops.add(new UnresolvedHop(service.getTarget(), service.getPort(), hopTransport));
 					}
 				} else {
 					LOGGER.debug("No valid SRV records found for " + serviceId + ", so use default port for " + hopTransport);
@@ -322,7 +327,7 @@ public class Locator {
 					// addresses, each of which can be contacted using the transport
 					// protocol determined previously, at the default port for that
 					// transport.
-					hops.add(new HopImpl(domain, LocatorUtils.getDefaultPortForTransport(hopTransport), hopTransport));
+					hops.add(new UnresolvedHop(domain, LocatorUtils.getDefaultPortForTransport(hopTransport), hopTransport));
 				}
 			} else {
 				LOGGER.debug("No port was discovered during transport selection, so use default port for selected transport");
@@ -333,7 +338,7 @@ public class Locator {
 				// addresses, each of which can be contacted using the transport
 				// protocol determined previously, at the default port for that
 				// transport.
-				hops.add(new HopImpl(domain, LocatorUtils.getDefaultPortForTransport(hopTransport), hopTransport));
+				hops.add(new UnresolvedHop(domain, LocatorUtils.getDefaultPortForTransport(hopTransport), hopTransport));
 			}
 		}
 		
@@ -347,15 +352,27 @@ public class Locator {
 		return selector.select();
 	}
 	
-	private Queue<Hop> resolveHops(Queue<Hop> hops) {
+	private Queue<Hop> resolveHops(Queue<UnresolvedHop> hops) {
 		Queue<Hop> resolvedHops = new LinkedList<Hop>();
 		
-		for (Hop hop : hops) {
+		for (UnresolvedHop hop : hops) {
 			LOGGER.debug("Resolving hop: " + hop);
-			final Set<AddressRecord> addresses = resolver.lookupAddressRecords(hop.getHost());
-			for (AddressRecord address : addresses) {
-				LOGGER.debug("Processing A/AAAA record: " + address);
-				final String ipAddress = address.getAddress().getHostAddress();
+			final Set<ARecord> aRecords = resolver.lookupARecords(hop.getHost());
+
+			for (ARecord aRecord : aRecords) {
+				LOGGER.debug("Processing A record: " + aRecord);
+				final String ipAddress = aRecord.getAddress().getHostAddress();
+				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
+				if (resolvedHops.contains(resolvedHop) == false) {
+					resolvedHops.add(resolvedHop);
+				}
+			}
+			
+			final Set<AAAARecord> aaaaRecords = resolver.lookupAAAARecords(hop.getHost());
+
+			for (AAAARecord aaaaRecord : aaaaRecords) {
+				LOGGER.debug("Processing AAAA record: " + aaaaRecord);
+				final String ipAddress = aaaaRecord.getAddress().getHostAddress();
 				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
 				if (resolvedHops.contains(resolvedHop) == false) {
 					resolvedHops.add(resolvedHop);
@@ -494,7 +511,7 @@ public class Locator {
 			// A target of "." means that the service is decidedly not
 	        // available at this domain.
 			final SRVRecord service = services.iterator().next();
-			if (service.getTarget().equals(".")) {
+			if (service.getTarget().equals(Name.root)) {
 				return false;
 			} else {
 				return true;

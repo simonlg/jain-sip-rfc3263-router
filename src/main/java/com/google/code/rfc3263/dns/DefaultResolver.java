@@ -1,6 +1,5 @@
 package com.google.code.rfc3263.dns;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,9 +11,9 @@ import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.NAPTRRecord;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
-import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
 /**
@@ -27,38 +26,47 @@ public class DefaultResolver implements Resolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<NAPTRRecord> lookupPointerRecords(String domain) {
-		final List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
+	public Set<ARecord> lookupARecords(Name domain) {
+		final Set<ARecord> addresses = new HashSet<ARecord>();
 		
-		final Record[] records;
-		try {
-			records = new Lookup(domain, Type.NAPTR).run();
-		} catch (TextParseException e) {
-			throw new RuntimeException(e);
-		}
+		Record[] records = new Lookup(domain, Type.A).run();
+		
 		if (records == null) {
-			return pointers;
+			return addresses;
 		}
 		for (Record record : records) {
-			pointers.add((NAPTRRecord) record);
+			addresses.add((ARecord) record);
 		}
 		
+		return addresses;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<AAAARecord> lookupAAAARecords(Name domain) {
+		final Set<AAAARecord> addresses = new HashSet<AAAARecord>();
 		
-		return pointers;
+		Record[] records = new Lookup(domain, Type.AAAA).run();
+		
+		if (records == null) {
+			return addresses;
+		}
+		for (Record record : records) {
+			addresses.add((AAAARecord) record);
+		}
+		
+		return addresses;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<SRVRecord> lookupServiceRecords(String domain) {
+	public List<SRVRecord> lookupSRVRecords(Name domain) {
 		final List<SRVRecord> services = new ArrayList<SRVRecord>();
 		
-		final Record[] records;
-		try {
-			records = new Lookup(domain, Type.SRV).run();
-		} catch (TextParseException e) {
-			throw new RuntimeException(e);
-		}
+		final Record[] records = new Lookup(domain, Type.SRV).run();
+
 		if (records == null) {
 			return services;
 		}
@@ -72,42 +80,18 @@ public class DefaultResolver implements Resolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Set<AddressRecord> lookupAddressRecords(String domain) {
-		final Set<AddressRecord> addresses = new HashSet<AddressRecord>();
+	public List<NAPTRRecord> lookupNAPTRRecords(Name domain) {
+		final List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		
-		Record[] records;
-		try {
-			records = new Lookup(domain, Type.A).run();
-		} catch (TextParseException e) {
-			throw new RuntimeException(e);
+		final Record[] records = new Lookup(domain, Type.NAPTR).run();
+
+		if (records == null) {
+			return pointers;
 		}
-		if (records != null) {
-			for (int i = 0; i < records.length; i++) {
-				ARecord a = (ARecord) records[i];
-	
-				InetAddress ip = a.getAddress();
-				
-				AddressRecord address = new AddressRecord(domain, ip);
-				addresses.add(address);
-			}
-		}
-		try {
-			records = new Lookup(domain, Type.AAAA).run();
-		} catch (TextParseException e) {
-			throw new RuntimeException(e);
-		}
-		if (records != null) {
-			for (int i = 0; i < records.length; i++) {
-				AAAARecord a = (AAAARecord) records[i];
-	
-				InetAddress ip = a.getAddress();
-				
-				AddressRecord address = new AddressRecord(domain, ip);
-				addresses.add(address);
-			}
+		for (Record record : records) {
+			pointers.add((NAPTRRecord) record);
 		}
 		
-		
-		return addresses;
+		return pointers;
 	}
 }

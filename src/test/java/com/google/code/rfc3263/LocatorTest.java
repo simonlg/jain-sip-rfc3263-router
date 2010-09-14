@@ -28,13 +28,14 @@ import javax.sip.address.SipURI;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.ARecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.NAPTRRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 
-import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.Resolver;
 
 /**
@@ -144,12 +145,13 @@ public class LocatorTest {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000, 0, 0, "s", "SIPS+D2T", "", new Name("_sips._tcp.example.org.")));
 		
-		Set<AddressRecord> addresses = new HashSet<AddressRecord>();
-		addresses.add(new AddressRecord("example.org.", InetAddress.getLocalHost()));
+		Set<ARecord> addresses = new HashSet<ARecord>();
+		addresses.add(new ARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getLocalHost()));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(pointers);
-		expect(resolver.lookupServiceRecords("_sips._tcp.example.org.")).andReturn(Collections.<SRVRecord>emptyList());
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(addresses);
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(pointers);
+		expect(resolver.lookupSRVRecords(new Name("_sips._tcp.example.org."))).andReturn(Collections.<SRVRecord>emptyList());
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(addresses);
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -167,12 +169,13 @@ public class LocatorTest {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2U", "", new Name("_sip._udp.example.org.")));
 		
-		Set<AddressRecord> addresses = new HashSet<AddressRecord>();
-		addresses.add(new AddressRecord("example.org.", InetAddress.getLocalHost()));
+		Set<ARecord> addresses = new HashSet<ARecord>();
+		addresses.add(new ARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getLocalHost()));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(pointers);
-		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(Collections.<SRVRecord>emptyList());
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(addresses);
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(pointers);
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.org."))).andReturn(Collections.<SRVRecord>emptyList());
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(addresses);
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -192,12 +195,13 @@ public class LocatorTest {
 		List<SRVRecord> services = new ArrayList<SRVRecord>();
 		services.add(new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("example.org.")));
 		
-		Set<AddressRecord> addresses = new HashSet<AddressRecord>();
-		addresses.add(new AddressRecord("example.org.", InetAddress.getLocalHost()));
+		Set<ARecord> addresses = new HashSet<ARecord>();
+		addresses.add(new ARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getLocalHost()));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(pointers);
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.org.")).andReturn(services);
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(addresses);
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(pointers);
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.org."))).andReturn(services);
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(addresses);
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -214,12 +218,13 @@ public class LocatorTest {
 		List<SRVRecord> services = new ArrayList<SRVRecord>();
 		services.add(new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("example.org.")));
 		
-		Set<AddressRecord> addresses = new HashSet<AddressRecord>();
-		addresses.add(new AddressRecord("example.org.", InetAddress.getLocalHost()));
+		Set<ARecord> addresses = new HashSet<ARecord>();
+		addresses.add(new ARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getLocalHost()));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(Collections.<NAPTRRecord>emptyList());
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.org.")).andReturn(services);
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(addresses);
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(Collections.<NAPTRRecord>emptyList());
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.org."))).andReturn(services);
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(addresses);
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -255,8 +260,9 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldLookupAddressWhenPortPresent() throws ParseException, UnknownHostException {
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(new HashSet<AddressRecord>());
+	public void testShouldLookupAddressWhenPortPresent() throws ParseException, UnknownHostException, TextParseException {
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -267,10 +273,11 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldLookupDefaultSrvWhenNoNaptr() throws ParseException, UnknownHostException {
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(new ArrayList<NAPTRRecord>());
-		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(new ArrayList<SRVRecord>());
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(new HashSet<AddressRecord>());
+	public void testShouldLookupDefaultSrvWhenNoNaptr() throws ParseException, UnknownHostException, TextParseException {
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(new ArrayList<NAPTRRecord>());
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.org."))).andReturn(new ArrayList<SRVRecord>());
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -284,9 +291,10 @@ public class LocatorTest {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2U", "", new Name("_sip._udp.example.net.")));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(pointers);
-		expect(resolver.lookupServiceRecords("_sip._udp.example.net.")).andReturn(new ArrayList<SRVRecord>());
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(new HashSet<AddressRecord>());
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(pointers);
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.net."))).andReturn(new ArrayList<SRVRecord>());
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -302,9 +310,10 @@ public class LocatorTest {
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 1, 0, "s", "SIP+D2U", "", new Name("_sip._udp.example.net.")));
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2T", "", new Name("_sip._tcp.example.net.")));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(pointers);
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.net.")).andReturn(new ArrayList<SRVRecord>());
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(new HashSet<AddressRecord>());
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(pointers);
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.net."))).andReturn(new ArrayList<SRVRecord>());
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -320,10 +329,11 @@ public class LocatorTest {
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 1, "s", "SIP+D2U", "", new Name("_sip._udp.example.net.")));
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2T", "", new Name("_sip._tcp.example.net.")));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(pointers);
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.net.")).andReturn(new ArrayList<SRVRecord>());
-		expect(resolver.lookupServiceRecords("_sip._udp.example.net.")).andReturn(new ArrayList<SRVRecord>());
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(new HashSet<AddressRecord>());
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(pointers);
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.net."))).andReturn(new ArrayList<SRVRecord>());
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.net."))).andReturn(new ArrayList<SRVRecord>());
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
@@ -337,9 +347,10 @@ public class LocatorTest {
 		List<SRVRecord> services = new ArrayList<SRVRecord>();
 		services.add(new SRVRecord(new Name("_sip._udp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("sip.example.org.")));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(new ArrayList<NAPTRRecord>());
-		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(services);
-		expect(resolver.lookupAddressRecords("sip.example.org.")).andReturn(new HashSet<AddressRecord>());
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(new ArrayList<NAPTRRecord>());
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.org."))).andReturn(services);
+		expect(resolver.lookupARecords(new Name("sip.example.org."))).andReturn(new HashSet<ARecord>());
+		expect(resolver.lookupAAAARecords(new Name("sip.example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");

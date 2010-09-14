@@ -15,12 +15,13 @@ import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.ARecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.NAPTRRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.SRVRecord;
 
-import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.Resolver;
 
 public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEnvironmentTest {
@@ -78,43 +79,56 @@ public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEn
 		
 		final Resolver resolver = EasyMock.createMock(Resolver.class);
 		
-		final Set<AddressRecord> orgAddresses = new HashSet<AddressRecord>();
-		orgAddresses.add(new AddressRecord("example.org.", InetAddress.getByName("192.168.0.3")));
-		final Set<AddressRecord> orgAddressesA = new HashSet<AddressRecord>();
-		orgAddressesA.add(new AddressRecord("a.example.org.", InetAddress.getByName("192.168.0.5")));
-		final Set<AddressRecord> orgAddressesB = new HashSet<AddressRecord>();
-		orgAddressesB.add(new AddressRecord("b.example.org.", InetAddress.getByName("192.168.0.6")));
-		final Set<AddressRecord> orgAddressesC = new HashSet<AddressRecord>();
-		orgAddressesC.add(new AddressRecord("c.example.org.", InetAddress.getByName("192.168.0.7")));
-		final Set<AddressRecord> orgAddressesD = new HashSet<AddressRecord>();
-		orgAddressesD.add(new AddressRecord("d.example.org.", InetAddress.getByName("192.168.0.8")));
-		final Set<AddressRecord> orgAddressesE = new HashSet<AddressRecord>();
-		orgAddressesE.add(new AddressRecord("e.example.org.", InetAddress.getByName("192.168.0.9")));
-		final Set<AddressRecord> netAddresses = new HashSet<AddressRecord>();
-		netAddresses.add(new AddressRecord("example.net.", InetAddress.getByName("192.168.0.4")));
-		final Set<AddressRecord> netAddressesA = new HashSet<AddressRecord>();
-		netAddressesA.add(new AddressRecord("a.example.net.", InetAddress.getByName("192.168.0.10")));
-		final Set<AddressRecord> netAddressesB = new HashSet<AddressRecord>();
-		netAddressesB.add(new AddressRecord("b.example.net.", InetAddress.getByName("192.168.0.11")));
-		final Set<AddressRecord> netAddressesC = new HashSet<AddressRecord>();
-		netAddressesC.add(new AddressRecord("c.example.net.", InetAddress.getByName("192.168.0.12")));
-		final Set<AddressRecord> netAddressesD = new HashSet<AddressRecord>();
-		netAddressesD.add(new AddressRecord("d.example.net.", InetAddress.getByName("192.168.0.13")));
-		final Set<AddressRecord> netAddressesE = new HashSet<AddressRecord>();
-		netAddressesE.add(new AddressRecord("e.example.net.", InetAddress.getByName("192.168.0.14")));
+		final Set<ARecord> orgAddresses = new HashSet<ARecord>();
+		orgAddresses.add(new ARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.3")));
+		final Set<ARecord> orgAddressesA = new HashSet<ARecord>();
+		orgAddressesA.add(new ARecord(new Name("a.example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.5")));
+		final Set<ARecord> orgAddressesB = new HashSet<ARecord>();
+		orgAddressesB.add(new ARecord(new Name("b.example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.6")));
+		final Set<ARecord> orgAddressesC = new HashSet<ARecord>();
+		orgAddressesC.add(new ARecord(new Name("c.example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.7")));
+		final Set<ARecord> orgAddressesD = new HashSet<ARecord>();
+		orgAddressesD.add(new ARecord(new Name("d.example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.8")));
+		final Set<ARecord> orgAddressesE = new HashSet<ARecord>();
+		orgAddressesE.add(new ARecord(new Name("e.example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.9")));
+		final Set<ARecord> netAddresses = new HashSet<ARecord>();
+		netAddresses.add(new ARecord(new Name("example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.4")));
+		final Set<ARecord> netAddressesA = new HashSet<ARecord>();
+		netAddressesA.add(new ARecord(new Name("a.example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.10")));
+		final Set<ARecord> netAddressesB = new HashSet<ARecord>();
+		netAddressesB.add(new ARecord(new Name("b.example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.11")));
+		final Set<ARecord> netAddressesC = new HashSet<ARecord>();
+		netAddressesC.add(new ARecord(new Name("c.example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.12")));
+		final Set<ARecord> netAddressesD = new HashSet<ARecord>();
+		netAddressesD.add(new ARecord(new Name("d.example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.13")));
+		final Set<ARecord> netAddressesE = new HashSet<ARecord>();
+		netAddressesE.add(new ARecord(new Name("e.example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.14")));
 		
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(orgAddresses).anyTimes();
-		expect(resolver.lookupAddressRecords("a.example.org.")).andReturn(orgAddressesA).anyTimes();
-		expect(resolver.lookupAddressRecords("b.example.org.")).andReturn(orgAddressesB).anyTimes();
-		expect(resolver.lookupAddressRecords("c.example.org.")).andReturn(orgAddressesC).anyTimes();
-		expect(resolver.lookupAddressRecords("d.example.org.")).andReturn(orgAddressesD).anyTimes();
-		expect(resolver.lookupAddressRecords("e.example.org.")).andReturn(orgAddressesE).anyTimes();
-		expect(resolver.lookupAddressRecords("example.net.")).andReturn(netAddresses).anyTimes();
-		expect(resolver.lookupAddressRecords("a.example.net.")).andReturn(netAddressesA).anyTimes();
-		expect(resolver.lookupAddressRecords("b.example.net.")).andReturn(netAddressesB).anyTimes();
-		expect(resolver.lookupAddressRecords("c.example.net.")).andReturn(netAddressesC).anyTimes();
-		expect(resolver.lookupAddressRecords("d.example.net.")).andReturn(netAddressesD).anyTimes();
-		expect(resolver.lookupAddressRecords("e.example.net.")).andReturn(netAddressesE).anyTimes();
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(orgAddresses).anyTimes();
+		expect(resolver.lookupARecords(new Name("a.example.org."))).andReturn(orgAddressesA).anyTimes();
+		expect(resolver.lookupARecords(new Name("b.example.org."))).andReturn(orgAddressesB).anyTimes();
+		expect(resolver.lookupARecords(new Name("c.example.org."))).andReturn(orgAddressesC).anyTimes();
+		expect(resolver.lookupARecords(new Name("d.example.org."))).andReturn(orgAddressesD).anyTimes();
+		expect(resolver.lookupARecords(new Name("e.example.org."))).andReturn(orgAddressesE).anyTimes();
+		expect(resolver.lookupARecords(new Name("example.net."))).andReturn(netAddresses).anyTimes();
+		expect(resolver.lookupARecords(new Name("a.example.net."))).andReturn(netAddressesA).anyTimes();
+		expect(resolver.lookupARecords(new Name("b.example.net."))).andReturn(netAddressesB).anyTimes();
+		expect(resolver.lookupARecords(new Name("c.example.net."))).andReturn(netAddressesC).anyTimes();
+		expect(resolver.lookupARecords(new Name("d.example.net."))).andReturn(netAddressesD).anyTimes();
+		expect(resolver.lookupARecords(new Name("e.example.net."))).andReturn(netAddressesE).anyTimes();
+		
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("a.example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("b.example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("c.example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("d.example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("e.example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("a.example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("b.example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("c.example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("d.example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("e.example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
 		
 		final List<SRVRecord> orgSipUdpServices = new ArrayList<SRVRecord>();
 		orgSipUdpServices.add(new SRVRecord(new Name("_sip._udp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("a.example.org.")));
@@ -137,20 +151,20 @@ public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEn
 		final List<SRVRecord> netSipsSctpServices = new ArrayList<SRVRecord>();
 		netSipsSctpServices.add(new SRVRecord(new Name("_sips._sctp.example.net."), DClass.IN, 1000L, 0, 0, 5061, new Name("e.example.net.")));
 		
-		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(orgSipUdpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.org.")).andReturn(orgSipTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._sctp.example.org.")).andReturn(orgSipSctpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._tcp.example.org.")).andReturn(orgSipsTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._sctp.example.org.")).andReturn(orgSipsSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.org."))).andReturn(orgSipUdpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.org."))).andReturn(orgSipTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._sctp.example.org."))).andReturn(orgSipSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._tcp.example.org."))).andReturn(orgSipsTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._sctp.example.org."))).andReturn(orgSipsSctpServices).anyTimes();
 		
-		expect(resolver.lookupServiceRecords("_sip._udp.example.net.")).andReturn(netSipUdpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.net.")).andReturn(netSipTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._sctp.example.net.")).andReturn(netSipSctpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._tcp.example.net.")).andReturn(netSipsTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._sctp.example.net.")).andReturn(netSipsSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.net."))).andReturn(netSipUdpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.net."))).andReturn(netSipTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._sctp.example.net."))).andReturn(netSipSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._tcp.example.net."))).andReturn(netSipsTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._sctp.example.net."))).andReturn(netSipsSctpServices).anyTimes();
 
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
-		expect(resolver.lookupPointerRecords("example.net.")).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
+		expect(resolver.lookupNAPTRRecords(new Name("example.net."))).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
 		
 		replay(resolver);
 		locator = new Locator(resolver, Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"));
