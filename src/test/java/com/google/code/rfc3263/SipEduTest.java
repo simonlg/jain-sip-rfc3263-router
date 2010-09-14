@@ -10,6 +10,7 @@ import javax.sip.SipFactory;
 import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,11 +50,6 @@ public class SipEduTest {
 		parameters.add(new String[] { "iptel.org" });
 		
 		return parameters;
-	}
-	
-	@BeforeClass
-	public static void configureLogging() {
-//		BasicConfigurator.configure();
 	}
 	
 	@Before
