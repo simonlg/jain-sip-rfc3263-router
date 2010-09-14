@@ -9,7 +9,9 @@
 || *Tag Revision* || r386 ||
 || *Bugs Fixed* || None ||
 
-This release brings a substantial change in the format of the Resolver, which now uses the   dnsjava classes to represent A, AAAA, SRV and NAPTR records.
+This release brings a substantial change in the format of the Resolver class, which now uses the   dnsjava classes to represent A, AAAA, SRV and NAPTR records. A and AAAA records are no longer combined into one group of generic "address" records.
+
+This should -- to some extent -- finalize the Resolver interface, and also pave the way for solving Issue 14, by providing all of the DNS record fields.
 
 [http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.1.0.jar Download]
 
