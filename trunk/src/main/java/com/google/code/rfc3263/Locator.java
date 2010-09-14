@@ -2,6 +2,7 @@ package com.google.code.rfc3263;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
@@ -28,6 +31,7 @@ import org.xbill.DNS.TextParseException;
 import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.PointerRecordSelector;
 import com.google.code.rfc3263.dns.Resolver;
+import com.google.code.rfc3263.dns.ServiceRecordDeterministicComparator;
 import com.google.code.rfc3263.dns.ServiceRecordSelector;
 import com.google.code.rfc3263.util.LocatorUtils;
 
@@ -58,6 +62,11 @@ public class Locator {
 	// SIP+D2S               SCTP      [RFC3263]
 	// SIPS+D2S              SCTP      [RFC4168]
 	private Map<String, String> serviceTransportMap = new HashMap<String, String>();
+	/**
+	 * Comparator for sorting prioritised SRV records.
+	 */
+	private Comparator<SRVRecord> weightingComparator = new ServiceRecordDeterministicComparator();
+	private final Lock comparatorLock = new ReentrantLock();
 	{
 		serviceTransportMap.put("SIP+D2T", "TCP");
 		serviceTransportMap.put("SIPS+D2T", "TLS");
@@ -383,11 +392,31 @@ public class Locator {
 		return resolvedHops;
 	}
 	
-	private static List<SRVRecord> sortServiceRecords(List<SRVRecord> services) {
+	/**
+	 * Provide a comparator to override the default comparator, which sorts by weight,
+	 * then by target.
+	 * 
+	 * @param weightingComparator the comparator to use to sort SRV records.
+	 */
+	public void setWeightingComparator(Comparator<SRVRecord> weightingComparator) {
+		comparatorLock.lock();
+		try {
+			this.weightingComparator = weightingComparator; 
+		} finally {
+			comparatorLock.unlock();
+		}
+	}
+	
+	private List<SRVRecord> sortServiceRecords(List<SRVRecord> services) {
 		LOGGER.debug("Selecting service record from record set");
 		
-		final ServiceRecordSelector selector = new ServiceRecordSelector(services);
-		return selector.select();
+		comparatorLock.lock();
+		try {
+			final ServiceRecordSelector selector = new ServiceRecordSelector(services, weightingComparator);
+			return selector.select();
+		} finally {
+			comparatorLock.unlock();
+		}
 	}
 	
 	private void discardInvalidPointers(List<NAPTRRecord> pointers, boolean isSecure) {

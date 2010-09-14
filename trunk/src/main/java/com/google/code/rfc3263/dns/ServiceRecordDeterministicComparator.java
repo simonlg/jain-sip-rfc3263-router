@@ -14,7 +14,7 @@ import net.jcip.annotations.ThreadSafe;
  * eliminate randomness.
  */
 @ThreadSafe
-class ServiceRecordDeterministicComparator implements Comparator<SRVRecord> {
+public class ServiceRecordDeterministicComparator implements Comparator<SRVRecord> {
 	public int compare(SRVRecord o1, SRVRecord o2) {
 		if (o1.getWeight() == o2.getWeight()) {
 			return o1.getTarget().compareTo(o2.getTarget());

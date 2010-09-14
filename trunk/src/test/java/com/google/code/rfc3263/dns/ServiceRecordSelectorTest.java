@@ -30,7 +30,7 @@ public class ServiceRecordSelectorTest {
 		services.add(d);
 		services.add(a);
 		
-		ServiceRecordSelector selector = new ServiceRecordSelector(services);
+		ServiceRecordSelector selector = new ServiceRecordSelector(services, new ServiceRecordDeterministicComparator());
 		List<SRVRecord> sortedServices = selector.select();
 		assertEquals(a, sortedServices.get(0));
 		assertEquals(b, sortedServices.get(1));
@@ -56,7 +56,7 @@ public class ServiceRecordSelectorTest {
 		services.add(c);
 		services.add(a);
 		
-		ServiceRecordSelector selector = new ServiceRecordSelector(services);
+		ServiceRecordSelector selector = new ServiceRecordSelector(services, new ServiceRecordDeterministicComparator());
 		List<SRVRecord> sortedServices = selector.select();
 		assertEquals(d, sortedServices.get(0));
 		assertEquals(c, sortedServices.get(1));
