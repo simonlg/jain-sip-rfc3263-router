@@ -3,6 +3,16 @@
 
 <wiki:toc/>
 
+== Release 1.1.0 ==
+
+|| *Release Date* || 2010-09-14 ||
+|| *Tag Revision* || r386 ||
+|| *Bugs Fixed* || None ||
+
+This release brings a substantial change in the format of the Resolver, which now uses the   dnsjava classes to represent A, AAAA, SRV and NAPTR records.
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.1.0.jar Download]
+
 == Release 1.0.8 ==
 
 || *Release Date* || 2010-09-10 ||
