@@ -17,13 +17,13 @@ import javax.sip.address.SipURI;
 import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
+import org.xbill.DNS.NAPTRRecord;
+import org.xbill.DNS.SRVRecord;
 
 import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.DefaultResolver;
-import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.PointerRecordSelector;
 import com.google.code.rfc3263.dns.Resolver;
-import com.google.code.rfc3263.dns.ServiceRecord;
 import com.google.code.rfc3263.dns.ServiceRecordSelector;
 import com.google.code.rfc3263.util.LocatorUtils;
 
@@ -200,7 +200,7 @@ public class Locator {
 			// target is not a numeric IP address, the client SHOULD perform a NAPTR
 			// query for the domain in the URI.
 			LOGGER.debug("Looking up NAPTR records for " + domain);
-			final List<PointerRecord> pointers = resolver.lookupPointerRecords(domain);
+			final List<NAPTRRecord> pointers = resolver.lookupPointerRecords(domain);
 			discardInvalidPointers(pointers, isSecure);
 			
 			if (pointers.size() > 0) {
@@ -212,20 +212,20 @@ public class Locator {
 				// the discovery of the most preferred transport protocol of the 
 				// server that is supported by the client, as well as an SRV 
 				// record for the server.
-				List<PointerRecord> sortedPointers = sortPointerRecords(pointers);
-				for (PointerRecord pointer : sortedPointers) {
+				List<NAPTRRecord> sortedPointers = sortPointerRecords(pointers);
+				for (NAPTRRecord pointer : sortedPointers) {
 					LOGGER.debug("Processing NAPTR record: " + pointer);
-					String serviceId = pointer.getReplacement();
+					String serviceId = pointer.getReplacement().toString();
 					LOGGER.debug("Looking up SRV records for " + serviceId);
-					final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+					final List<SRVRecord> services = resolver.lookupServiceRecords(serviceId);
 					if (isValid(services)) {
 						LOGGER.debug("Found " + services.size() + " SRV record(s)");
-						List<ServiceRecord> sortedServices = sortServiceRecords(services);
+						List<SRVRecord> sortedServices = sortServiceRecords(services);
 						
 						hopTransport = serviceTransportMap.get(pointer.getService());
-						for (ServiceRecord service : sortedServices) {
+						for (SRVRecord service : sortedServices) {
 							LOGGER.debug("Processing SRV record: " + service);
-							hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+							hops.add(new HopImpl(service.getTarget().toString(), service.getPort(), hopTransport));
 						}
 					}
 				}
@@ -242,14 +242,14 @@ public class Locator {
 				for (String prefTransport : filteredTransports) {
 					String serviceId = LocatorUtils.getServiceIdentifier(prefTransport, domain);
 					LOGGER.debug("Looking up SRV records for " + serviceId);
-					final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+					final List<SRVRecord> services = resolver.lookupServiceRecords(serviceId);
 					if (isValid(services)) {
 						LOGGER.debug("Found " + services.size() + " SRV record(s) for " + serviceId);
-						List<ServiceRecord> sortedServices = sortServiceRecords(services);
+						List<SRVRecord> sortedServices = sortServiceRecords(services);
 						hopTransport = prefTransport;
-						for (ServiceRecord service : sortedServices) {
+						for (SRVRecord service : sortedServices) {
 							LOGGER.debug("Processing SRV record: " + service);
-							hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+							hops.add(new HopImpl(service.getTarget().toString(), service.getPort(), hopTransport));
 						}
 					} else {
 						LOGGER.debug("No valid SRV records for " + serviceId);
@@ -304,14 +304,14 @@ public class Locator {
 				// "_sip".
 				String serviceId = LocatorUtils.getServiceIdentifier(hopTransport, domain);
 				LOGGER.debug("Looking up SRV records for " + serviceId);
-				final List<ServiceRecord> services = resolver.lookupServiceRecords(serviceId);
+				final List<SRVRecord> services = resolver.lookupServiceRecords(serviceId);
 				if (isValid(services)) {
 					LOGGER.debug("Found " + services.size() + " SRV records for " + serviceId + ", so use provided targets and ports");
 					LOGGER.debug(services);
-					List<ServiceRecord> sortedServices = sortServiceRecords(services);
-					for (ServiceRecord service : sortedServices) {
+					List<SRVRecord> sortedServices = sortServiceRecords(services);
+					for (SRVRecord service : sortedServices) {
 						LOGGER.debug("Processing SRV record: " + service);
-						hops.add(new HopImpl(service.getTarget(), service.getPort(), hopTransport));
+						hops.add(new HopImpl(service.getTarget().toString(), service.getPort(), hopTransport));
 					}
 				} else {
 					LOGGER.debug("No valid SRV records found for " + serviceId + ", so use default port for " + hopTransport);
@@ -340,7 +340,7 @@ public class Locator {
 		return hops;
 	}
 
-	private static List<PointerRecord> sortPointerRecords(List<PointerRecord> pointers) {
+	private static List<NAPTRRecord> sortPointerRecords(List<NAPTRRecord> pointers) {
 		LOGGER.debug("Selecting pointer record from record set");
 		PointerRecordSelector selector = new PointerRecordSelector(pointers);
 		
@@ -366,14 +366,14 @@ public class Locator {
 		return resolvedHops;
 	}
 	
-	private static List<ServiceRecord> sortServiceRecords(List<ServiceRecord> services) {
+	private static List<SRVRecord> sortServiceRecords(List<SRVRecord> services) {
 		LOGGER.debug("Selecting service record from record set");
 		
 		final ServiceRecordSelector selector = new ServiceRecordSelector(services);
 		return selector.select();
 	}
 	
-	private void discardInvalidPointers(List<PointerRecord> pointers, boolean isSecure) {
+	private void discardInvalidPointers(List<NAPTRRecord> pointers, boolean isSecure) {
 		final Set<String> validServiceFields = new HashSet<String>();
 		// 4.1 Para 5
 		//
@@ -424,9 +424,9 @@ public class Locator {
 		LOGGER.debug("Supported NAPTR services: " + validServiceFields);
 
 		// Discard
-		final Iterator<PointerRecord> iter = pointers.iterator();
+		final Iterator<NAPTRRecord> iter = pointers.iterator();
 		while (iter.hasNext()) {
-			final PointerRecord pointer = iter.next();
+			final NAPTRRecord pointer = iter.next();
 			if (validServiceFields.contains(pointer.getService()) == false) {
 				LOGGER.debug("Removing unsupported NAPTR record: " + pointer);
 				iter.remove();
@@ -485,7 +485,7 @@ public class Locator {
 	 * @param services
 	 * @return true is the list of services is valid; false otherwise.
 	 */
-	private static boolean isValid(List<ServiceRecord> services) {
+	private static boolean isValid(List<SRVRecord> services) {
 		if (services.size() == 0) {
 			return false;
 		} else if (services.size() == 1) {
@@ -493,7 +493,7 @@ public class Locator {
 			//
 			// A target of "." means that the service is decidedly not
 	        // available at this domain.
-			final ServiceRecord service = services.iterator().next();
+			final SRVRecord service = services.iterator().next();
 			if (service.getTarget().equals(".")) {
 				return false;
 			} else {
@@ -518,7 +518,7 @@ public class Locator {
 		return uri.isSecure();
 	}
 	
-	private static boolean isValid(PointerRecord pointer) {
+	private static boolean isValid(NAPTRRecord pointer) {
 		// RFC 3263, Section 4.1
 		//
 		// The resource record will contain an empty regular expression and a 

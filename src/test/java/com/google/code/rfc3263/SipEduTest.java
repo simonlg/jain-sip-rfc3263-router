@@ -3,11 +3,8 @@ package com.google.code.rfc3263;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 import javax.sip.PeerUnavailableException;
 import javax.sip.SipFactory;
@@ -51,6 +48,8 @@ public class SipEduTest {
 		parameters.add(new String[] { "valencia.edu" });
 		parameters.add(new String[] { "whoi.edu" });
 		parameters.add(new String[] { "yale.edu" });
+		parameters.add(new String[] { "inria.fr" });
+		parameters.add(new String[] { "iptel.org" });
 		
 		return parameters;
 	}

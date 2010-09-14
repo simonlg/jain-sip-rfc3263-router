@@ -27,8 +27,8 @@ public class DefaultResolver implements Resolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<PointerRecord> lookupPointerRecords(String domain) {
-		final List<PointerRecord> pointers = new ArrayList<PointerRecord>();
+	public List<NAPTRRecord> lookupPointerRecords(String domain) {
+		final List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		
 		final Record[] records;
 		try {
@@ -39,18 +39,8 @@ public class DefaultResolver implements Resolver {
 		if (records == null) {
 			return pointers;
 		}
-		for (int i = 0; i < records.length; i++) {
-			NAPTRRecord naptr = (NAPTRRecord) records[i];
-
-			int order = naptr.getOrder();
-			int preference = naptr.getPreference();
-			String flags = naptr.getFlags();
-			String service = naptr.getService();
-			String regexp = naptr.getRegexp();
-			String replacement = naptr.getReplacement().toString();
-			
-			PointerRecord pointer = new PointerRecord(domain, order, preference, flags, service, regexp, replacement);
-			pointers.add(pointer);
+		for (Record record : records) {
+			pointers.add((NAPTRRecord) record);
 		}
 		
 		
@@ -60,8 +50,8 @@ public class DefaultResolver implements Resolver {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<ServiceRecord> lookupServiceRecords(String domain) {
-		final List<ServiceRecord> services = new ArrayList<ServiceRecord>();
+	public List<SRVRecord> lookupServiceRecords(String domain) {
+		final List<SRVRecord> services = new ArrayList<SRVRecord>();
 		
 		final Record[] records;
 		try {
@@ -72,18 +62,9 @@ public class DefaultResolver implements Resolver {
 		if (records == null) {
 			return services;
 		}
-		for (int i = 0; i < records.length; i++) {
-			SRVRecord srv = (SRVRecord) records[i];
-
-			int priority = srv.getPriority();
-			int weight = srv.getWeight();
-			int port = srv.getPort();
-			String target = srv.getTarget().toString();
-			
-			ServiceRecord service = new ServiceRecord(domain, priority, weight, port, target);
-			services.add(service);
+		for (Record record : records) {
+			services.add((SRVRecord) record);
 		}
-		
 		
 		return services;
 	}

@@ -6,19 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TextParseException;
 
 public class ServiceRecordSelectorTest {
 	/**
 	 * Tests four records, all with the same weight.
+	 * @throws TextParseException 
 	 */
 	@Test
-	public void testSelectByTarget() {
-		List<ServiceRecord> services = new ArrayList<ServiceRecord>();
+	public void testSelectByTarget() throws TextParseException {
+		List<SRVRecord> services = new ArrayList<SRVRecord>();
 		
-		ServiceRecord a = new ServiceRecord("_sip._tcp.example.org.", 1, 0, 5060, "a.sip.example.org.");
-		ServiceRecord b = new ServiceRecord("_sip._tcp.example.org.", 1, 0, 5060, "b.sip.example.org.");
-		ServiceRecord c = new ServiceRecord("_sip._tcp.example.org.", 1, 0, 5060, "c.sip.example.org.");
-		ServiceRecord d = new ServiceRecord("_sip._tcp.example.org.", 1, 0, 5060, "d.sip.example.org.");
+		SRVRecord a = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 0, 5060, new Name("a.sip.example.org."));
+		SRVRecord b = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 0, 5060, new Name("b.sip.example.org."));
+		SRVRecord c = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 0, 5060, new Name("c.sip.example.org."));
+		SRVRecord d = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 0, 5060, new Name("d.sip.example.org."));
 		
 		services.add(b);
 		services.add(c);
@@ -26,7 +31,7 @@ public class ServiceRecordSelectorTest {
 		services.add(a);
 		
 		ServiceRecordSelector selector = new ServiceRecordSelector(services);
-		List<ServiceRecord> sortedServices = selector.select();
+		List<SRVRecord> sortedServices = selector.select();
 		assertEquals(a, sortedServices.get(0));
 		assertEquals(b, sortedServices.get(1));
 		assertEquals(c, sortedServices.get(2));
@@ -35,15 +40,16 @@ public class ServiceRecordSelectorTest {
 	
 	/**
 	 * Tests four records, all with the different weights.
+	 * @throws TextParseException 
 	 */
 	@Test
-	public void testSelectByWeight() {
-		List<ServiceRecord> services = new ArrayList<ServiceRecord>();
+	public void testSelectByWeight() throws TextParseException {
+		List<SRVRecord> services = new ArrayList<SRVRecord>();
 		
-		ServiceRecord a = new ServiceRecord("_sip._tcp.example.org.", 1, 0, 5060, "a.sip.example.org.");
-		ServiceRecord b = new ServiceRecord("_sip._tcp.example.org.", 1, 1, 5060, "b.sip.example.org.");
-		ServiceRecord c = new ServiceRecord("_sip._tcp.example.org.", 1, 2, 5060, "c.sip.example.org.");
-		ServiceRecord d = new ServiceRecord("_sip._tcp.example.org.", 1, 3, 5060, "d.sip.example.org.");
+		SRVRecord a = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 0, 5060, new Name("a.sip.example.org."));
+		SRVRecord b = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 1, 5060, new Name("b.sip.example.org."));
+		SRVRecord c = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 2, 5060, new Name("c.sip.example.org."));
+		SRVRecord d = new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 1, 3, 5060, new Name("d.sip.example.org."));
 		
 		services.add(b);
 		services.add(d);
@@ -51,7 +57,7 @@ public class ServiceRecordSelectorTest {
 		services.add(a);
 		
 		ServiceRecordSelector selector = new ServiceRecordSelector(services);
-		List<ServiceRecord> sortedServices = selector.select();
+		List<SRVRecord> sortedServices = selector.select();
 		assertEquals(d, sortedServices.get(0));
 		assertEquals(c, sortedServices.get(1));
 		assertEquals(b, sortedServices.get(2));

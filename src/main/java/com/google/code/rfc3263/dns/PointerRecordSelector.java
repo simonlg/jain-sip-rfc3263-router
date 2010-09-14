@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
+import org.xbill.DNS.NAPTRRecord;
 
 /**
  * This class is used for sorting NAPTR records.
@@ -19,27 +20,27 @@ import org.apache.log4j.Logger;
 @ThreadSafe
 public class PointerRecordSelector {
 	private final Logger LOGGER = Logger.getLogger(PointerRecordSelector.class);
-	private final List<PointerRecord> pointers;
+	private final List<NAPTRRecord> pointers;
 	
-	public PointerRecordSelector(List<PointerRecord> pointers) {
-		this.pointers = new LinkedList<PointerRecord>(pointers);
+	public PointerRecordSelector(List<NAPTRRecord> pointers) {
+		this.pointers = new LinkedList<NAPTRRecord>(pointers);
 	}
 	
-	public List<PointerRecord> select() {
+	public List<NAPTRRecord> select() {
 		LOGGER.debug("Sorting service records by priority");
 		Collections.sort(this.pointers, new PointerRecordOrderComparator());
 		
 		// Split map into orders.
-		final Map<Integer, List<PointerRecord>> orderMap = new TreeMap<Integer, List<PointerRecord>>(); 
-		for (PointerRecord pointer : this.pointers) {
+		final Map<Integer, List<NAPTRRecord>> orderMap = new TreeMap<Integer, List<NAPTRRecord>>(); 
+		for (NAPTRRecord pointer : this.pointers) {
 			if (orderMap.containsKey(pointer.getOrder()) == false) {
-				orderMap.put(pointer.getOrder(), new LinkedList<PointerRecord>());
+				orderMap.put(pointer.getOrder(), new LinkedList<NAPTRRecord>());
 			}
 			orderMap.get(pointer.getOrder()).add(pointer);
 		}
 		
 		final Integer lowestOrder = orderMap.keySet().iterator().next();
-		final List<PointerRecord> lowestOrderPointers = orderMap.get(lowestOrder);
+		final List<NAPTRRecord> lowestOrderPointers = orderMap.get(lowestOrder);
 		
 		Collections.sort(lowestOrderPointers, new PointerRecordPreferenceComparator());
 		

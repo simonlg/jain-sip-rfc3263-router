@@ -13,11 +13,11 @@ import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.xbill.DNS.NAPTRRecord;
+import org.xbill.DNS.SRVRecord;
 
 import com.google.code.rfc3263.dns.AddressRecord;
-import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
-import com.google.code.rfc3263.dns.ServiceRecord;
 
 public class ExhaustiveAddressEnvironmentTest extends ExhaustiveNoEnvironmentTest {
 	private static Map<String, String> transportMap;
@@ -121,20 +121,20 @@ public class ExhaustiveAddressEnvironmentTest extends ExhaustiveNoEnvironmentTes
 		expect(resolver.lookupAddressRecords("example.org.")).andReturn(orgAddresses).anyTimes();
 		expect(resolver.lookupAddressRecords("example.net.")).andReturn(netAddresses).anyTimes();
 		
-		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.org.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._sctp.example.org.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._tcp.example.org.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._sctp.example.org.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sip._tcp.example.org.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sip._sctp.example.org.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sips._tcp.example.org.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sips._sctp.example.org.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
 		
-		expect(resolver.lookupServiceRecords("_sip._udp.example.net.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.net.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._sctp.example.net.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._tcp.example.net.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._sctp.example.net.")).andReturn(Collections.<ServiceRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sip._udp.example.net.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sip._tcp.example.net.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sip._sctp.example.net.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sips._tcp.example.net.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
+		expect(resolver.lookupServiceRecords("_sips._sctp.example.net.")).andReturn(Collections.<SRVRecord>emptyList()).anyTimes();
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(Collections.<PointerRecord>emptyList()).anyTimes();
-		expect(resolver.lookupPointerRecords("example.net.")).andReturn(Collections.<PointerRecord>emptyList()).anyTimes();
+		expect(resolver.lookupPointerRecords("example.org.")).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
+		expect(resolver.lookupPointerRecords("example.net.")).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
 		
 		replay(resolver);
 		locator = new Locator(resolver, Arrays.asList("udp", "tcp", "tls", "sctp", "tls-sctp"));
