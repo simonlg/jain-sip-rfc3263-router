@@ -10,6 +10,9 @@ import javax.sip.address.SipURI;
 import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.NameTooLongException;
+import org.xbill.DNS.TextParseException;
 
 /**
  * This class contains a collection of useful utility methods.
@@ -24,6 +27,24 @@ public final class LocatorUtils {
 		knownTransports.add("TLS");
 		knownTransports.add("SCTP");
 		knownTransports.add("TLS-SCTP");
+	}
+
+	private static Name SIP;
+	private static Name SIPS;
+	private static Name SCTP;
+	private static Name TCP;
+	private static Name UDP;
+	
+	static {
+		try {
+			SIP = new Name("_sip");
+			SIPS = new Name("_sips");
+			SCTP = new Name("_sctp");
+			TCP = new Name("_tcp");
+			UDP = new Name("_udp");
+		} catch (TextParseException e) {
+			
+		}
 	}
 	
 	private LocatorUtils() {}
@@ -256,37 +277,36 @@ public final class LocatorUtils {
 	 * and is sent over TCP (hence <code>_tcp</code>).
 	 * 
 	 * @param transport the transport.
-	 * @param domain the domain name.
+	 * @param suffix the domain name.
 	 * @return the SRV service identifier.
 	 */
-	public static String getServiceIdentifier(String transport, String domain) {
-		LOGGER.debug("getServiceIdentifier(" + transport + ", " + domain + ")");
+	public static Name getServiceIdentifier(String transport, Name suffix) {
+		LOGGER.debug("getServiceIdentifier(" + transport + ", " + suffix + ")");
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}
 		
-		StringBuilder sb = new StringBuilder();
+		final Name transportName;
 		
-		if (transport.startsWith("TLS")) {
-			sb.append("_sips.");
+		if (transport.equalsIgnoreCase("TLS") || transport.equalsIgnoreCase("TCP")) {
+			transportName = TCP;
+		} else if (transport.equalsIgnoreCase("TLS-SCTP") || transport.equalsIgnoreCase("SCTP")) {
+			transportName = SCTP;
 		} else {
-			sb.append("_sip.");
+			transportName = UDP;
 		}
 		
-		sb.append("_");
-		if (transport.equalsIgnoreCase("TLS")) {
-			sb.append("tcp");
-		} else if (transport.equalsIgnoreCase("TLS-SCTP")) {
-			sb.append("sctp");
-		} else {
-			sb.append(transport.toLowerCase());
+		final Name scheme = transport.startsWith("TLS") ? SIPS : SIP;
+		
+		try {
+			Name prefix = Name.concatenate(scheme, transportName);
+			Name serviceId = Name.concatenate(prefix, suffix);
+			
+			LOGGER.debug("getServiceIdentifier(" + transport + ", " + suffix + "): " + serviceId);
+			return serviceId;	
+		} catch (NameTooLongException e) {
+			// TODO: This is a generic DNS exception.
+			throw new RuntimeException(e);
 		}
-		sb.append(".");
-		sb.append(domain);
-		
-		final String serviceId = sb.toString();
-		LOGGER.debug("getServiceIdentifier(" + transport + ", " + domain + "): " + serviceId);
-		
-		return serviceId;
 	}
 }

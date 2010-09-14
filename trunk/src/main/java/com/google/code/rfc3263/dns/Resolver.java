@@ -3,7 +3,10 @@ package com.google.code.rfc3263.dns;
 import java.util.List;
 import java.util.Set;
 
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.ARecord;
 import org.xbill.DNS.NAPTRRecord;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.SRVRecord;
 
 /**
@@ -16,19 +19,26 @@ public interface Resolver {
 	 * @param domain the domain to query.
 	 * @return a list of NAPTR records.
 	 */
-	List<NAPTRRecord> lookupPointerRecords(String domain);
+	List<NAPTRRecord> lookupNAPTRRecords(Name domain);
 	/**
 	 * Returns a list of SRV records for the given domain.
 	 * 
 	 * @param domain the domain to query.
 	 * @return a list of SRV records.
 	 */
-	List<SRVRecord> lookupServiceRecords(String domain);
+	List<SRVRecord> lookupSRVRecords(Name domain);
 	/**
 	 * Returns a list of A or AAAA records for the given domain.
 	 * 
 	 * @param domain the domain to query.
 	 * @return a list of A or AAAA records.
 	 */
-	Set<AddressRecord> lookupAddressRecords(String domain);
+	Set<ARecord> lookupARecords(Name domain);
+	/**
+	 * Returns a list of AAAA records for the given domain.
+	 * 
+	 * @param domain the domain to query.
+	 * @return a list of AAAA records.
+	 */
+	Set<AAAARecord> lookupAAAARecords(Name domain);
 }

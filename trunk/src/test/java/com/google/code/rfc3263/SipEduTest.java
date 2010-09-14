@@ -4,15 +4,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
 
 import javax.sip.PeerUnavailableException;
 import javax.sip.SipFactory;
 import javax.sip.address.AddressFactory;
-import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,7 +53,7 @@ public class SipEduTest {
 	
 	@BeforeClass
 	public static void configureLogging() {
-		BasicConfigurator.configure();
+//		BasicConfigurator.configure();
 	}
 	
 	@Before
@@ -72,6 +69,6 @@ public class SipEduTest {
 	@Test
 	public void testSimple() throws ParseException {
 		SipURI uri = addressFactory.createSipURI(null, domain);
-		Queue<Hop> hops = locator.locate(uri);
+		locator.locate(uri);
 	}
 }

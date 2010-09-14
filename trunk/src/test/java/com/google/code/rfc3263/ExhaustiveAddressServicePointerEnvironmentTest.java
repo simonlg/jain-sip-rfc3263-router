@@ -6,6 +6,7 @@ import static org.easymock.EasyMock.replay;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,12 +15,13 @@ import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.xbill.DNS.AAAARecord;
+import org.xbill.DNS.ARecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.NAPTRRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.SRVRecord;
 
-import com.google.code.rfc3263.dns.AddressRecord;
 import com.google.code.rfc3263.dns.Resolver;
 
 public class ExhaustiveAddressServicePointerEnvironmentTest extends ExhaustiveAddressServiceEnvironmentTest {
@@ -77,25 +79,32 @@ public class ExhaustiveAddressServicePointerEnvironmentTest extends ExhaustiveAd
 		
 final Resolver resolver = EasyMock.createMock(Resolver.class);
 		
-		final Set<AddressRecord> orgAddresses = new HashSet<AddressRecord>();
-		orgAddresses.add(new AddressRecord("example.org.", InetAddress.getByName("192.168.0.3")));
-		final Set<AddressRecord> orgAddressesInsecure = new HashSet<AddressRecord>();
-		orgAddressesInsecure.add(new AddressRecord("sip.example.org.", InetAddress.getByName("192.168.0.15")));
-		final Set<AddressRecord> orgAddressesSecure = new HashSet<AddressRecord>();
-		orgAddressesSecure.add(new AddressRecord("sips.example.org.", InetAddress.getByName("192.168.0.16")));
-		final Set<AddressRecord> netAddresses = new HashSet<AddressRecord>();
-		netAddresses.add(new AddressRecord("example.net.", InetAddress.getByName("192.168.0.4")));
-		final Set<AddressRecord> netAddressesInsecure = new HashSet<AddressRecord>();
-		netAddressesInsecure.add(new AddressRecord("sip.example.net.", InetAddress.getByName("192.168.0.17")));
-		final Set<AddressRecord> netAddressesSecure = new HashSet<AddressRecord>();
-		netAddressesSecure.add(new AddressRecord("sips.example.net.", InetAddress.getByName("192.168.0.18")));
+		final Set<ARecord> orgAddresses = new HashSet<ARecord>();
+		orgAddresses.add(new ARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.3")));
+		final Set<ARecord> orgAddressesInsecure = new HashSet<ARecord>();
+		orgAddressesInsecure.add(new ARecord(new Name("sip.example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.15")));
+		final Set<ARecord> orgAddressesSecure = new HashSet<ARecord>();
+		orgAddressesSecure.add(new ARecord(new Name("sips.example.org."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.16")));
+		final Set<ARecord> netAddresses = new HashSet<ARecord>();
+		netAddresses.add(new ARecord(new Name("example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.4")));
+		final Set<ARecord> netAddressesInsecure = new HashSet<ARecord>();
+		netAddressesInsecure.add(new ARecord(new Name("sip.example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.17")));
+		final Set<ARecord> netAddressesSecure = new HashSet<ARecord>();
+		netAddressesSecure.add(new ARecord(new Name("sips.example.net."), DClass.IN, 1000L, InetAddress.getByName("192.168.0.18")));
 		
-		expect(resolver.lookupAddressRecords("example.org.")).andReturn(orgAddresses).anyTimes();
-		expect(resolver.lookupAddressRecords("sip.example.org.")).andReturn(orgAddressesInsecure).anyTimes();
-		expect(resolver.lookupAddressRecords("sips.example.org.")).andReturn(orgAddressesSecure).anyTimes();
-		expect(resolver.lookupAddressRecords("example.net.")).andReturn(netAddresses).anyTimes();
-		expect(resolver.lookupAddressRecords("sip.example.net.")).andReturn(netAddressesInsecure).anyTimes();
-		expect(resolver.lookupAddressRecords("sips.example.net.")).andReturn(netAddressesSecure).anyTimes();
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(orgAddresses).anyTimes();
+		expect(resolver.lookupARecords(new Name("sip.example.org."))).andReturn(orgAddressesInsecure).anyTimes();
+		expect(resolver.lookupARecords(new Name("sips.example.org."))).andReturn(orgAddressesSecure).anyTimes();
+		expect(resolver.lookupARecords(new Name("example.net."))).andReturn(netAddresses).anyTimes();
+		expect(resolver.lookupARecords(new Name("sip.example.net."))).andReturn(netAddressesInsecure).anyTimes();
+		expect(resolver.lookupARecords(new Name("sips.example.net."))).andReturn(netAddressesSecure).anyTimes();
+		
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("sip.example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("sips.example.org."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("sip.example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
+		expect(resolver.lookupAAAARecords(new Name("sips.example.net."))).andReturn(Collections.<AAAARecord>emptySet()).anyTimes();
 		
 		final List<SRVRecord> orgSipUdpServices = new ArrayList<SRVRecord>();
 		orgSipUdpServices.add(new SRVRecord(new Name("_sip._udp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("sip.example.org.")));
@@ -118,16 +127,16 @@ final Resolver resolver = EasyMock.createMock(Resolver.class);
 		final List<SRVRecord> netSipsSctpServices = new ArrayList<SRVRecord>();
 		netSipsSctpServices.add(new SRVRecord(new Name("_sips._sctp.example.net."), DClass.IN, 1000L, 4, 0, 5061, new Name("sips.example.net.")));
 		
-		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(orgSipUdpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.org.")).andReturn(orgSipTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._sctp.example.org.")).andReturn(orgSipSctpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._tcp.example.org.")).andReturn(orgSipsTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._sctp.example.org.")).andReturn(orgSipsSctpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._udp.example.net.")).andReturn(netSipUdpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._tcp.example.net.")).andReturn(netSipTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sip._sctp.example.net.")).andReturn(netSipSctpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._tcp.example.net.")).andReturn(netSipsTcpServices).anyTimes();
-		expect(resolver.lookupServiceRecords("_sips._sctp.example.net.")).andReturn(netSipsSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.org."))).andReturn(orgSipUdpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.org."))).andReturn(orgSipTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._sctp.example.org."))).andReturn(orgSipSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._tcp.example.org."))).andReturn(orgSipsTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._sctp.example.org."))).andReturn(orgSipsSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.net."))).andReturn(netSipUdpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._tcp.example.net."))).andReturn(netSipTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sip._sctp.example.net."))).andReturn(netSipSctpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._tcp.example.net."))).andReturn(netSipsTcpServices).anyTimes();
+		expect(resolver.lookupSRVRecords(new Name("_sips._sctp.example.net."))).andReturn(netSipsSctpServices).anyTimes();
 		
 		final List<NAPTRRecord> orgPointers = new ArrayList<NAPTRRecord>();
 		orgPointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2U", "", new Name("_sip._udp.example.org.")));
@@ -142,8 +151,8 @@ final Resolver resolver = EasyMock.createMock(Resolver.class);
 		netPointers.add(new NAPTRRecord(new Name("example.net."), DClass.IN, 1000L, 0, 0, "s", "SIPS+D2T", "", new Name("_sips._tcp.example.net.")));
 		netPointers.add(new NAPTRRecord(new Name("example.net."), DClass.IN, 1000L, 0, 0, "s", "SIPS+D2S", "", new Name("_sips._sctp.example.net.")));
 		
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(orgPointers).anyTimes();
-		expect(resolver.lookupPointerRecords("example.net.")).andReturn(netPointers).anyTimes();
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(orgPointers).anyTimes();
+		expect(resolver.lookupNAPTRRecords(new Name("example.net."))).andReturn(netPointers).anyTimes();
 		
 		replay(resolver);
 		locator = new Locator(resolver, Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"));
