@@ -15,11 +15,13 @@ import java.util.Set;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.NAPTRRecord;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.SRVRecord;
 
 import com.google.code.rfc3263.dns.AddressRecord;
-import com.google.code.rfc3263.dns.PointerRecord;
 import com.google.code.rfc3263.dns.Resolver;
-import com.google.code.rfc3263.dns.ServiceRecord;
 
 public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEnvironmentTest {
 	private static Map<String, String> transportMap;
@@ -114,26 +116,26 @@ public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEn
 		expect(resolver.lookupAddressRecords("d.example.net.")).andReturn(netAddressesD).anyTimes();
 		expect(resolver.lookupAddressRecords("e.example.net.")).andReturn(netAddressesE).anyTimes();
 		
-		final List<ServiceRecord> orgSipUdpServices = new ArrayList<ServiceRecord>();
-		orgSipUdpServices.add(new ServiceRecord("_sip._udp.example.org.", 0, 0, 5060, "a.example.org."));
-		final List<ServiceRecord> orgSipTcpServices = new ArrayList<ServiceRecord>();
-		orgSipTcpServices.add(new ServiceRecord("_sip._tcp.example.org.", 0, 0, 5060, "b.example.org."));
-		final List<ServiceRecord> orgSipSctpServices = new ArrayList<ServiceRecord>();
-		orgSipSctpServices.add(new ServiceRecord("_sip._sctp.example.org.", 0, 0, 5060, "c.example.org."));
-		final List<ServiceRecord> orgSipsTcpServices = new ArrayList<ServiceRecord>();
-		orgSipsTcpServices.add(new ServiceRecord("_sips._tcp.example.org.", 0, 0, 5061, "d.example.org."));
-		final List<ServiceRecord> orgSipsSctpServices = new ArrayList<ServiceRecord>();
-		orgSipsSctpServices.add(new ServiceRecord("_sips._sctp.example.org.", 0, 0, 5061, "e.example.org."));
-		final List<ServiceRecord> netSipUdpServices = new ArrayList<ServiceRecord>();
-		netSipUdpServices.add(new ServiceRecord("_sip._udp.example.net.", 0, 0, 5060, "a.example.net."));
-		final List<ServiceRecord> netSipTcpServices = new ArrayList<ServiceRecord>();
-		netSipTcpServices.add(new ServiceRecord("_sip._tcp.example.net.", 0, 0, 5060, "b.example.net."));
-		final List<ServiceRecord> netSipSctpServices = new ArrayList<ServiceRecord>();
-		netSipSctpServices.add(new ServiceRecord("_sip._sctp.example.net.", 0, 0, 5060, "c.example.net."));
-		final List<ServiceRecord> netSipsTcpServices = new ArrayList<ServiceRecord>();
-		netSipsTcpServices.add(new ServiceRecord("_sips._tcp.example.net.", 0, 0, 5061, "d.example.net."));
-		final List<ServiceRecord> netSipsSctpServices = new ArrayList<ServiceRecord>();
-		netSipsSctpServices.add(new ServiceRecord("_sips._sctp.example.net.", 0, 0, 5061, "e.example.net."));
+		final List<SRVRecord> orgSipUdpServices = new ArrayList<SRVRecord>();
+		orgSipUdpServices.add(new SRVRecord(new Name("_sip._udp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("a.example.org.")));
+		final List<SRVRecord> orgSipTcpServices = new ArrayList<SRVRecord>();
+		orgSipTcpServices.add(new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("b.example.org.")));
+		final List<SRVRecord> orgSipSctpServices = new ArrayList<SRVRecord>();
+		orgSipSctpServices.add(new SRVRecord(new Name("_sip._sctp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("c.example.org.")));
+		final List<SRVRecord> orgSipsTcpServices = new ArrayList<SRVRecord>();
+		orgSipsTcpServices.add(new SRVRecord(new Name("_sips._tcp.example.org."), DClass.IN, 1000L, 0, 0, 5061, new Name("d.example.org.")));
+		final List<SRVRecord> orgSipsSctpServices = new ArrayList<SRVRecord>();
+		orgSipsSctpServices.add(new SRVRecord(new Name("_sips._sctp.example.org."), DClass.IN, 1000L, 0, 0, 5061, new Name("e.example.org.")));
+		final List<SRVRecord> netSipUdpServices = new ArrayList<SRVRecord>();
+		netSipUdpServices.add(new SRVRecord(new Name("_sip._udp.example.net."), DClass.IN, 1000L, 0, 0, 5060, new Name("a.example.net.")));
+		final List<SRVRecord> netSipTcpServices = new ArrayList<SRVRecord>();
+		netSipTcpServices.add(new SRVRecord(new Name("_sip._tcp.example.net."), DClass.IN, 1000L, 0, 0, 5060, new Name("b.example.net.")));
+		final List<SRVRecord> netSipSctpServices = new ArrayList<SRVRecord>();
+		netSipSctpServices.add(new SRVRecord(new Name("_sip._sctp.example.net."), DClass.IN, 1000L, 0, 0, 5060, new Name("c.example.net.")));
+		final List<SRVRecord> netSipsTcpServices = new ArrayList<SRVRecord>();
+		netSipsTcpServices.add(new SRVRecord(new Name("_sips._tcp.example.net."), DClass.IN, 1000L, 0, 0, 5061, new Name("d.example.net.")));
+		final List<SRVRecord> netSipsSctpServices = new ArrayList<SRVRecord>();
+		netSipsSctpServices.add(new SRVRecord(new Name("_sips._sctp.example.net."), DClass.IN, 1000L, 0, 0, 5061, new Name("e.example.net.")));
 		
 		expect(resolver.lookupServiceRecords("_sip._udp.example.org.")).andReturn(orgSipUdpServices).anyTimes();
 		expect(resolver.lookupServiceRecords("_sip._tcp.example.org.")).andReturn(orgSipTcpServices).anyTimes();
@@ -147,8 +149,8 @@ public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEn
 		expect(resolver.lookupServiceRecords("_sips._tcp.example.net.")).andReturn(netSipsTcpServices).anyTimes();
 		expect(resolver.lookupServiceRecords("_sips._sctp.example.net.")).andReturn(netSipsSctpServices).anyTimes();
 
-		expect(resolver.lookupPointerRecords("example.org.")).andReturn(Collections.<PointerRecord>emptyList()).anyTimes();
-		expect(resolver.lookupPointerRecords("example.net.")).andReturn(Collections.<PointerRecord>emptyList()).anyTimes();
+		expect(resolver.lookupPointerRecords("example.org.")).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
+		expect(resolver.lookupPointerRecords("example.net.")).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
 		
 		replay(resolver);
 		locator = new Locator(resolver, Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"));

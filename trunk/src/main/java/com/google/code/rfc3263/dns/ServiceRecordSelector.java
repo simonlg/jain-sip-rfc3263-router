@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
+import org.xbill.DNS.SRVRecord;
 
 /**
  * This class is used for sorting ServiceRecords.
@@ -19,27 +20,27 @@ import org.apache.log4j.Logger;
 @ThreadSafe
 public class ServiceRecordSelector {
 	private final Logger LOGGER = Logger.getLogger(ServiceRecordSelector.class);
-	private final List<ServiceRecord> services;
+	private final List<SRVRecord> services;
 	
-	public ServiceRecordSelector(List<ServiceRecord> services) {
-		this.services = new LinkedList<ServiceRecord>(services);
+	public ServiceRecordSelector(List<SRVRecord> services) {
+		this.services = new LinkedList<SRVRecord>(services);
 	}
 	
-	public List<ServiceRecord> select() {
-		final List<ServiceRecord> sortedList = new LinkedList<ServiceRecord>();
+	public List<SRVRecord> select() {
+		final List<SRVRecord> sortedList = new LinkedList<SRVRecord>();
 		LOGGER.debug("Sorting service records by priority");
 		Collections.sort(this.services, new ServiceRecordPriorityComparator());
 		
 		// Split map into priorities.
-		final Map<Integer, List<ServiceRecord>> priorityMap = new TreeMap<Integer, List<ServiceRecord>>(); 
-		for (ServiceRecord service : this.services) {
+		final Map<Integer, List<SRVRecord>> priorityMap = new TreeMap<Integer, List<SRVRecord>>(); 
+		for (SRVRecord service : this.services) {
 			if (priorityMap.containsKey(service.getPriority()) == false) {
-				priorityMap.put(service.getPriority(), new LinkedList<ServiceRecord>());
+				priorityMap.put(service.getPriority(), new LinkedList<SRVRecord>());
 			}
 			priorityMap.get(service.getPriority()).add(service);
 		}
 		
-		for (List<ServiceRecord> priorityList : priorityMap.values()) {
+		for (List<SRVRecord> priorityList : priorityMap.values()) {
 			sortedList.addAll(selectPrioritised(priorityList));
 		}
 		
@@ -47,7 +48,7 @@ public class ServiceRecordSelector {
 		return sortedList;
 	}
 	
-	private List<ServiceRecord> selectPrioritised(List<ServiceRecord> services) {
+	private List<SRVRecord> selectPrioritised(List<SRVRecord> services) {
 		LOGGER.debug("Sorting service record(s) by weight for priority " + services.get(0).getPriority());
 		
 		if (services.size() == 1) {

@@ -2,6 +2,8 @@ package com.google.code.rfc3263.dns;
 
 import java.util.Comparator;
 
+import org.xbill.DNS.SRVRecord;
+
 import net.jcip.annotations.ThreadSafe;
 
 /**
@@ -11,8 +13,8 @@ import net.jcip.annotations.ThreadSafe;
  */
 @Deprecated
 @ThreadSafe
-class ServiceRecordWeightComparator implements Comparator<ServiceRecord> {
-	public int compare(ServiceRecord o1, ServiceRecord o2) {
+class ServiceRecordWeightComparator implements Comparator<SRVRecord> {
+	public int compare(SRVRecord o1, SRVRecord o2) {
 		if (o1.getWeight() == o2.getWeight()) {
 			return 0;
 		} else if (o1.getWeight() == 0) {
