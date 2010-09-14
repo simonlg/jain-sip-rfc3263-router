@@ -1,6 +1,7 @@
 package com.google.code.rfc3263.dns;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,11 @@ import org.xbill.DNS.SRVRecord;
 public class ServiceRecordSelector {
 	private final Logger LOGGER = Logger.getLogger(ServiceRecordSelector.class);
 	private final List<SRVRecord> services;
+	private final Comparator<SRVRecord> weightingComparator;
 	
-	public ServiceRecordSelector(List<SRVRecord> services) {
+	public ServiceRecordSelector(List<SRVRecord> services, Comparator<SRVRecord> weightingComparator) {
 		this.services = new LinkedList<SRVRecord>(services);
+		this.weightingComparator = weightingComparator;
 	}
 	
 	public List<SRVRecord> select() {
@@ -56,7 +59,7 @@ public class ServiceRecordSelector {
 			return services;
 		}
 		
-		Collections.sort(services, new ServiceRecordDeterministicComparator());
+		Collections.sort(services, weightingComparator);
 		
 		return services;
 	}
