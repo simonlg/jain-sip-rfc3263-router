@@ -167,7 +167,7 @@ public class ExhaustiveAddressServiceEnvironmentTest extends ExhaustiveAddressEn
 		expect(resolver.lookupNAPTRRecords(new Name("example.net."))).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
 		
 		replay(resolver);
-		locator = new Locator(resolver, Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"));
+		locator = new Locator(Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"), resolver);
 	}
 	
 	public ExhaustiveAddressServiceEnvironmentTest(String uriString) {

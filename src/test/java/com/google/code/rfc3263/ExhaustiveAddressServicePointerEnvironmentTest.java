@@ -155,7 +155,7 @@ final Resolver resolver = EasyMock.createMock(Resolver.class);
 		expect(resolver.lookupNAPTRRecords(new Name("example.net."))).andReturn(netPointers).anyTimes();
 		
 		replay(resolver);
-		locator = new Locator(resolver, Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"));
+		locator = new Locator(Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"), resolver);
 	}
 	
 	public ExhaustiveAddressServicePointerEnvironmentTest(String uriString) {

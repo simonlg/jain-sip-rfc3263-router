@@ -142,7 +142,7 @@ public class ExhaustiveAddressEnvironmentTest extends ExhaustiveNoEnvironmentTes
 		expect(resolver.lookupNAPTRRecords(new Name("example.net."))).andReturn(Collections.<NAPTRRecord>emptyList()).anyTimes();
 		
 		replay(resolver);
-		locator = new Locator(resolver, Arrays.asList("udp", "tcp", "tls", "sctp", "tls-sctp"));
+		locator = new Locator(Arrays.asList("UDP", "TCP", "TLS", "SCTP", "TLS-SCTP"), resolver);
 	}
 	
 	public ExhaustiveAddressEnvironmentTest(String uriString) {

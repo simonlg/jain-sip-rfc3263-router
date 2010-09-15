@@ -1,5 +1,18 @@
 package com.google.code.rfc3263;
 
+import static com.google.code.rfc3263.util.LocatorUtils.getDefaultPortForTransport;
+import static com.google.code.rfc3263.util.LocatorUtils.getDefaultTransportForScheme;
+import static com.google.code.rfc3263.util.LocatorUtils.getServiceIdentifier;
+import static com.google.code.rfc3263.util.LocatorUtils.getTarget;
+import static com.google.code.rfc3263.util.LocatorUtils.getTransportForService;
+import static com.google.code.rfc3263.util.LocatorUtils.isIPv6Reference;
+import static com.google.code.rfc3263.util.LocatorUtils.isNumeric;
+import static com.google.code.rfc3263.util.LocatorUtils.upgradeTransport;
+import static javax.sip.ListeningPoint.SCTP;
+import static javax.sip.ListeningPoint.TCP;
+import static javax.sip.ListeningPoint.TLS;
+import static javax.sip.ListeningPoint.UDP;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
@@ -33,7 +44,6 @@ import com.google.code.rfc3263.dns.PointerRecordSelector;
 import com.google.code.rfc3263.dns.Resolver;
 import com.google.code.rfc3263.dns.ServiceRecordDeterministicComparator;
 import com.google.code.rfc3263.dns.ServiceRecordSelector;
-import com.google.code.rfc3263.util.LocatorUtils;
 
 /**
  * This class provides the mechanism defined by RFC 3263 for ascertaining the hops to try
@@ -52,6 +62,10 @@ public class Locator {
 	 * Preferred transports.
 	 */
 	private final List<String> prefTransports;
+	/**
+	 * Comparator for sorting prioritised SRV records.
+	 */
+	private final Comparator<SRVRecord> weightingComparator;
 	// SIP Table of Mappings From Service Field Values to Transport Protocols
 	//
 	// Services Field        Protocol  Reference
@@ -62,16 +76,11 @@ public class Locator {
 	// SIP+D2S               SCTP      [RFC3263]
 	// SIPS+D2S              SCTP      [RFC4168]
 	private Map<String, String> serviceTransportMap = new HashMap<String, String>();
-	/**
-	 * Comparator for sorting prioritised SRV records.
-	 */
-	private Comparator<SRVRecord> weightingComparator = new ServiceRecordDeterministicComparator();
-	private final Lock comparatorLock = new ReentrantLock();
 	{
-		serviceTransportMap.put("SIP+D2T", "TCP");
-		serviceTransportMap.put("SIPS+D2T", "TLS");
-		serviceTransportMap.put("SIP+D2U", "UDP");
-		serviceTransportMap.put("SIP+D2S", "SCTP");
+		serviceTransportMap.put("SIP+D2T", TCP);
+		serviceTransportMap.put("SIPS+D2T", TLS);
+		serviceTransportMap.put("SIP+D2U", UDP);
+		serviceTransportMap.put("SIP+D2S", SCTP);
 		serviceTransportMap.put("SIPS+D2S", "TLS-SCTP");
 	}
 	
@@ -82,23 +91,49 @@ public class Locator {
 	 * @param transports the transports to use.
 	 */
 	public Locator(List<String> transports) {
-		this(new DefaultResolver(), transports);
+		this(transports, new DefaultResolver());
 	}
 	
 	/**
 	 * Constructs a new instance of the <code>Locator</code> class using
 	 * the given {@link Resolver} and list of transports.
 	 *  
-	 * @param resolver the resolver to use.
 	 * @param transports the transports to use.
+	 * @param resolver the resolver to use.
 	 */
-	public Locator(Resolver resolver, List<String> transports) {
+	public Locator(List<String> transports, Resolver resolver) {
+		this(transports, resolver, new ServiceRecordDeterministicComparator());
+	}
+	
+	/**
+	 * Constructs a new instance of the <code>Locator</code> class using
+	 * the {@link DefaultResolver}, the given list of transports and the given
+	 * SRV weighting algorithm.
+	 *   
+	 * @param transports the transports to use.
+	 * @param weightingComparator the comparator to use to sort SRV records
+	 */
+	public Locator(List<String> transports, Comparator<SRVRecord> weightingComparator) {
+		this(transports, new DefaultResolver(), weightingComparator);
+	}
+	
+	/**
+	 * Constructs a new instance of the <code>Locator</code> class using
+	 * the given {@link Resolver}, the list of transports and the given
+	 * SRV weighting algorithm.
+	 *  
+	 * @param transports the transports to use.
+	 * @param resolver the resolver to use.
+	 * @param weightingComparator the comparator to use to sort SRV records
+	 */
+	public Locator(List<String> transports, Resolver resolver, Comparator<SRVRecord> weightingComparator) {
 		this.resolver = resolver;
 		this.prefTransports = transports;
+		this.weightingComparator = weightingComparator;
 	}
 	
 	private Hop locateNumeric(SipURI uri) {
-		final String domain = LocatorUtils.getTarget(uri);
+		final String domain = getTarget(uri);
 		
 		final String transportParam = getTransportParam(uri);
 		final boolean isSecure = isSecure(uri);
@@ -118,7 +153,7 @@ public class Locator {
 			// that transport protocol SHOULD be used.
 			if (isSecure) {
 				try {
-					hopTransport = LocatorUtils.upgradeTransport(transportParam);
+					hopTransport = upgradeTransport(transportParam);
 				} catch (IllegalArgumentException e) {
 					// User is trying to use secure UDP
 					return null;
@@ -133,7 +168,7 @@ public class Locator {
 			// Otherwise, if no transport protocol is specified, but the TARGET is a
 			// numeric IP address, the client SHOULD use UDP for a SIP URI, and TCP
 			// for a SIPS URI.
-			hopTransport = LocatorUtils.getDefaultTransportForScheme(uri.getScheme());
+			hopTransport = getDefaultTransportForScheme(uri.getScheme());
 		}
 		
 		LOGGER.debug("Transport selected for " + uri + ": " + hopTransport);
@@ -145,7 +180,7 @@ public class Locator {
 		// the URI also contains a port, it uses that port.  If no port is
 		// specified, it uses the default port for the particular transport
 		// protocol.
-		if (LocatorUtils.isIPv6Reference(domain)) {
+		if (isIPv6Reference(domain)) {
 			hopAddress = domain.substring(1, domain.length() - 1);
 		} else {
 			hopAddress = domain;
@@ -153,7 +188,7 @@ public class Locator {
 		if (port != -1) {
 			hopPort = port;
 		} else {
-			hopPort = LocatorUtils.getDefaultPortForTransport(hopTransport);
+			hopPort = getDefaultPortForTransport(hopTransport);
 		}
 		
 		LOGGER.debug("Determined IP address and port for " + uri + ": " + hopAddress + ":" + hopPort);
@@ -170,7 +205,7 @@ public class Locator {
 		
 		Name domain;
 		try {
-			domain = Name.concatenate(new Name(LocatorUtils.getTarget(uri)), Name.root);
+			domain = Name.concatenate(new Name(getTarget(uri)), Name.root);
 		} catch (TextParseException e) {
 			// TODO DNS Exception
 			throw new RuntimeException(e);
@@ -190,7 +225,7 @@ public class Locator {
 			// that transport protocol SHOULD be used.
 			if (isSecure) {
 				try {
-					hopTransport = LocatorUtils.upgradeTransport(transportParam);
+					hopTransport = upgradeTransport(transportParam);
 				} catch (IllegalArgumentException e) {
 					// User is trying to use secure UDP
 					return hops;
@@ -205,7 +240,7 @@ public class Locator {
 			// ... if no transport protocol is specified, and the TARGET is not 
 			// numeric, but an explicit port is provided, the client SHOULD use 
 			// UDP for a SIP URI, and TCP for a SIPS URI.
-			hopTransport = LocatorUtils.getDefaultTransportForScheme(uri.getScheme());
+			hopTransport = getDefaultTransportForScheme(uri.getScheme());
 		} else {
 			LOGGER.debug("No transport parameter or port was specified.");
 			// 4.1 Para 4
@@ -236,7 +271,7 @@ public class Locator {
 						LOGGER.debug("Found " + services.size() + " SRV record(s)");
 						List<SRVRecord> sortedServices = sortServiceRecords(services);
 						
-						hopTransport = serviceTransportMap.get(pointer.getService());
+						hopTransport = getTransportForService(pointer.getService());
 						for (SRVRecord service : sortedServices) {
 							LOGGER.debug("Processing SRV record: " + service);
 							hops.add(new UnresolvedHop(service.getTarget(), service.getPort(), hopTransport));
@@ -254,7 +289,7 @@ public class Locator {
 				// query is successful.
 				final List<String> filteredTransports = filterTransports(isSecure);
 				for (String prefTransport : filteredTransports) {
-					Name serviceId = LocatorUtils.getServiceIdentifier(prefTransport, domain);
+					Name serviceId = getServiceIdentifier(prefTransport, domain);
 					LOGGER.debug("Looking up SRV records for " + serviceId);
 					final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 					if (isValid(services)) {
@@ -277,7 +312,7 @@ public class Locator {
 				//
 				// If no SRV records are found, the client SHOULD use TCP for a SIPS
 				// URI, and UDP for a SIP URI.
-				hopTransport = LocatorUtils.getDefaultTransportForScheme(uri.getScheme());
+				hopTransport = getDefaultTransportForScheme(uri.getScheme());
 			}
 		}
 		
@@ -316,7 +351,7 @@ public class Locator {
 				// For a SIP URI, if the client wishes to use TLS, it also uses the service
 				// identifier "_sips" for that specific transport, otherwise, it uses
 				// "_sip".
-				Name serviceId = LocatorUtils.getServiceIdentifier(hopTransport, domain);
+				Name serviceId = getServiceIdentifier(hopTransport, domain);
 				LOGGER.debug("Looking up SRV records for " + serviceId);
 				final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 				if (isValid(services)) {
@@ -336,7 +371,7 @@ public class Locator {
 					// addresses, each of which can be contacted using the transport
 					// protocol determined previously, at the default port for that
 					// transport.
-					hops.add(new UnresolvedHop(domain, LocatorUtils.getDefaultPortForTransport(hopTransport), hopTransport));
+					hops.add(new UnresolvedHop(domain, getDefaultPortForTransport(hopTransport), hopTransport));
 				}
 			} else {
 				LOGGER.debug("No port was discovered during transport selection, so use default port for selected transport");
@@ -347,7 +382,7 @@ public class Locator {
 				// addresses, each of which can be contacted using the transport
 				// protocol determined previously, at the default port for that
 				// transport.
-				hops.add(new UnresolvedHop(domain, LocatorUtils.getDefaultPortForTransport(hopTransport), hopTransport));
+				hops.add(new UnresolvedHop(domain, getDefaultPortForTransport(hopTransport), hopTransport));
 			}
 		}
 		
@@ -392,31 +427,11 @@ public class Locator {
 		return resolvedHops;
 	}
 	
-	/**
-	 * Provide a comparator to override the default comparator, which sorts by weight,
-	 * then by target.
-	 * 
-	 * @param weightingComparator the comparator to use to sort SRV records.
-	 */
-	public void setWeightingComparator(Comparator<SRVRecord> weightingComparator) {
-		comparatorLock.lock();
-		try {
-			this.weightingComparator = weightingComparator; 
-		} finally {
-			comparatorLock.unlock();
-		}
-	}
-	
 	private List<SRVRecord> sortServiceRecords(List<SRVRecord> services) {
 		LOGGER.debug("Selecting service record from record set");
 		
-		comparatorLock.lock();
-		try {
-			final ServiceRecordSelector selector = new ServiceRecordSelector(services, weightingComparator);
-			return selector.select();
-		} finally {
-			comparatorLock.unlock();
-		}
+		final ServiceRecordSelector selector = new ServiceRecordSelector(services, weightingComparator);
+		return selector.select();
 	}
 	
 	private void discardInvalidPointers(List<NAPTRRecord> pointers, boolean isSecure) {
@@ -445,7 +460,7 @@ public class Locator {
 		//
 		// A client resolving a SIP URI SHOULD retain records with "SIPS"
 		// as the protocol, if the client supports TLS.
-		if (prefTransports.contains("TLS") == false) {
+		if (prefTransports.contains(TLS) == false) {
 			validServiceFields.remove("SIPS+D2T");
 		}
 		if (prefTransports.contains("TLS-SCTP") == false) {
@@ -457,13 +472,13 @@ public class Locator {
 		// Second, a client MUST discard any service fields that identify
 		// a resolution service whose value is not "D2X", for values of X that
 		// indicate transport protocols supported by the client.
-		if (prefTransports.contains("TCP") == false) {
+		if (prefTransports.contains(TCP) == false) {
 			validServiceFields.remove("SIP+D2T");
 		}
-		if (prefTransports.contains("UDP") == false) {
+		if (prefTransports.contains(UDP) == false) {
 			validServiceFields.remove("SIP+D2U");
 		}
-		if (prefTransports.contains("SCTP") == false) {
+		if (prefTransports.contains(SCTP) == false) {
 			validServiceFields.remove("SIP+D2S");
 		}
 		
@@ -493,10 +508,10 @@ public class Locator {
 	 */
 	public Queue<Hop> locate(SipURI uri) {
 		LOGGER.debug("locate(" + uri + ")");
-		final String target = LocatorUtils.getTarget(uri);
+		final String target = getTarget(uri);
 
 		final Queue<Hop> hops = new LinkedList<Hop>();
-		if (LocatorUtils.isNumeric(target)) {
+		if (isNumeric(target)) {
 			Hop hop = locateNumeric(uri);
 			if (hop != null) {
 				hops.add(hop);
@@ -515,7 +530,7 @@ public class Locator {
 			Iterator<String> iter = filteredTransports.iterator();
 			while (iter.hasNext()) {
 				// TLS or SCTP-TLS
-				if (iter.next().startsWith("TLS") == false) {
+				if (iter.next().startsWith(TLS) == false) {
 					iter.remove();
 				}
 			}
