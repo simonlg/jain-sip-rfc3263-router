@@ -52,6 +52,11 @@ public class SipEduTest {
 		return parameters;
 	}
 	
+	@BeforeClass
+	public static void configureLogging() {
+		BasicConfigurator.configure();
+	}
+	
 	@Before
 	public void setUp() throws PeerUnavailableException {
 		addressFactory = SipFactory.getInstance().createAddressFactory();

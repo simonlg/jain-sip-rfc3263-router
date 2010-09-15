@@ -1,5 +1,10 @@
 package com.google.code.rfc3263.util;
 
+import static javax.sip.ListeningPoint.SCTP;
+import static javax.sip.ListeningPoint.TCP;
+import static javax.sip.ListeningPoint.TLS;
+import static javax.sip.ListeningPoint.UDP;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -22,26 +27,26 @@ public final class LocatorUtils {
 	private final static Logger LOGGER = Logger.getLogger(LocatorUtils.class);
 	private final static Set<String> knownTransports = new HashSet<String>();
 	static {
-		knownTransports.add("UDP");
-		knownTransports.add("TCP");
-		knownTransports.add("TLS");
-		knownTransports.add("SCTP");
+		knownTransports.add(UDP);
+		knownTransports.add(TCP);
+		knownTransports.add(TLS);
+		knownTransports.add(SCTP);
 		knownTransports.add("TLS-SCTP");
 	}
 
-	private static Name SIP;
-	private static Name SIPS;
-	private static Name SCTP;
-	private static Name TCP;
-	private static Name UDP;
+	private static Name _SIP;
+	private static Name _SIPS;
+	private static Name _SCTP;
+	private static Name _TCP;
+	private static Name _UDP;
 	
 	static {
 		try {
-			SIP = new Name("_sip");
-			SIPS = new Name("_sips");
-			SCTP = new Name("_sctp");
-			TCP = new Name("_tcp");
-			UDP = new Name("_udp");
+			_SIP = new Name("_sip");
+			_SIPS = new Name("_sips");
+			_SCTP = new Name("_sctp");
+			_TCP = new Name("_tcp");
+			_UDP = new Name("_udp");
 		} catch (TextParseException e) {
 			
 		}
@@ -178,7 +183,7 @@ public final class LocatorUtils {
 		}
 		
 		int port;
-		if (transport.startsWith("TLS")) {
+		if (transport.startsWith(TLS)) {
 			port = 5061;
 		} else {
 			port = 5060;
@@ -205,7 +210,7 @@ public final class LocatorUtils {
 		
 		String upgradedTransport;
 		if (transport.equalsIgnoreCase("tcp")) {
-			upgradedTransport = "TLS";
+			upgradedTransport = TLS;
 		} else if (transport.equalsIgnoreCase("sctp")) {
 			upgradedTransport = "TLS-SCTP";
 		} else {
@@ -230,9 +235,9 @@ public final class LocatorUtils {
 		LOGGER.debug("getDefaultTransportForScheme(" + scheme + ")");
 		String transport;
 		if ("SIPS".equalsIgnoreCase(scheme)) {
-			transport = upgradeTransport("TCP");
+			transport = upgradeTransport(TCP);
 		} else if ("SIP".equalsIgnoreCase(scheme)) {
-			transport = "UDP";
+			transport = UDP;
 		} else {
 			throw new IllegalArgumentException("Unknown scheme: " + scheme);
 		}
@@ -268,6 +273,34 @@ public final class LocatorUtils {
 		LOGGER.debug("getTarget(" + uri + "): " + target);
 		return target;
 	}
+	
+	/**
+	 * Returns the transport for a NAPTR service field.
+	 * 
+	 * @param service the NAPTR service field.
+	 * @return the corresponding transport.
+	 * @throws IllegalArgumentException if the NAPTR service field is not recognised.
+	 */
+	public static String getTransportForService(String service) {
+		LOGGER.debug("getTransportForService(" + service + ")");
+		String transport;
+		if (service.equals("SIP+D2T")) {
+			transport = TCP;
+		} else if (service.equals("SIPS+D2T")) {
+			transport = TLS;
+		} else if (service.equals("SIP+D2U")) {
+			transport = UDP;
+		} else if (service.equals("SIP+D2S")) {
+			transport = SCTP;
+		} else if (service.equals("SIPS+D2S")) {
+			transport = "TLS-SCTP";
+		} else {
+			throw new IllegalArgumentException();
+		}
+		
+		LOGGER.debug("getTransportForService(" + service + "): " + transport);
+		return transport;
+	}
 
 	/**
 	 * Returns the SRV service identifier for the given transport and domain.
@@ -288,15 +321,15 @@ public final class LocatorUtils {
 		
 		final Name transportName;
 		
-		if (transport.equalsIgnoreCase("TLS") || transport.equalsIgnoreCase("TCP")) {
-			transportName = TCP;
-		} else if (transport.equalsIgnoreCase("TLS-SCTP") || transport.equalsIgnoreCase("SCTP")) {
-			transportName = SCTP;
+		if (transport.equalsIgnoreCase(TLS) || transport.equalsIgnoreCase(TCP)) {
+			transportName = _TCP;
+		} else if (transport.equalsIgnoreCase("TLS-SCTP") || transport.equalsIgnoreCase(SCTP)) {
+			transportName = _SCTP;
 		} else {
-			transportName = UDP;
+			transportName = _UDP;
 		}
 		
-		final Name scheme = transport.startsWith("TLS") ? SIPS : SIP;
+		final Name scheme = transport.startsWith(TLS) ? _SIPS : _SIP;
 		
 		try {
 			Name prefix = Name.concatenate(scheme, transportName);

@@ -63,7 +63,7 @@ public class LocatorTest {
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
 		uri.setTransportParam("tcp");
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("TCP"));
+		Locator locator = new Locator(Collections.singletonList("TCP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -77,7 +77,7 @@ public class LocatorTest {
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
 		uri.setTransportParam("udp");
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -90,7 +90,7 @@ public class LocatorTest {
 		
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -104,7 +104,7 @@ public class LocatorTest {
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
 		uri.setSecure(true);
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("TCP"));
+		Locator locator = new Locator(Collections.singletonList("TCP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -119,7 +119,7 @@ public class LocatorTest {
 		uri.setSecure(true);
 		uri.setPort(5061);
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("TCP"));
+		Locator locator = new Locator(Collections.singletonList("TCP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -133,7 +133,7 @@ public class LocatorTest {
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
 		uri.setPort(5060);
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("TCP"));
+		Locator locator = new Locator(Collections.singletonList("TCP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -157,7 +157,7 @@ public class LocatorTest {
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		uri.setSecure(true);
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("TLS"));
+		Locator locator = new Locator(Collections.singletonList("TLS"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -180,7 +180,7 @@ public class LocatorTest {
 		
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -206,7 +206,7 @@ public class LocatorTest {
 		
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Arrays.asList("TCP"));
+		Locator locator = new Locator(Collections.singletonList("TCP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -229,7 +229,7 @@ public class LocatorTest {
 		
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Arrays.asList("TCP"));
+		Locator locator = new Locator(Collections.singletonList("TCP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		Hop hop = hops.peek();
 		
@@ -241,7 +241,7 @@ public class LocatorTest {
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		locator.locate(uri);
 	}
 	
@@ -250,7 +250,7 @@ public class LocatorTest {
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "[2001:db8:85a3::8a2e:370:7334]");
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		Queue<Hop> hops = locator.locate(uri);
 		
 		Hop expected = new HopImpl("2001:db8:85a3::8a2e:370:7334", 5060, "UDP");
@@ -268,7 +268,7 @@ public class LocatorTest {
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		uri.setPort(5060);
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		locator.locate(uri);
 	}
 	
@@ -282,7 +282,7 @@ public class LocatorTest {
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		locator.locate(uri);
 	}
 	
@@ -299,7 +299,7 @@ public class LocatorTest {
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		locator.locate(uri);
 	}
 	
@@ -318,7 +318,7 @@ public class LocatorTest {
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Arrays.asList("UDP", "TCP"));
+		Locator locator = new Locator(Arrays.asList("UDP", "TCP"), resolver);
 		locator.locate(uri);
 	}
 	
@@ -338,7 +338,7 @@ public class LocatorTest {
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Arrays.asList("UDP", "TCP"));
+		Locator locator = new Locator(Arrays.asList("UDP", "TCP"), resolver);
 		locator.locate(uri);
 	}
 	
@@ -355,7 +355,7 @@ public class LocatorTest {
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
-		Locator locator = new Locator(resolver, Collections.singletonList("UDP"));
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		locator.locate(uri);
 	}
 }
