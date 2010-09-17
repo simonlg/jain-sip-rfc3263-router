@@ -54,11 +54,15 @@ public class ServiceRecordSelector {
 				final Integer priority = entry.getKey();
 				final List<SRVRecord> priorityList = entry.getValue();
 				
-				LOGGER.debug("Sorting SRV records for priority field value " + priority);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Sorting SRV records for priority field value " + priority);
+				}
 				if (priorityList.size() != 1) {
-					LOGGER.debug("Multiple SRV records found at priority " + priority + ", using " + weightingComparator.getClass() + " as sorting algorithm");
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Multiple SRV records found at priority " + priority + ", using " + weightingComparator.getClass() + " as sorting algorithm");
+					}
 					Collections.sort(priorityList, weightingComparator);
-				} else {
+				} else if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("One SRV record found at priority " + priority + ", no further sort required");
 				}
 				sortedList.addAll(priorityList);
