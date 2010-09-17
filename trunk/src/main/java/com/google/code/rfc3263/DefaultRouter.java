@@ -1,5 +1,6 @@
 package com.google.code.rfc3263;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,7 +52,9 @@ public class DefaultRouter implements Router {
 	 * @param outboundProxy the outbound proxy specified by the user.
 	 */
 	public DefaultRouter(SipStack sipStack, String outboundProxy) {
-		LOGGER.debug("Router instantiated for " + sipStack);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Router instantiated for " + sipStack);
+		}
 
 		this.sipStack = sipStack;
 		if (outboundProxy == null) {
@@ -69,12 +72,16 @@ public class DefaultRouter implements Router {
 	 * {@inheritDoc}
 	 */
 	public Hop getNextHop(Request request) throws SipException {
-		LOGGER.debug("getNextHop(" + request + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getNextHop(" + request + ")");
+		}
 		
 		
 		if (outboundProxy != null) {
-			LOGGER.debug("Outbound proxy has been defined, returning proxy hop.");
-			LOGGER.debug("getNextHop(" + request + "): " + outboundProxy);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Outbound proxy has been defined, returning proxy hop.");
+				LOGGER.debug("getNextHop(" + request + "): " + outboundProxy);
+			}
 			return outboundProxy;
 		}
 		
@@ -88,8 +95,14 @@ public class DefaultRouter implements Router {
 			if (hops.size() > 0) {
 				top = hops.peek();
 			}
-			LOGGER.debug("getNextHop(" + request + "): " + top);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("getNextHop(" + request + "): " + top);
+			}
 			return top;
+		} catch (IOException e) {
+			LOGGER.error("DNS problem encountered", e);
+			
+			return null;
 		} catch (IllegalArgumentException e) {
 			throw new SipException("Rethrowing", e);
 		}
@@ -126,17 +139,23 @@ public class DefaultRouter implements Router {
 			final SipProvider provider = (SipProvider) providers.next();
 			for (ListeningPoint endpoint : provider.getListeningPoints()) {
 				final String transport = endpoint.getTransport().toUpperCase();
-				LOGGER.debug("Found ListeningPoint " + endpoint.getIPAddress() + ":" + endpoint.getPort() + "/" + endpoint.getTransport());
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Found ListeningPoint " + endpoint.getIPAddress() + ":" + endpoint.getPort() + "/" + endpoint.getTransport());
+				}
 				supportedTransports.add(transport);
 			}
 		}
 		
-		LOGGER.debug("Supported transports: " + supportedTransports);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Supported transports: " + supportedTransports);
+		}
 		return supportedTransports;
 	}
 
 	public static SipURI selectDestination(Request request) {
-		LOGGER.debug("select(" + request + ")"); 
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("select(" + request + ")");
+		}
 		// RFC 3261 Section 8.1.2 Para 1
 		//
 		// The destination for the request is then computed.  Unless there is
@@ -200,7 +219,9 @@ public class DefaultRouter implements Router {
 			destination.setSecure(true);
 		}
 		
-		LOGGER.debug("select(" + request + "): " + destination);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("select(" + request + "): " + destination);
+		}
 		return destination;
 	}
 }

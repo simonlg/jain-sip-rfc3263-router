@@ -13,7 +13,7 @@ import static javax.sip.ListeningPoint.TCP;
 import static javax.sip.ListeningPoint.TLS;
 import static javax.sip.ListeningPoint.UDP;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,9 +35,7 @@ import org.xbill.DNS.AAAARecord;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.NAPTRRecord;
 import org.xbill.DNS.Name;
-import org.xbill.DNS.NameTooLongException;
 import org.xbill.DNS.SRVRecord;
-import org.xbill.DNS.TextParseException;
 
 import com.google.code.rfc3263.dns.DefaultResolver;
 import com.google.code.rfc3263.dns.PointerRecordSelector;
@@ -75,7 +73,7 @@ public class Locator {
 	// SIP+D2U               UDP       [RFC3263]
 	// SIP+D2S               SCTP      [RFC3263]
 	// SIPS+D2S              SCTP      [RFC4168]
-	private Map<String, String> serviceTransportMap = new HashMap<String, String>();
+	private final Map<String, String> serviceTransportMap = new HashMap<String, String>();
 	{
 		serviceTransportMap.put("SIP+D2T", TCP);
 		serviceTransportMap.put("SIPS+D2T", TLS);
@@ -132,6 +130,12 @@ public class Locator {
 		this.weightingComparator = weightingComparator;
 	}
 	
+	/**
+	 * This method returns a the next hop for a numeric URI.
+	 * 
+	 * @param uri the URI to locate a hop for.
+	 * @return the next hop.
+	 */
 	private Hop locateNumeric(SipURI uri) {
 		final String domain = getTarget(uri);
 		
@@ -143,7 +147,9 @@ public class Locator {
 		final int hopPort;
 		final String hopTransport;
 		
-		LOGGER.debug("Selecting transport for " + uri);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Selecting transport for " + uri);
+		}
 		
 		if (transportParam != null) {
 			LOGGER.debug("Transport parameter found");
@@ -155,6 +161,7 @@ public class Locator {
 				try {
 					hopTransport = upgradeTransport(transportParam);
 				} catch (IllegalArgumentException e) {
+					
 					// User is trying to use secure UDP
 					return null;
 				}
@@ -171,8 +178,10 @@ public class Locator {
 			hopTransport = getDefaultTransportForScheme(uri.getScheme());
 		}
 		
-		LOGGER.debug("Transport selected for " + uri + ": " + hopTransport);
-		LOGGER.debug("Determining IP address and port for " + uri);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Transport selected for " + uri + ": " + hopTransport);
+			LOGGER.debug("Determining IP address and port for " + uri);
+		}
 		
 		// 4.2 Para 2
 		//
@@ -191,31 +200,26 @@ public class Locator {
 			hopPort = getDefaultPortForTransport(hopTransport);
 		}
 		
-		LOGGER.debug("Determined IP address and port for " + uri + ": " + hopAddress + ":" + hopPort);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Determined IP address and port for " + uri + ": " + hopAddress + ":" + hopPort);
+		}
 		
 		return new HopImpl(hopAddress, hopPort, hopTransport);
 	}
 	
-	private Queue<UnresolvedHop> locateNonNumeric(SipURI uri) {
+	private Queue<UnresolvedHop> locateNonNumeric(SipURI uri) throws IOException {
 		final Queue<UnresolvedHop> hops = new LinkedList<UnresolvedHop>();
 		
 		final String transportParam = getTransportParam(uri);
 		final boolean isSecure = isSecure(uri);
 		final int port = uri.getPort();
+		final Name domain = Name.concatenate(new Name(getTarget(uri)), Name.root);
 		
-		Name domain;
-		try {
-			domain = Name.concatenate(new Name(getTarget(uri)), Name.root);
-		} catch (TextParseException e) {
-			// TODO DNS Exception
-			throw new RuntimeException(e);
-		} catch (NameTooLongException e) {
-			// TODO DNS Exception
-			throw new RuntimeException(e);
-		}
 		String hopTransport = null;
 		
-		LOGGER.debug("Selecting transport for " + uri);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Selecting transport for " + uri);
+		}
 		
 		if (transportParam != null) {
 			LOGGER.debug("Transport parameter was specified");
@@ -227,6 +231,7 @@ public class Locator {
 				try {
 					hopTransport = upgradeTransport(transportParam);
 				} catch (IllegalArgumentException e) {
+					LOGGER.error("No known transport for secure UDP.", e);
 					// User is trying to use secure UDP
 					return hops;
 				}
@@ -248,12 +253,16 @@ public class Locator {
 			// Otherwise, if no transport protocol or port is specified, and the
 			// target is not a numeric IP address, the client SHOULD perform a NAPTR
 			// query for the domain in the URI.
-			LOGGER.debug("Looking up NAPTR records for " + domain);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Looking up NAPTR records for " + domain);
+			}
 			final List<NAPTRRecord> pointers = resolver.lookupNAPTRRecords(domain);
 			discardInvalidPointers(pointers, isSecure);
 			
 			if (pointers.size() > 0) {
-				LOGGER.debug("Found " + pointers.size() + " NAPTR record(s)");
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Found " + pointers.size() + " NAPTR record(s)");
+				}
 				
 				// 4.1 Para 6
 				//
@@ -263,23 +272,31 @@ public class Locator {
 				// record for the server.
 				List<NAPTRRecord> sortedPointers = sortPointerRecords(pointers);
 				for (NAPTRRecord pointer : sortedPointers) {
-					LOGGER.debug("Processing NAPTR record: " + pointer);
-					Name serviceId = pointer.getReplacement();
-					LOGGER.debug("Looking up SRV records for " + serviceId);
+					final Name serviceId = pointer.getReplacement();
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Processing NAPTR record: " + pointer);
+						LOGGER.debug("Looking up SRV records for " + serviceId);
+					}
 					final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 					if (isValid(services)) {
-						LOGGER.debug("Found " + services.size() + " SRV record(s)");
-						List<SRVRecord> sortedServices = sortServiceRecords(services);
+						if (LOGGER.isDebugEnabled()) {
+							LOGGER.debug("Found " + services.size() + " SRV record(s)");
+						}
+						final List<SRVRecord> sortedServices = sortServiceRecords(services);
 						
 						hopTransport = getTransportForService(pointer.getService());
 						for (SRVRecord service : sortedServices) {
-							LOGGER.debug("Processing SRV record: " + service);
+							if (LOGGER.isDebugEnabled()) {
+								LOGGER.debug("Processing SRV record: " + service);
+							}
 							hops.add(new UnresolvedHop(service.getTarget(), service.getPort(), hopTransport));
 						}
 					}
 				}
 			} else {
-				LOGGER.debug("No NAPTR records found for " + domain);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("No NAPTR records found for " + domain);
+				}
 				// 4.1 Para 12
 				//
 				// If no NAPTR records are found, the client constructs SRV queries for
@@ -289,25 +306,31 @@ public class Locator {
 				// query is successful.
 				final List<String> filteredTransports = filterTransports(isSecure);
 				for (String prefTransport : filteredTransports) {
-					Name serviceId = getServiceIdentifier(prefTransport, domain);
-					LOGGER.debug("Looking up SRV records for " + serviceId);
+					final Name serviceId = getServiceIdentifier(prefTransport, domain);
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Looking up SRV records for " + serviceId);
+					}
 					final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 					if (isValid(services)) {
 						LOGGER.debug("Found " + services.size() + " SRV record(s) for " + serviceId);
-						List<SRVRecord> sortedServices = sortServiceRecords(services);
+						final List<SRVRecord> sortedServices = sortServiceRecords(services);
 						hopTransport = prefTransport;
 						for (SRVRecord service : sortedServices) {
-							LOGGER.debug("Processing SRV record: " + service);
+							if (LOGGER.isDebugEnabled()) {
+								LOGGER.debug("Processing SRV record: " + service);
+							}
 							hops.add(new UnresolvedHop(service.getTarget(), service.getPort(), hopTransport));
 						}
-					} else {
+					} else if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug("No valid SRV records for " + serviceId);
 					}
 				}
 			}
 			
 			if (hops.size() == 0) {
-				LOGGER.debug("No SRV records found for " + domain);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("No SRV records found for " + domain);
+				}
 				// 4.1 Para 13
 				//
 				// If no SRV records are found, the client SHOULD use TCP for a SIPS
@@ -316,8 +339,10 @@ public class Locator {
 			}
 		}
 		
-		LOGGER.debug("Transport selected for " + uri + ": " + hopTransport);
-		LOGGER.debug("Determining IP address and port for " + uri);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Transport selected for " + uri + ": " + hopTransport);
+			LOGGER.debug("Determining IP address and port for " + uri);
+		}
 		
 		if (port != -1) {
 			LOGGER.debug("Port is present in the URI");
@@ -341,8 +366,10 @@ public class Locator {
 				LOGGER.debug("SRV records found during transport selection");
 				// Nothing to do here: hops were created earlier.
 			} else if (transportParam != null) {
-				LOGGER.debug("Transport was sepecified explicitly, so no NAPTR processing was performed.");
-				LOGGER.debug("Performing an SRV query for " + hopTransport);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Transport was sepecified explicitly, so no NAPTR processing was performed.");
+					LOGGER.debug("Performing an SRV query for " + hopTransport);
+				}
 				// 4.2 Para 4
 				//
 				// If [NAPTR processing] was not [performed], because a transport was 
@@ -351,19 +378,27 @@ public class Locator {
 				// For a SIP URI, if the client wishes to use TLS, it also uses the service
 				// identifier "_sips" for that specific transport, otherwise, it uses
 				// "_sip".
-				Name serviceId = getServiceIdentifier(hopTransport, domain);
-				LOGGER.debug("Looking up SRV records for " + serviceId);
+				final Name serviceId = getServiceIdentifier(hopTransport, domain);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Looking up SRV records for " + serviceId);
+				}
 				final List<SRVRecord> services = resolver.lookupSRVRecords(serviceId);
 				if (isValid(services)) {
-					LOGGER.debug("Found " + services.size() + " SRV records for " + serviceId + ", so use provided targets and ports");
-					LOGGER.debug(services);
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Found " + services.size() + " SRV records for " + serviceId + ", so use provided targets and ports");
+						LOGGER.debug(services);
+					}
 					List<SRVRecord> sortedServices = sortServiceRecords(services);
 					for (SRVRecord service : sortedServices) {
-						LOGGER.debug("Processing SRV record: " + service);
+						if (LOGGER.isDebugEnabled()) {
+							LOGGER.debug("Processing SRV record: " + service);
+						}
 						hops.add(new UnresolvedHop(service.getTarget(), service.getPort(), hopTransport));
 					}
 				} else {
-					LOGGER.debug("No valid SRV records found for " + serviceId + ", so use default port for " + hopTransport);
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("No valid SRV records found for " + serviceId + ", so use default port for " + hopTransport);
+					}
 					// 4.2 Para 5
 					//
 					// If no SRV records were found, the client performs an A or AAAA record
@@ -400,11 +435,15 @@ public class Locator {
 		Queue<Hop> resolvedHops = new LinkedList<Hop>();
 		
 		for (UnresolvedHop hop : hops) {
-			LOGGER.debug("Resolving hop: " + hop);
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Resolving hop: " + hop);
+			}
 			final Set<ARecord> aRecords = resolver.lookupARecords(hop.getHost());
 
 			for (ARecord aRecord : aRecords) {
-				LOGGER.debug("Processing A record: " + aRecord);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Processing A record: " + aRecord);
+				}
 				final String ipAddress = aRecord.getAddress().getHostAddress();
 				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
 				if (resolvedHops.contains(resolvedHop) == false) {
@@ -415,7 +454,9 @@ public class Locator {
 			final Set<AAAARecord> aaaaRecords = resolver.lookupAAAARecords(hop.getHost());
 
 			for (AAAARecord aaaaRecord : aaaaRecords) {
-				LOGGER.debug("Processing AAAA record: " + aaaaRecord);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Processing AAAA record: " + aaaaRecord);
+				}
 				final String ipAddress = aaaaRecord.getAddress().getHostAddress();
 				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
 				if (resolvedHops.contains(resolvedHop) == false) {
@@ -482,17 +523,23 @@ public class Locator {
 			validServiceFields.remove("SIP+D2S");
 		}
 		
-		LOGGER.debug("Supported NAPTR services: " + validServiceFields);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Supported NAPTR services: " + validServiceFields);
+		}
 
 		// Discard
 		final Iterator<NAPTRRecord> iter = pointers.iterator();
 		while (iter.hasNext()) {
 			final NAPTRRecord pointer = iter.next();
 			if (validServiceFields.contains(pointer.getService()) == false) {
-				LOGGER.debug("Removing unsupported NAPTR record: " + pointer);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Removing unsupported NAPTR record: " + pointer);
+				}
 				iter.remove();
 			} else if (isValid(pointer) == false) {
-				LOGGER.debug("Removing invalid NAPTR record: " + pointer);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Removing invalid NAPTR record: " + pointer);
+				}
 				iter.remove();
 			}
 		}
@@ -504,10 +551,12 @@ public class Locator {
 	 * 
 	 * @param uri the URI for which to determine a hop queue.
 	 * @return the hop queue.
-	 * @throws UnknownHostException if the URI host is invalid.
+	 * @throws IOException if any DNS error occurs.
 	 */
-	public Queue<Hop> locate(SipURI uri) {
-		LOGGER.debug("locate(" + uri + ")");
+	public Queue<Hop> locate(SipURI uri) throws IOException {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("locate(" + uri + ")");
+		}
 		final String target = getTarget(uri);
 
 		final Queue<Hop> hops = new LinkedList<Hop>();
@@ -519,7 +568,9 @@ public class Locator {
 		} else {
 			hops.addAll(resolveHops(locateNonNumeric(uri)));
 		}
-		LOGGER.debug("locate(" + uri + "): " + hops);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("locate(" + uri + "): " + hops);
+		}
 		
 		return hops;
 	}

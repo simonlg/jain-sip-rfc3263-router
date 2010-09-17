@@ -5,6 +5,7 @@ import static javax.sip.ListeningPoint.TCP;
 import static javax.sip.ListeningPoint.TLS;
 import static javax.sip.ListeningPoint.UDP;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -16,7 +17,6 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.apache.log4j.Logger;
 import org.xbill.DNS.Name;
-import org.xbill.DNS.NameTooLongException;
 import org.xbill.DNS.TextParseException;
 
 /**
@@ -48,7 +48,7 @@ public final class LocatorUtils {
 			_TCP = new Name("_tcp");
 			_UDP = new Name("_udp");
 		} catch (TextParseException e) {
-			
+			// Do nothing
 		}
 	}
 	
@@ -62,9 +62,13 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if an IPv4 or IPv6 string, <code>false</code> otherwise.
 	 */
 	public static boolean isNumeric(String host) {
-		LOGGER.debug("isNumeric(" + host + ")");
-		boolean numeric = LocatorUtils.isIPv4Address(host) || LocatorUtils.isIPv6Reference(host);
-		LOGGER.debug("isNumeric(" + host + "): " + numeric);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isNumeric(" + host + ")");
+		}
+		boolean numeric = isIPv4Address(host) || isIPv6Reference(host);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isNumeric(" + host + "): " + numeric);
+		}
 		
 		return numeric;
 	}
@@ -79,7 +83,9 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if the provided host is an IPv4 address, <code>false</code> otherwise.
 	 */
 	public static boolean isIPv4Address(String host) {
-		LOGGER.debug("isIPv4Address(" + host + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isIPv4Address(" + host + ")");
+		}
 		
 		// RFC 2234, Section 6.1
 		//
@@ -94,7 +100,9 @@ public final class LocatorUtils {
 		final Matcher m = p.matcher(host);
 		boolean matches = m.matches();
 		
-		LOGGER.debug("isIPv4Address(" + host + "): " + matches);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isIPv4Address(" + host + "): " + matches);
+		}
 		
 		return matches;
 	}
@@ -110,7 +118,9 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if the host is an IPv6 reference, <code>false</code> otherwise.
 	 */
 	public static boolean isIPv6Reference(String host) {
-		LOGGER.debug("isIPv6Reference(" + host + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isIPv6Reference(" + host + ")");
+		}
 		
 		// RFC 2234, Section 6.1
 		//
@@ -137,7 +147,9 @@ public final class LocatorUtils {
 		final Matcher m = p.matcher(host);
 		boolean matches = m.matches();
 		
-		LOGGER.debug("isIPv6Reference(" + host + "): " + matches);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isIPv6Reference(" + host + "): " + matches);
+		}
 		
 		return matches;
 	}
@@ -159,9 +171,13 @@ public final class LocatorUtils {
 	 * @return <code>true</code> if the transport is known, <code>false</code> otherwise.
 	 */
 	public static boolean isKnownTransport(String transport) {
-		LOGGER.debug("isKnownTransport(" + transport + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isKnownTransport(" + transport + ")");
+		}
 		boolean known = knownTransports.contains(transport.toUpperCase());
-		LOGGER.debug("isKnownTransport(" + transport + "): " + known);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("isKnownTransport(" + transport + "): " + known);
+		}
 		
 		return known;
 	}
@@ -177,7 +193,10 @@ public final class LocatorUtils {
 	 * @return the default port number for the provided transport.
 	 */
 	public static int getDefaultPortForTransport(String transport) {
-		LOGGER.debug("getDefaultPortForTransport(" + transport + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getDefaultPortForTransport(" + transport + ")");
+		}
+		
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}
@@ -188,7 +207,10 @@ public final class LocatorUtils {
 		} else {
 			port = 5060;
 		}
-		LOGGER.debug("getDefaultPortForTransport(" + transport + "): " + port);
+		
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getDefaultPortForTransport(" + transport + "): " + port);
+		}
 		
 		return port;
 	}
@@ -203,7 +225,10 @@ public final class LocatorUtils {
 	 * @return the upgraded transport.
 	 */
 	public static String upgradeTransport(String transport) {
-		LOGGER.debug("upgradeTransport(" + transport + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("upgradeTransport(" + transport + ")");
+		}
+		
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}
@@ -215,8 +240,11 @@ public final class LocatorUtils {
 			upgradedTransport = "TLS-SCTP";
 		} else {
 			throw new IllegalArgumentException("Cannot upgrade " + transport);
-		}		
-		LOGGER.debug("upgradeTransport(" + transport + "): " + upgradedTransport);
+		}
+		
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("upgradeTransport(" + transport + "): " + upgradedTransport);
+		}
 		
 		return upgradedTransport;
 	}
@@ -232,7 +260,10 @@ public final class LocatorUtils {
 	 * @return the default transport for the provided scheme.
 	 */
 	public static String getDefaultTransportForScheme(String scheme) {
-		LOGGER.debug("getDefaultTransportForScheme(" + scheme + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getDefaultTransportForScheme(" + scheme + ")");
+		}
+		
 		String transport;
 		if ("SIPS".equalsIgnoreCase(scheme)) {
 			transport = upgradeTransport(TCP);
@@ -242,7 +273,9 @@ public final class LocatorUtils {
 			throw new IllegalArgumentException("Unknown scheme: " + scheme);
 		}
 		
-		LOGGER.debug("getDefaultTransportForScheme(" + scheme + "): " + transport);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getDefaultTransportForScheme(" + scheme + "): " + transport);
+		}
 		return transport;
 	}
 
@@ -256,7 +289,9 @@ public final class LocatorUtils {
 	 * @return the target.
 	 */
 	public static String getTarget(SipURI uri) {
-		LOGGER.debug("getTarget(" + uri + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getTarget(" + uri + ")");
+		}
 		// RFC 3263 Section 4 Para 5
 	
 		// We define TARGET as the value of the maddr parameter of
@@ -265,12 +300,17 @@ public final class LocatorUtils {
 		final String maddr = uri.getMAddrParam();
 		final String target;
 		if (maddr != null) {
-			LOGGER.debug(uri + " has no maddr parameter");
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(uri + " has no maddr parameter");
+			}
 			target = maddr;
 		} else {
 			target = uri.getHost();
 		}
-		LOGGER.debug("getTarget(" + uri + "): " + target);
+		
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getTarget(" + uri + "): " + target);
+		}
 		return target;
 	}
 	
@@ -282,7 +322,9 @@ public final class LocatorUtils {
 	 * @throws IllegalArgumentException if the NAPTR service field is not recognised.
 	 */
 	public static String getTransportForService(String service) {
-		LOGGER.debug("getTransportForService(" + service + ")");
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getTransportForService(" + service + ")");
+		}
 		String transport;
 		if (service.equals("SIP+D2T")) {
 			transport = TCP;
@@ -298,7 +340,9 @@ public final class LocatorUtils {
 			throw new IllegalArgumentException();
 		}
 		
-		LOGGER.debug("getTransportForService(" + service + "): " + transport);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getTransportForService(" + service + "): " + transport);
+		}
 		return transport;
 	}
 
@@ -313,8 +357,10 @@ public final class LocatorUtils {
 	 * @param suffix the domain name.
 	 * @return the SRV service identifier.
 	 */
-	public static Name getServiceIdentifier(String transport, Name suffix) {
-		LOGGER.debug("getServiceIdentifier(" + transport + ", " + suffix + ")");
+	public static Name getServiceIdentifier(String transport, Name suffix) throws IOException {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("getServiceIdentifier(" + transport + ", " + suffix + ")");
+		}
 		if (isKnownTransport(transport) == false) {
 			throw new IllegalArgumentException("Unknown transport: " + transport);
 		}
@@ -331,15 +377,12 @@ public final class LocatorUtils {
 		
 		final Name scheme = transport.startsWith(TLS) ? _SIPS : _SIP;
 		
-		try {
-			Name prefix = Name.concatenate(scheme, transportName);
-			Name serviceId = Name.concatenate(prefix, suffix);
-			
+		Name prefix = Name.concatenate(scheme, transportName);
+		Name serviceId = Name.concatenate(prefix, suffix);
+		
+		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("getServiceIdentifier(" + transport + ", " + suffix + "): " + serviceId);
-			return serviceId;	
-		} catch (NameTooLongException e) {
-			// TODO: This is a generic DNS exception.
-			throw new RuntimeException(e);
 		}
+		return serviceId;	
 	}
 }
