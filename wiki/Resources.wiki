@@ -1,3 +1,4 @@
 #summary One-sentence summary of this page.
 
   * [http://mit.edu/sip/sip.edu/dns.shtml SIP.edu Cookbook DNS Configuration]
+  * http://blog.tekelec.com/blog/bid/13206/How-do-SIP-endpoints-find-the-right-servers
