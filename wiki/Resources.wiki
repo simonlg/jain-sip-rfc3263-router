@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Links to resources on SIP and DNS
 
   * [http://mit.edu/sip/sip.edu/dns.shtml DNS Configuration] (SIP.edu Cookbook)
   * [http://blog.tekelec.com/blog/bid/13206/How-do-SIP-endpoints-find-the-right-servers How do SIP endpoints find the right servers?] (SIP Sessions)
