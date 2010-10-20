@@ -2,6 +2,7 @@ package com.google.code.rfc3263;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -240,7 +241,7 @@ public class StandardTest {
 	}
 	
 	@Test
-	public void testHop() {
+	public void testHop() throws IOException {
 		final Queue<Hop> hops = locator.locate(uri);
 		
 		assertEquals(hop, hops.peek());

@@ -8,8 +8,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +34,6 @@ import org.xbill.DNS.DClass;
 import org.xbill.DNS.NAPTRRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.SRVRecord;
-import org.xbill.DNS.TextParseException;
 
 import com.google.code.rfc3263.dns.Resolver;
 
@@ -57,7 +56,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseTcpTransportParameter() throws ParseException {
+	public void testShouldUseTcpTransportParameter() throws ParseException, IOException {
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
@@ -71,7 +70,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseUdpTransportParameter() throws ParseException {
+	public void testShouldUseUdpTransportParameter() throws ParseException, IOException {
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
@@ -85,7 +84,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseUdpIfNumericAndIsInsecure() throws ParseException {
+	public void testShouldUseUdpIfNumericAndIsInsecure() throws ParseException, IOException {
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
@@ -98,7 +97,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseTlsIfNumericAndIsSecure() throws ParseException {
+	public void testShouldUseTlsIfNumericAndIsSecure() throws ParseException, IOException {
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
@@ -112,7 +111,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseTlsIfNonNumericHasPortAndIsSecure() throws ParseException {
+	public void testShouldUseTlsIfNonNumericHasPortAndIsSecure() throws ParseException, IOException {
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
@@ -127,7 +126,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseUdpIfNonNumericHasPortAndIsInsecure() throws ParseException {
+	public void testShouldUseUdpIfNonNumericHasPortAndIsInsecure() throws ParseException, IOException {
 		replay(resolver);
 		
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
@@ -141,7 +140,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseTlsIfNonNumericSomeNaptrRecordsNoSrvRecordsAndIsSecure() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldUseTlsIfNonNumericSomeNaptrRecordsNoSrvRecordsAndIsSecure() throws ParseException, IOException {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000, 0, 0, "s", "SIPS+D2T", "", new Name("_sips._tcp.example.org.")));
 		
@@ -165,7 +164,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseUdpIfNonNumericSomeNaptrRecordsNoSrvRecordsAndIsInsecure() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldUseUdpIfNonNumericSomeNaptrRecordsNoSrvRecordsAndIsInsecure() throws ParseException, IOException {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2U", "", new Name("_sip._udp.example.org.")));
 		
@@ -188,7 +187,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseTransportFromSrvIfNonNumericSomeNaptrRecordsSomeSrvRecordsAndIsInsecure() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldUseTransportFromSrvIfNonNumericSomeNaptrRecordsSomeSrvRecordsAndIsInsecure() throws ParseException, IOException {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2T", "", new Name("_sip._tcp.example.org.")));
 		
@@ -214,7 +213,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseTransportFromSrvIfNonNumericNoNaptrRecordsSomeSrvRecordsAndIsInsecure() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldUseTransportFromSrvIfNonNumericNoNaptrRecordsSomeSrvRecordsAndIsInsecure() throws ParseException, IOException {
 		List<SRVRecord> services = new ArrayList<SRVRecord>();
 		services.add(new SRVRecord(new Name("_sip._tcp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("example.org.")));
 		
@@ -237,7 +236,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldNotLookupNumericHost() throws ParseException {
+	public void testShouldNotLookupNumericHost() throws ParseException, IOException {
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "127.0.0.1");
@@ -246,7 +245,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldNotLookupNumericHostIPv6() throws ParseException {
+	public void testShouldNotLookupNumericHostIPv6() throws ParseException, IOException {
 		replay(resolver);
 
 		SipURI uri = addressFactory.createSipURI(null, "[2001:db8:85a3::8a2e:370:7334]");
@@ -260,7 +259,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldLookupAddressWhenPortPresent() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldLookupAddressWhenPortPresent() throws ParseException, IOException {
 		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
 		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(Collections.<AAAARecord>emptySet());
 		replay(resolver);
@@ -273,7 +272,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldLookupDefaultSrvWhenNoNaptr() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldLookupDefaultSrvWhenNoNaptr() throws ParseException, IOException {
 		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(new ArrayList<NAPTRRecord>());
 		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.org."))).andReturn(new ArrayList<SRVRecord>());
 		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
@@ -287,7 +286,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldLookupSrvFromNaptrReplacement() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldLookupSrvFromNaptrReplacement() throws ParseException, IOException {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 0, "s", "SIP+D2U", "", new Name("_sip._udp.example.net.")));
 		
@@ -304,7 +303,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseLowestOrderNaptr() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldUseLowestOrderNaptr() throws ParseException, IOException {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		// TCP is a lower order, so should be used first.
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 1, 0, "s", "SIP+D2U", "", new Name("_sip._udp.example.net.")));
@@ -323,7 +322,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldUseLowestPreferenceNaptr() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldUseLowestPreferenceNaptr() throws ParseException, IOException {
 		List<NAPTRRecord> pointers = new ArrayList<NAPTRRecord>();
 		// UDP and TCP have the same order, but TCP is a lower preference, so should be used first.
 		pointers.add(new NAPTRRecord(new Name("example.org."), DClass.IN, 1000L, 0, 1, "s", "SIP+D2U", "", new Name("_sip._udp.example.net.")));
@@ -343,7 +342,7 @@ public class LocatorTest {
 	}
 	
 	@Test
-	public void testShouldLookupAddressFromSrvTarget() throws ParseException, UnknownHostException, TextParseException {
+	public void testShouldLookupAddressFromSrvTarget() throws ParseException, IOException {
 		List<SRVRecord> services = new ArrayList<SRVRecord>();
 		services.add(new SRVRecord(new Name("_sip._udp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("sip.example.org.")));
 		

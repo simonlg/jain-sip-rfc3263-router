@@ -4,9 +4,10 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.xbill.DNS.Name;
-import org.xbill.DNS.TextParseException;
 
 public class LocatorUtilsTest {
 	@Test
@@ -131,32 +132,32 @@ public class LocatorUtilsTest {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testGetServiceIdentifierForInvalidTransport() throws TextParseException {
+	public void testGetServiceIdentifierForInvalidTransport() throws IOException {
 		LocatorUtils.getServiceIdentifier("FOO", new Name("example.org."));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForUdp() throws TextParseException {
+	public void testGetServiceIdentifierForUdp() throws IOException {
 		assertEquals(new Name("_sip._udp.example.org."), LocatorUtils.getServiceIdentifier("UDP", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForTcp() throws TextParseException {
+	public void testGetServiceIdentifierForTcp() throws IOException {
 		assertEquals(new Name("_sip._tcp.example.org."), LocatorUtils.getServiceIdentifier("TCP", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForTls() throws TextParseException {
+	public void testGetServiceIdentifierForTls() throws IOException {
 		assertEquals(new Name("_sips._tcp.example.org."), LocatorUtils.getServiceIdentifier("TLS", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForSctp() throws TextParseException {
+	public void testGetServiceIdentifierForSctp() throws IOException {
 		assertEquals(new Name("_sip._sctp.example.org."), LocatorUtils.getServiceIdentifier("SCTP", new Name("example.org.")));
 	}
 	
 	@Test
-	public void testGetServiceIdentifierForSctpTls() throws TextParseException {
+	public void testGetServiceIdentifierForSctpTls() throws IOException {
 		assertEquals(new Name("_sips._sctp.example.org."), LocatorUtils.getServiceIdentifier("TLS-SCTP", new Name("example.org.")));
 	}
 }

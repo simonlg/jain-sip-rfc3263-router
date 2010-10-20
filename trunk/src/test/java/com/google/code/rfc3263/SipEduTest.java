@@ -1,5 +1,6 @@
 package com.google.code.rfc3263;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +69,7 @@ public class SipEduTest {
 	}
 	
 	@Test
-	public void testSimple() throws ParseException {
+	public void testSimple() throws ParseException, IOException {
 		SipURI uri = addressFactory.createSipURI(null, domain);
 		locator.locate(uri);
 	}
