@@ -172,7 +172,7 @@ public class DefaultRouter implements Router {
 		// Request-URI specifies a SIPS resource, the UAC MUST follow the
 		// procedures of [4] as if the input URI were a SIPS URI.
 		
-		final SipURI requestUri = (SipURI) request.getRequestURI();
+		final URI requestUri = request.getRequestURI();
 		final SipURI destination;
 		
 		final ListIterator<?> routes = request.getHeaders(RouteHeader.NAME);
@@ -192,7 +192,11 @@ public class DefaultRouter implements Router {
 				//
 				// If the first element in the route set indicated a strict router, 
 				// the procedures MUST be applied to the Request-URI of the request.
-				destination = requestUri;
+				if (requestUri.isSipURI() == false) {
+					LOGGER.error("Strict routing detected but the request URI is not a SIP URI. Unable to route request");
+					throw new IllegalArgumentException("Can't route non-SIP URI" + requestUri);
+				}
+				destination = (SipURI)requestUri;
 			} else {
 				LOGGER.debug("Top Route header indicates a loose router.  Using route for input");
 				// RFC 3261 Section 8.1.2 Para 1 (Cont)
@@ -207,14 +211,18 @@ public class DefaultRouter implements Router {
 			//
 			// Otherwise, the procedures are applied to ... the request's Request-URI
 			// if there is no Route header field present.
-			destination = requestUri;
+			if (requestUri.isSipURI() == false) {
+				LOGGER.error("The request URI is not a SIP URI. Unable to route request");
+				throw new IllegalArgumentException("Can't route non-SIP URI" + requestUri);
+			}
+			destination = (SipURI)requestUri;
 		}
 		
 		// RFC 3261 Section 8.1.2 Para 1 (Cont)
 		//
 		// if the Request-URI specifies a SIPS resource, the UAC MUST follow 
 		// the procedures of [4] as if the input URI were a SIPS URI.
-		if (requestUri.isSecure()) {
+		if (requestUri.isSipURI() && ((SipURI)requestUri).isSecure()) {
 			LOGGER.debug("Request URI is a SIPS URI.  Treating input URI as a SIPS URI too");
 			destination.setSecure(true);
 		}
