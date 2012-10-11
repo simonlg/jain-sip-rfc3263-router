@@ -1,7 +1,8 @@
 package com.google.code.rfc3263;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -14,6 +15,7 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.Hop;
 import javax.sip.address.Router;
 import javax.sip.address.SipURI;
+import javax.sip.address.URI;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
 import javax.sip.header.FromHeader;
@@ -73,6 +75,67 @@ public class DefaultRouterTest {
 	}
 	
 	@Test
+	public void testGivenTelRequestUriWhenSelectingDestinationThenErrorThrown() throws Exception {
+		//given
+		Request request = getRequest();
+		request.setRequestURI(getTelUri());
+		try {
+			//when
+			DefaultRouter.selectDestination(request);
+			fail();
+		} catch(IllegalArgumentException e) {
+			//then
+		}
+	}
+	
+	@Test
+	public void testGivenStrictRoutingRouteHeaderAndTelRequestUriWhenSelectingDestinationThenErrorThrown() throws Exception {
+		//given
+		Request request = getRequest();
+		request.setRequestURI(getTelUri());
+		final RouteHeader route = getRoute(false);
+		request.addHeader(route);
+		try {
+			//when
+			DefaultRouter.selectDestination(request);
+			fail();
+		} catch(IllegalArgumentException e) {
+			//then
+		}
+	}
+	
+	@Test
+	public void testGivenTelRouteHeaderWhenSelectingDestinationThenErrorThrown() throws Exception {
+		//given
+		Request request = getRequest();
+		request.setRequestURI(getTelUri());
+		URI routeUri = getTelUri();
+		RouteHeader route = headerFactory.createRouteHeader(addressFactory.createAddress(routeUri));
+		request.addHeader(route);
+		try {
+			//when
+			DefaultRouter.selectDestination(request);
+			fail();
+		} catch(IllegalArgumentException e) {
+			//then
+		}
+	}
+	
+	@Test
+	public void testGivenLooseRoutingRouteHeaderAndTelRequestUriWhenSelectingDestinationThenDestinationIsRouteUri() throws Exception {
+		//given
+		Request request = getRequest();
+		request.setRequestURI(getTelUri());
+		final RouteHeader route = getRoute(true);
+		request.addHeader(route);
+		
+		//when
+		SipURI destination = DefaultRouter.selectDestination(request);
+		//then
+		assertEquals(route.getAddress().getURI(), destination);
+	}
+	
+	@Test
 	public void testProxyShouldBeUsedInAbsenseOfRoute() throws Exception {
 		Hop expected = new HopImpl("192.168.0.3", 5060, "UDP");
 		Hop actual = getRouter("192.168.0.3:5060/UDP").getNextHop(getRequest());
@@ -128,6 +191,10 @@ public class DefaultRouterTest {
 		}
 		final Address routeAddr = addressFactory.createAddress(routeUri);
 		return headerFactory.createRouteHeader(routeAddr);
+	}
+	
+	private URI getTelUri() throws ParseException {
+		return addressFactory.createTelURL("4181234567");
 	}
 	
 	private Request getRequest() throws Exception {
