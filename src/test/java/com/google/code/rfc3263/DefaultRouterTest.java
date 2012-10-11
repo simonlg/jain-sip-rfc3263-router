@@ -2,6 +2,8 @@ package com.google.code.rfc3263;
 
 import static org.junit.Assert.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -172,9 +174,17 @@ public class DefaultRouterTest {
 	public void testMcastShouldBeUsedWhenPresent() throws Exception {
 		final Request request = getRequest();
 		SipURI requestUri = (SipURI) request.getRequestURI();
-		requestUri.setMAddrParam("sip.mcast.net");
-		
-		Hop expected = new HopImpl("224.0.1.75", 5060 , "UDP");
+
+		Hop expected;
+		try {
+			InetAddress.getByName("sip.mcast.net");
+			requestUri.setMAddrParam("sip.mcast.net");
+			expected = new HopImpl("224.0.1.75", 5060 , "UDP");
+		} catch (UnknownHostException e) {
+			// This path is used when the DNS of the server running the test doesn't know sip.mcast.net
+			requestUri.setMAddrParam("localhost");
+			expected = new HopImpl("127.0.0.1", 5060 , "UDP");
+		}
 		Hop actual = getRouter(null).getNextHop(request);
 		
 		assertEquals(expected, actual);
