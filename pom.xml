@@ -3,7 +3,7 @@
 	<groupId>com.google.code.jain-sip-rfc3263-router</groupId>
 	<artifactId>jain-sip-rfc3263-router</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1.2-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<name>JAIN-SIP RFC3263 Router</name>
 	<url>http://code.google.com/p/jain-sip-rfc3263-router/</url>
 	<dependencies>
