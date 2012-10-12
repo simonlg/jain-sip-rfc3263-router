@@ -3,7 +3,7 @@
 	<groupId>com.google.code.jain-sip-rfc3263-router</groupId>
 	<artifactId>jain-sip-rfc3263-router</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1.1</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<name>JAIN-SIP RFC3263 Router</name>
 	<url>http://code.google.com/p/jain-sip-rfc3263-router/</url>
 	<dependencies>
@@ -53,9 +53,9 @@
 		</dependency>
 	</dependencies>
 	<scm>
-		<connection>scm:svn:http://jain-sip-rfc3263-router.googlecode.com/svn/tags/1.1.1</connection>
-		<developerConnection>scm:svn:https://jain-sip-rfc3263-router.googlecode.com/svn/tags/1.1.1</developerConnection>
-		<url>http://code.google.com/p/jain-sip-rfc3263-router/source/browse/tags/1.1.1</url>
+		<connection>scm:svn:http://jain-sip-rfc3263-router.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://jain-sip-rfc3263-router.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://code.google.com/p/jain-sip-rfc3263-router/source/browse/</url>
 	</scm>
 	<build>
 		<plugins>
