@@ -1,0 +1,94 @@
+#summary Changes included in each release
+#labels Featured
+
+<wiki:toc/>
+
+== Release 1.1.0 ==
+
+|| *Release Date* || 2010-09-14 ||
+|| *Tag Revision* || r386 ||
+|| *Bugs Fixed* || None ||
+
+This release brings a substantial change in the format of the Resolver class, which now uses the   dnsjava classes to represent A, AAAA, SRV and NAPTR records. A and AAAA records are no longer combined into one group of generic "address" records.
+
+This should -- to some extent -- finalize the Resolver interface, and also pave the way for solving Issue 14, by providing all of the DNS record fields.
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.1.0.jar Download]
+
+== Release 1.0.8 ==
+
+|| *Release Date* || 2010-09-10 ||
+|| *Tag Revision* || r368 ||
+|| *Bugs Fixed* || Issue 12, Issue 13 ||
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.8.jar Download]
+
+== Release 1.0.7 ==
+
+|| *Release Date* || 2010-08-24 ||
+|| *Tag Revision* || r300 ||
+|| *Bugs Fixed* || Issue 11 ||
+
+Now route SipURIs with `transport=tls`.
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.7.jar Download]
+
+== Release 1.0.6 ==
+
+|| *Release Date* || 2010-08-18 ||
+|| *Tag Revision* || r253 ||
+|| *Bugs Fixed* || Issue 10 ||
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.6.jar Download]
+
+== Release 1.0.5 ==
+
+|| *Release Date* || 2010-08-10 ||
+|| *Tag Revision* || r201 ||
+|| *Bugs Fixed* || Issue 9 ||
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.5.jar Download]
+
+== Release 1.0.4 ==
+
+|| *Release Date* || 2010-08-03 ||
+|| *Tag Revision* || r163 ||
+|| *Bugs Fixed* || Issue 8 ||
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.4.jar Download]
+
+== Release 1.0.3 ==
+
+|| *Release Date* || 2010-07-26 ||
+|| *Tag Revision* || r137 ||
+|| *Bugs Fixed* || Issue 6, Issue 7 ||
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.3.jar Download]
+
+== Release 1.0.2 ==
+
+|| *Release Date* || 2010-07-15 ||
+|| *Tag Revision* || r123 ||
+|| *Bugs Fixed* || Issue 1, Issue 2, Issue 3 ||
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.2.jar Download]
+
+== Release 1.0.1 ==
+
+|| *Release Date* || 2010-07-14 ||
+|| *Tag Revision* || r65 ||
+|| *Bugs Fixed* || None ||
+
+Greatly improved logging.
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.1.jar Download]
+
+== Release 1.0 ==
+
+|| *Release Date* || 2010-07-13 ||
+|| *Tag Revision* || r51 ||
+|| *Bugs Fixed* || None ||
+
+This is the initial release.
+
+[http://code.google.com/p/jain-sip-rfc3263-router/downloads/detail?name=jain-sip-rfc3263-router-1.0.jar Download]
