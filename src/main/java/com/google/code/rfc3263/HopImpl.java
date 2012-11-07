@@ -20,7 +20,11 @@ public class HopImpl implements Hop {
 	public HopImpl(String host, int port, String transport) {
 		this.host = host;
 		this.port = port;
-		this.transport= transport;
+		if (transport != null) {
+			this.transport= transport.toUpperCase();
+		} else {
+			this.transport= transport;
+		}
 	}
 	
 	/**
