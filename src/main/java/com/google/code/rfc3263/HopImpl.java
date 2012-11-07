@@ -12,7 +12,7 @@ import com.google.code.rfc3263.util.LocatorUtils;
  * This is an implementation of the Hop interface.
  */
 @Immutable
-class HopImpl implements Hop {
+public class HopImpl implements Hop {
 	private final String host;
 	private final int port;
 	private final String transport;
