@@ -19,8 +19,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+/**
+ * Integration Test for sip.edu Members
+ */
 @RunWith(Parameterized.class)
-public class SipEduTest {
+public class SipEduIT {
 	private AddressFactory addressFactory;
 	private Locator locator;
 	private final String domain;
@@ -64,7 +67,7 @@ public class SipEduTest {
 		locator = new Locator(Arrays.asList("TCP", "UDP", "SCTP", "TLS", "TLS-SCTP"));
 	}
 	
-	public SipEduTest(String domain) {
+	public SipEduIT(String domain) {
 		this.domain = domain;
 	}
 	
