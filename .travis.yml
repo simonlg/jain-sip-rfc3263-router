@@ -1,0 +1,8 @@
+language: java
+install: mvn -B -DskipTests=true install
+before_script: mvn -B help:effective-pom
+script: mvn -B test
+after_script: mvn -B versions:display-dependency-updates versions:display-plugin-updates
+jdk:
+  - openjdk7
+  - oraclejdk7
