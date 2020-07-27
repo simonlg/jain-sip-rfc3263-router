@@ -48,6 +48,7 @@ public class LocatorTest {
 	public void setUp() throws PeerUnavailableException {
 		addressFactory = SipFactory.getInstance().createAddressFactory();
 		resolver = createMock(Resolver.class);
+		System.setProperty("java.net.preferIPv4Stack", "false");
 	}
 	
 	@After
@@ -354,6 +355,19 @@ public class LocatorTest {
 
 		SipURI uri = addressFactory.createSipURI(null, "example.org");
 		
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
+		locator.locate(uri);
+	}
+
+	@Test
+	public void testShouldNotLookupAAAAWhenPreferIPv4StackEnabled() throws ParseException, IOException {
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
+		replay(resolver);
+
+		SipURI uri = addressFactory.createSipURI(null, "example.org");
+		uri.setPort(5060);
+
 		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		locator.locate(uri);
 	}

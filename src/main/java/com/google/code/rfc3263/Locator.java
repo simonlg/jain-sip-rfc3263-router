@@ -52,6 +52,7 @@ import com.google.code.rfc3263.dns.ServiceRecordSelector;
 @ThreadSafe
 public class Locator {
 	private final static Logger LOGGER = Logger.getLogger(Locator.class);
+
 	/**
 	 * Class to use for DNS lookups.
 	 */
@@ -81,6 +82,11 @@ public class Locator {
 		serviceTransportMap.put("SIP+D2S", SCTP);
 		serviceTransportMap.put("SIPS+D2S", "TLS-SCTP");
 	}
+
+	/**
+	 * Flag based on java.net.preferIPv4Stack
+	 */
+	private final boolean ipv4only;
 	
 	/**
 	 * Constructs a new instance of the <code>Locator</code> class using
@@ -128,6 +134,7 @@ public class Locator {
 		this.resolver = resolver;
 		this.prefTransports = transports;
 		this.weightingComparator = weightingComparator;
+		this.ipv4only = Boolean.getBoolean("java.net.preferIPv4Stack");
 	}
 	
 	/**
@@ -450,17 +457,19 @@ public class Locator {
 					resolvedHops.add(resolvedHop);
 				}
 			}
-			
-			final Set<AAAARecord> aaaaRecords = resolver.lookupAAAARecords(hop.getHost());
 
-			for (AAAARecord aaaaRecord : aaaaRecords) {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Processing AAAA record: " + aaaaRecord);
-				}
-				final String ipAddress = aaaaRecord.getAddress().getHostAddress();
-				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
-				if (resolvedHops.contains(resolvedHop) == false) {
-					resolvedHops.add(resolvedHop);
+			if(!ipv4only) {
+				final Set<AAAARecord> aaaaRecords = resolver.lookupAAAARecords(hop.getHost());
+
+				for (AAAARecord aaaaRecord : aaaaRecords) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Processing AAAA record: " + aaaaRecord);
+					}
+					final String ipAddress = aaaaRecord.getAddress().getHostAddress();
+					final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
+					if (resolvedHops.contains(resolvedHop) == false) {
+						resolvedHops.add(resolvedHop);
+					}
 				}
 			}
 		}
