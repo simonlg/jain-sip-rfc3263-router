@@ -41,6 +41,9 @@ import com.google.code.rfc3263.dns.Resolver;
  * This test checks that only the expected DNS lookups take place. 
  */
 public class LocatorTest {
+	private static final String JAVA_NET_PREFER_IPV_4_STACK = "java.net.preferIPv4Stack";
+	private static final String JAVA_NET_PREFER_IPV_6_ADDRESSES = "java.net.preferIPv6Addresses";
+
 	private AddressFactory addressFactory;
 	private Resolver resolver;
 	
@@ -48,7 +51,8 @@ public class LocatorTest {
 	public void setUp() throws PeerUnavailableException {
 		addressFactory = SipFactory.getInstance().createAddressFactory();
 		resolver = createMock(Resolver.class);
-		System.setProperty("java.net.preferIPv4Stack", "false");
+		System.setProperty(JAVA_NET_PREFER_IPV_4_STACK, "false");
+		System.setProperty(JAVA_NET_PREFER_IPV_6_ADDRESSES, "false");
 	}
 	
 	@After
@@ -361,7 +365,7 @@ public class LocatorTest {
 
 	@Test
 	public void testShouldNotLookupAAAAWhenPreferIPv4StackEnabled() throws ParseException, IOException {
-		System.setProperty("java.net.preferIPv4Stack", "true");
+		System.setProperty(JAVA_NET_PREFER_IPV_4_STACK, "true");
 		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(new HashSet<ARecord>());
 		replay(resolver);
 
@@ -370,5 +374,58 @@ public class LocatorTest {
 
 		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
 		locator.locate(uri);
+	}
+
+	@Test
+	public void testShouldOrderAFirstWhenPreferIPv6AddressesIsDisabled() throws ParseException, IOException {
+		System.setProperty(JAVA_NET_PREFER_IPV_6_ADDRESSES, "false");
+
+		Queue<Hop> hops = locateMultipleIpv4AndIpv4Hops();
+
+		assertThat(hops.poll().getHost(), is("127.0.0.1"));
+		assertThat(hops.poll().getHost(), is("0:0:0:0:0:0:0:1"));
+		assertThat(hops.poll().getHost(), is("127.0.0.2"));
+		assertThat(hops.poll().getHost(), is("0:0:0:0:0:0:0:2"));
+	}
+
+	@Test
+	public void testShouldOrderAAAAFirstWhenPreferIPv6AddressesIsEnabled() throws ParseException, IOException {
+		System.setProperty(JAVA_NET_PREFER_IPV_6_ADDRESSES, "true");
+
+		Queue<Hop> hops = locateMultipleIpv4AndIpv4Hops();
+
+		assertThat(hops.poll().getHost(), is("0:0:0:0:0:0:0:1"));
+		assertThat(hops.poll().getHost(), is("127.0.0.1"));
+		assertThat(hops.poll().getHost(), is("0:0:0:0:0:0:0:2"));
+		assertThat(hops.poll().getHost(), is("127.0.0.2"));
+	}
+
+	private Queue<Hop> locateMultipleIpv4AndIpv4Hops() throws ParseException, IOException {
+		List<SRVRecord> services = new ArrayList<SRVRecord>();
+		services.add(new SRVRecord(new Name("_sip._udp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("example.org.")));
+		services.add(new SRVRecord(new Name("_sip._udp.example.org."), DClass.IN, 1000L, 0, 0, 5060, new Name("backup.example.org.")));
+
+		Set<ARecord> exampleIpv4Addresses = new HashSet<ARecord>();
+		exampleIpv4Addresses.add(new ARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getByName("127.0.0.1")));
+		Set<ARecord> backupExampleIpv4Addresses = new HashSet<ARecord>();
+		backupExampleIpv4Addresses.add(new ARecord(new Name("backup.example.org."), DClass.IN, 1000L, InetAddress.getByName("127.0.0.2")));
+
+		Set<AAAARecord> exampleIpv6Addresses = new HashSet<AAAARecord>();
+		exampleIpv6Addresses.add(new AAAARecord(new Name("example.org."), DClass.IN, 1000L, InetAddress.getByName("0:0:0:0:0:0:0:1")));
+		Set<AAAARecord> backupExampleIpv6Addresses = new HashSet<AAAARecord>();
+		backupExampleIpv6Addresses.add(new AAAARecord(new Name("backup.example.org."), DClass.IN, 1000L, InetAddress.getByName("0:0:0:0:0:0:0:2")));
+
+		expect(resolver.lookupNAPTRRecords(new Name("example.org."))).andReturn(Collections.<NAPTRRecord>emptyList());
+		expect(resolver.lookupSRVRecords(new Name("_sip._udp.example.org."))).andReturn(services);
+		expect(resolver.lookupARecords(new Name("example.org."))).andReturn(exampleIpv4Addresses);
+		expect(resolver.lookupAAAARecords(new Name("example.org."))).andReturn(exampleIpv6Addresses);
+		expect(resolver.lookupARecords(new Name("backup.example.org."))).andReturn(backupExampleIpv4Addresses);
+		expect(resolver.lookupAAAARecords(new Name("backup.example.org."))).andReturn(backupExampleIpv6Addresses);
+		replay(resolver);
+
+		SipURI uri = addressFactory.createSipURI(null, "example.org");
+
+		Locator locator = new Locator(Collections.singletonList("UDP"), resolver);
+		return locator.locate(uri);
 	}
 }

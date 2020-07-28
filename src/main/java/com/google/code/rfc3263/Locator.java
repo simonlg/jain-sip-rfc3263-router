@@ -52,6 +52,8 @@ import com.google.code.rfc3263.dns.ServiceRecordSelector;
 @ThreadSafe
 public class Locator {
 	private final static Logger LOGGER = Logger.getLogger(Locator.class);
+	public static final String JAVA_NET_PREFER_IPV_4_STACK = "java.net.preferIPv4Stack";
+	public static final String JAVA_NET_PREFER_IPV_6_ADDRESSES = "java.net.preferIPv6Addresses";
 
 	/**
 	 * Class to use for DNS lookups.
@@ -87,6 +89,11 @@ public class Locator {
 	 * Flag based on java.net.preferIPv4Stack
 	 */
 	private final boolean ipv4only;
+
+	/**
+	 * Flag based on java.net.preferIPv6Addresses
+	 */
+	private final boolean ipv6first;
 	
 	/**
 	 * Constructs a new instance of the <code>Locator</code> class using
@@ -134,7 +141,8 @@ public class Locator {
 		this.resolver = resolver;
 		this.prefTransports = transports;
 		this.weightingComparator = weightingComparator;
-		this.ipv4only = Boolean.getBoolean("java.net.preferIPv4Stack");
+		this.ipv4only = Boolean.getBoolean(JAVA_NET_PREFER_IPV_4_STACK);
+		this.ipv6first = Boolean.getBoolean(JAVA_NET_PREFER_IPV_6_ADDRESSES);
 	}
 	
 	/**
@@ -445,6 +453,8 @@ public class Locator {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("Resolving hop: " + hop);
 			}
+
+			Queue<Hop> resolvedIpv4Hops = new LinkedList<Hop>();
 			final Set<ARecord> aRecords = resolver.lookupARecords(hop.getHost());
 
 			for (ARecord aRecord : aRecords) {
@@ -453,11 +463,12 @@ public class Locator {
 				}
 				final String ipAddress = aRecord.getAddress().getHostAddress();
 				final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
-				if (resolvedHops.contains(resolvedHop) == false) {
-					resolvedHops.add(resolvedHop);
+				if (resolvedHops.contains(resolvedHop) == false && resolvedIpv4Hops.contains(resolvedHop) == false) {
+					resolvedIpv4Hops.add(resolvedHop);
 				}
 			}
 
+			Queue<Hop> resolvedIpv6Hops = new LinkedList<Hop>();
 			if(!ipv4only) {
 				final Set<AAAARecord> aaaaRecords = resolver.lookupAAAARecords(hop.getHost());
 
@@ -467,11 +478,23 @@ public class Locator {
 					}
 					final String ipAddress = aaaaRecord.getAddress().getHostAddress();
 					final Hop resolvedHop = new HopImpl(ipAddress, hop.getPort(), hop.getTransport());
-					if (resolvedHops.contains(resolvedHop) == false) {
-						resolvedHops.add(resolvedHop);
+					if (resolvedHops.contains(resolvedHop) == false && resolvedIpv6Hops.contains(resolvedHop) == false) {
+						resolvedIpv6Hops.add(resolvedHop);
 					}
 				}
+			} else {
+				LOGGER.debug("Not resolving AAAA records because " + JAVA_NET_PREFER_IPV_4_STACK + "=true");
 			}
+
+			if(ipv6first) {
+				LOGGER.debug("Preferring AAAA records because " + JAVA_NET_PREFER_IPV_6_ADDRESSES + "=true");
+				resolvedHops.addAll(resolvedIpv6Hops);
+				resolvedHops.addAll(resolvedIpv4Hops);
+			} else {
+				resolvedHops.addAll(resolvedIpv4Hops);
+				resolvedHops.addAll(resolvedIpv6Hops);
+			}
+
 		}
 		
 		return resolvedHops;
