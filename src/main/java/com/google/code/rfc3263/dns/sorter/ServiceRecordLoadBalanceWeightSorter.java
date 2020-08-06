@@ -11,7 +11,7 @@ public class ServiceRecordLoadBalanceWeightSorter implements ServiceRecordWeight
 
 	private static final int FIRST_ELEMENT_POSITION = 0;
 
-	private final Random random = new Random();
+	private final SplittableRandom random = new SplittableRandom();
 	private final Comparator<SRVRecord> weightComparator = new WeightComparator();
 
 	public ServiceRecordLoadBalanceWeightSorter() {
